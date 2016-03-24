@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         serviceAPI.login("Lemon", "123456");
         serviceAPI.login("Lemon95", "123456");
 
-        post.setText(userInfo.getName() + " --- " + userInfo.getFace());
+        post.setText(userInfo.toString());
 
     }
 
