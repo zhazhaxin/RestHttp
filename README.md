@@ -113,7 +113,7 @@ java代码：
         
 POST请求：
 
-<img src="/app/post.png" width="320" height="569" alt="POST"/>
+<img src="post.png" width="320" height="569" alt="POST"/>
 
 图片加载（第一张小图，第二张大图）：
 
