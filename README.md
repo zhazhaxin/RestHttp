@@ -108,9 +108,9 @@
         
     效果图：
 
-<img src="post.png" width="320" height="569" alt="POST"/>
-<img src="image.png" width="320" height="569"/>
+    <img src="post.png" width="320" height="569" alt="POST"/>
+    <img src="image.png" width="320" height="569"/>
 
     日志打印輸出：
 
-<img src="log.png" width="800" height="300"/>
+    <img src="log.png" width="800" height="300"/>
