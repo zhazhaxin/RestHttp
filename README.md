@@ -42,7 +42,7 @@
         
 - 普通请求方式：
         
-(1)get请求：
+    (1)get请求：
         
                 HttpRequest.getInstance().get(GET_URL, new HttpCallBack() {
                             @Override
@@ -51,7 +51,7 @@
                             }
                         });
         
-(2)post请求：
+    (2)post请求：
         
                  public void httpPostRequest() {
                         Map<String, String> params = new HashMap<>();
@@ -63,13 +63,13 @@
                                 post.setText("POST:\n" + info);
                             }
                             
-(3)添加header
+    (3)添加header
 
         public void setHttpHeader(Map<String, String> header);
 
 - 图片加载（包括了内存缓存和硬盘缓存）
 
-(1)加载小图：
+    (1)加载小图：
 
          <cn.alien95.resthttp.view.HttpImageView
                      android:id="@+id/small_image"
@@ -82,7 +82,7 @@
 
         smallImage.setImageUrl(IMAGE_SMALL_URL);    设置一个图片地址就好了。                                       
 
-(2)加载大图时可以进行图片压缩处理：
+    (2)加载大图时可以进行图片压缩处理：
 
          <cn.alien95.resthttp.view.HttpImageView
                      android:id="@+id/big_image"
@@ -101,16 +101,16 @@
 
 - 注意事项：
         
-还依赖了其他库(避免重复依赖)：
+    还依赖了其他库(避免重复依赖)：
 
         compile 'com.jakewharton:disklrucache:2.0.2'
         compile 'com.google.code.gson:gson:2.6.2'      
         
-效果图：
+    效果图：
 
 <img src="post.png" width="320" height="569" alt="POST"/>
 <img src="image.png" width="320" height="569"/>
 
-日志打印輸出：
+    日志打印輸出：
 
 <img src="log.png" width="800" height="300"/>
