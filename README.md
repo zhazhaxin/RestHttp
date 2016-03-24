@@ -1,6 +1,6 @@
 ### RestHttp网络库
 
-gradle依赖：
+- gradle依赖：
 
         compile 'cn.alien95:resthttp:1.0.0'
 
@@ -11,9 +11,7 @@ gradle依赖：
                     Http.setDebug(true,"NetWork");
                 }
 
-- GET,POST请求
-
-面向接口请求：
+- 面向接口请求：
 
         在接口中写好API
 
@@ -26,7 +24,7 @@ gradle依赖：
                        String password);
         }
         
-java代码：
+  java代码：
 
         RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
@@ -42,9 +40,9 @@ java代码：
         post.setText(userInfo.toString());
         
         
-普通请求方式：
+- 普通请求方式：
         
-        (1)get请求：
+(1)get请求：
         
                 HttpRequest.getInstance().get(GET_URL, new HttpCallBack() {
                             @Override
@@ -53,7 +51,7 @@ java代码：
                             }
                         });
         
-        (2)post请求：
+(2)post请求：
         
                  public void httpPostRequest() {
                         Map<String, String> params = new HashMap<>();
@@ -80,7 +78,7 @@ java代码：
                      android:layout_marginTop="16dp"
                      android:adjustViewBounds="true" />
                     
-然后在java代码中：
+    然后在java代码中：
 
         smallImage.setImageUrl(IMAGE_SMALL_URL);    设置一个图片地址就好了。                                       
 
@@ -93,11 +91,11 @@ java代码：
                      android:layout_marginTop="16dp"
                      android:adjustViewBounds="true" />
                     
-也可以通过：
+    也可以通过：
 
         public void setInSimpleSize(int inSimpleSize);  设置压缩参数。
         
-还可以通过：
+    还可以通过：
 
         public void setImageUrlWithCompress(String url, int inSimpleSize);  设置压缩参数。
 
