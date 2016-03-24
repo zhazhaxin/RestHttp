@@ -113,4 +113,4 @@
 
     日志打印輸出：
 
-    <img src="log.png" width="800" height="260"/>
+    <img src="log.png" width="1001" height="303"/>
