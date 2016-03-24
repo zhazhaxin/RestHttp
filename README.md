@@ -108,14 +108,11 @@ java代码：
         compile 'com.jakewharton:disklrucache:2.0.2'
         compile 'com.google.code.gson:gson:2.6.2'      
         
-POST请求：
+效果图：
 
 <img src="post.png" width="320" height="569" alt="POST"/>
-
-图片加载（第一张小图，第二张大图）：
-
 <img src="image.png" width="320" height="569"/>
 
 日志打印輸出：
 
-<img src="log.png" width="1000" height="550"/>
+<img src="log.png" width="800" height="300"/>
