@@ -1,5 +1,9 @@
 ### RestHttp网络库
 
+gradle依赖：
+
+        compile 'cn.alien95:resthttp:1.0.0'
+
 - 初始化：设置是否开启调试模式（默认关闭）,设置日志Log打印Tag
     
         Http.initialize(this);
@@ -117,4 +121,4 @@ POST请求：
 
 日志打印輸出：
 
-<img src="log.png" width="800" height="300"/>
+<img src="log.png" width="1000" height="550"/>
