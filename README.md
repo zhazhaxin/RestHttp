@@ -117,7 +117,7 @@ POST请求：
 
 图片加载（第一张小图，第二张大图）：
 
-<img src="/app/image.png" width="320" height="569"/>
+<img src="image.png" width="320" height="569"/>
 
 日志打印輸出：
 
