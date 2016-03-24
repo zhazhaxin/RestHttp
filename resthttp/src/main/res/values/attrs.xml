@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="HttpImageView">
+        <attr name="compressSize" format="integer"/>
+        <attr name="loadImage" format="reference"/>
+        <attr name="failedImage" format="reference"/>
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0 rc1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.jakewharton:disklrucache:2.0.2'
+    compile 'com.google.code.gson:gson:2.6.2'
+}
+
+ext {
+    bintrayRepo = 'maven'////bintray上的仓库名，一般为maven
+    bintrayName = 'RestHttp'//bintray上的项目名
+
+    publishedGroupId = 'cn.alien95'//JCenter的GroupId
+    artifact = 'resthttp'//JCenter的ArtifactId
+
+    siteUrl = 'https://github.com/llxdaxia/RestHttp'
+    gitUrl = 'https://github.com/llxdaxia/RestHttp.git'
+
+    libraryVersion = '1.0.0'//版本号
+    libraryName = 'RestHttp'//项目名字，没什么用
+    libraryDescription = 'A network framework for Android'//项目描述，没什么用
+
+    //开发者信息
+    developerId = 'Lemon'
+    developerName = 'Lemon'
+    developerEmail = 'daxiallx@gmail.com'
+
+    //以上所有信息自行修改，以下不变
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+apply from: 'https://raw.githubusercontent.com/Jude95/JCenter/master/install.gradle'
+apply from: 'https://raw.githubusercontent.com/Jude95/JCenter/master/bintray.gradle'
