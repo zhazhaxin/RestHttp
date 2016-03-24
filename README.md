@@ -73,13 +73,12 @@ java代码：
 
 (1)加载小图：
 
-         <alien95.cn.http.view.HttpImageView
-                    android:id="@+id/small_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    app:failedImage="@mipmap/ic_launcher"
-                    app:loadImage="@mipmap/ic_launcher" />
+         <cn.alien95.resthttp.view.HttpImageView
+                     android:id="@+id/small_image"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_marginTop="16dp"
+                     android:adjustViewBounds="true" />
                     
 然后在java代码中：
 
@@ -87,14 +86,12 @@ java代码：
 
 (2)加载大图时可以进行图片压缩处理：
 
-         <alien95.cn.http.view.HttpImageView
-                    android:id="@+id/big_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    app:compressSize="2"
-                    app:failedImage="@mipmap/ic_launcher"
-                    app:loadImage="@mipmap/ic_launcher" />
+         <cn.alien95.resthttp.view.HttpImageView
+                     android:id="@+id/big_image"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_marginTop="16dp"
+                     android:adjustViewBounds="true" />
                     
 也可以通过：
 
