@@ -13,8 +13,10 @@ import cn.alien95.resthttp.util.Utils;
  * Created by linlongxin on 2015/12/27.
  */
 public class RestThreadPool {
+
+    private final String TAG = "RestThreadPool";
     private LinkedBlockingDeque<Callable> requestQueue;
-    private ExecutorService threadPool; //线程池
+    private ExecutorService threadPool;
 
     private RestThreadPool() {
         requestQueue = new LinkedBlockingDeque<>();
@@ -32,7 +34,7 @@ public class RestThreadPool {
         return HttpQueueHolder.instance;
     }
 
-    public synchronized <T> Future<T> addQuest(Callable<T> callable) {
+    public <T> Future<T> putThreadPool(Callable<T> callable) {
         Future<T> result = threadPool.submit(callable);
         return result;
     }
