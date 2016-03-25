@@ -15,7 +15,7 @@ import cn.alien95.resthttp.util.Utils;
 public class RestThreadPool {
 
     private final String TAG = "RestThreadPool";
-    private LinkedBlockingDeque<Callable> requestQueue;
+    private LinkedBlockingDeque<Runnable> requestQueue;
     private ExecutorService threadPool;
 
     private RestThreadPool() {
@@ -39,7 +39,13 @@ public class RestThreadPool {
     }
 
     public void putThreadPool(Runnable runnable){
-        threadPool.execute(runnable);
+        requestQueue.add(runnable);
+        start();
+    }
+    private void start(){
+        while (!requestQueue.isEmpty()){
+            threadPool.execute(requestQueue.poll());
+        }
     }
 
 }

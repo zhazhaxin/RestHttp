@@ -17,27 +17,65 @@
 
         public interface ServiceAPI {
         
-            @POST("/v1/users/login.php")
-            UserInfo login(@Field("name")
-                       String name,
-                           @Field("password")
-                       String password);
+                /** 
+                 * 同步请求方式：不能包含Callback参数，切记：Android主线程不能进行网络操作
+                 * @param name
+                 * @param password
+                 * @return 返回一个经过Gson解析后的对象
+                 */
+                
+                @POST("/v1/users/login.php")
+                UserInfo login(@Field("name")
+                               String name,
+                               @Field("password")
+                               String password);
+            
+                /**
+                 * 异步请求：必须有一个Callback参数作为回调
+                 * @param name
+                 * @param password 
+                 * @param callback  回调泛型类
+                 */
+                
+                @POST("/v1/users/login.php")
+                void login2(@Field("name") String name, @Field("password") String password, Callback<UserInfo> callback);
         }
+
         
   java代码：
 
-        RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
-                .baseUrl(BASE_URL)
-                .build();
-
-        final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
-
-        UserInfo userInfo = serviceAPI.login("alien95", "123456");
-        serviceAPI.login("alien", "123456");
-        serviceAPI.login("Lemon", "123456");
-        serviceAPI.login("Lemon95", "123456");
-
-        post.setText(userInfo.toString());
+        final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
+                        .baseUrl(BASE_URL)
+                        .build();
+        
+                final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
+        
+                /**
+                 * 同步操作
+                 */
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final UserInfo userInfo = serviceAPI.login("Lemon" , "123456");
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                post.setText(userInfo.toString());
+                            }
+                        });
+                    }
+                }).start();
+        
+                /**
+                 * 异步操作
+                 */
+                serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
+                    @Override
+                    public void callback(UserInfo result) {
+                        post.setText(post.getText().toString() + "\n"
+                                + result.toString());
+                    }
+                });
         
         
 - 普通请求方式：

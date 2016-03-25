@@ -39,13 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
         final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
 
-        serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
-            @Override
-            public void callback(UserInfo result) {
-                post.setText(result.toString());
-            }
-        });
-
+        /**
+         * 同步操作
+         */
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -56,9 +52,21 @@ public class MainActivity extends AppCompatActivity {
                         post.setText(userInfo.toString());
                     }
                 });
-
             }
         }).start();
+
+        /**
+         * 异步操作
+         */
+        serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                post.setText(post.getText().toString() + "\n\n"
+                        + result.toString());
+            }
+        });
+
+
 
 
     }
