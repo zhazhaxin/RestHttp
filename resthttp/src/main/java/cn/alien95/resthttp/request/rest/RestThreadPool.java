@@ -39,4 +39,8 @@ public class RestThreadPool {
         return result;
     }
 
+    public void putThreadPool(Runnable runnable){
+        threadPool.execute(runnable);
+    }
+
 }

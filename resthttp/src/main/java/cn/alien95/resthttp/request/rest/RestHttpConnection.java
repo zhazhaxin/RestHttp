@@ -1,5 +1,7 @@
 package cn.alien95.resthttp.request.rest;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -50,13 +52,12 @@ public class RestHttpConnection {
     }
 
     /**
-     * 网络请求,每个线程执行自己的任务，每个线程都只有一个quest请求，相互不相影响，只是争夺CPU的资源，
-     * 所以这里不需要同步，同步会降低效率
+     * 需要同步，通过线程池并发执行
      *
      * @param type  请求方式{POST,GET}
      * @param param 请求的参数，HashMap键值对的形式
      */
-    protected <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
+    protected synchronized <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
@@ -134,9 +135,12 @@ public class RestHttpConnection {
                     DebugUtils.responseLog(respondCode + "\n" + result, requestTime);
                 }
 
-                Gson gson = new Gson();
-                T object = gson.fromJson(result, returnType);
-                return object;
+                Log.i("NetWork","returnType:" + returnType.getName());
+                if(returnType != null && returnType != void.class){
+                    Gson gson = new Gson();
+                    T object = gson.fromJson(result, returnType);
+                    return object;
+                }
             }
 
         } catch (final IOException e1) {

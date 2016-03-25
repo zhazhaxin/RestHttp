@@ -64,7 +64,7 @@ public class HttpConnection {
      * @param param    请求的参数，HashMap键值对的形式
      * @param callback 请求返回的回调
      */
-    protected void quest(String url, RequestType type, Map<String, String> param, final HttpCallBack callback) {
+    protected synchronized void quest(String url, RequestType type, Map<String, String> param, final HttpCallBack callback) {
 
         logUrl = url;
         final int respondCode;

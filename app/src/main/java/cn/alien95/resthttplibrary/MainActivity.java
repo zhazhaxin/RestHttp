@@ -2,9 +2,11 @@ package cn.alien95.resthttplibrary;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import cn.alien95.resthttp.request.rest.RestHttpRequest;
+import cn.alien95.resthttp.request.rest.callback.Callback;
 import cn.alien95.resthttp.view.HttpImageView;
 import cn.alien95.resthttplibrary.bean.UserInfo;
 
@@ -30,18 +32,35 @@ public class MainActivity extends AppCompatActivity {
         smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
         bigImage.setImageUrl(IMAGE_BIG_URL);
 
-        RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
+        final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
                 .build();
 
         final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
 
-        UserInfo userInfo = serviceAPI.login("alien95", "123456");
-        serviceAPI.login("alien", "123456");
-        serviceAPI.login("Lemon", "123456");
-        serviceAPI.login("Lemon95", "123456");
+        serviceAPI.login2("alien", "123456", new Callback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                Log.i("NetWork","login2-response:" + result.getName());
+            }
+        });
+        Log.i("NetWork","login2");
+        serviceAPI.login2("Lemon", "123456", new Callback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                Log.i("NetWork","login3-response:" + result.getName());
+            }
+        });
+        Log.i("NetWork","login3");
+        serviceAPI.login2("Lemon95", "123456", new Callback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                Log.i("NetWork","login4-response:" + result.getName());
+            }
+        });
+        Log.i("NetWork","login4");
 
-        post.setText(userInfo.toString());
+//        post.setText(userInfo.toString());
 
     }
 

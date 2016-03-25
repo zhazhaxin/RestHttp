@@ -1,5 +1,8 @@
 package cn.alien95.resthttp.request.rest;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -10,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import cn.alien95.resthttp.request.HttpConnection;
+import cn.alien95.resthttp.request.rest.callback.Callback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
@@ -19,6 +23,9 @@ import cn.alien95.resthttp.request.rest.param.Query;
  * Created by linlongxin on 2016/3/24.
  */
 public class RestHttpRequest {
+
+    private final String TAG = "RestHttpRequest";
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * 通过动态代理，实例化接口
@@ -33,8 +40,9 @@ public class RestHttpRequest {
                         clss
                 }, new InvocationHandler() {
                     @Override
-                    public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
-                        Annotation[] annotations = method.getAnnotations();
+                    public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+
+                        final Annotation[] annotations = method.getAnnotations();
 
                         Annotation[][] paramterAnnotations = method.getParameterAnnotations();
                         Class[] paramterTypes = method.getParameterTypes();
@@ -57,6 +65,24 @@ public class RestHttpRequest {
                                     }
                                 }
                                 url = url.deleteCharAt(url.length() - 1);
+
+                                if (args[args.length - 1] instanceof Callback) {
+                                    final StringBuilder finalUrl1 = url;
+                                    RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl1.toString(), HttpConnection.RequestType.GET, null, method.getReturnType());
+
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ((Callback) args[args.length - 1]).callback(reuslt);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+
 
                                 if (method.getReturnType() != Void.class) {
                                     final StringBuilder finalUrl = url;
@@ -88,15 +114,34 @@ public class RestHttpRequest {
                                 }
 
                                 /**
+                                 * 判断异步回调参数callback
+                                 */
+
+                                if (args[args.length - 1] instanceof Callback) {
+                                    RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            final Object reuslt = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
+                                                    HttpConnection.RequestType.POST, params, ((Callback)args[args.length - 1]).getActualClass());
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ((Callback) args[args.length - 1]).callback(reuslt);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                                /**
                                  * 任务加入线程池
                                  */
-                                Future result = RestThreadPool.getInstance().putThreadPool(new Callable() {
-                                    @Override
-                                    public Object call() throws Exception {
-                                        return RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(), HttpConnection.RequestType.POST, params, method.getReturnType());
-                                    }
-                                });
-                                returnObject = result.get();
+//                                Future result = RestThreadPool.getInstance().putThreadPool(new Callable() {
+//                                    @Override
+//                                    public Object call() throws Exception {
+//                                        return RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(), HttpConnection.RequestType.POST, params, method.getReturnType());
+//                                    }
+//                                });
+//                                returnObject = result.get();
                             }
                         }
                         /**
@@ -108,6 +153,7 @@ public class RestHttpRequest {
 
         return object;
     }
+
 
     /**
      * Builder模式来添加信息
