@@ -20,14 +20,14 @@ public class RestThreadPool {
 
     private RestThreadPool() {
         requestQueue = new LinkedBlockingDeque<>();
-        if(Utils.getNumberOfCPUCores() != 0){
+        if (Utils.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Utils.getNumberOfCPUCores());
-        }else
+        } else
             threadPool = Executors.newFixedThreadPool(4);
     }
 
-    private static class HttpQueueHolder{
-        private static final RestThreadPool instance= new RestThreadPool();
+    private static class HttpQueueHolder {
+        private static final RestThreadPool instance = new RestThreadPool();
     }
 
     public static RestThreadPool getInstance() {

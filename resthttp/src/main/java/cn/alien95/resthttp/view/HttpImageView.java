@@ -50,7 +50,7 @@ public class HttpImageView extends ImageView {
         if (loadImageId != -1) {
             setImageResource(loadImageId);
         }
-        HttpRequestImage.getInstance().requestImageWithCompress(url,inSimpleSize, new ImageCallBack() {
+        HttpRequestImage.getInstance().requestImageWithCompress(url, inSimpleSize, new ImageCallBack() {
             @Override
             public void success(Bitmap bitmap) {
                 setImageBitmap(bitmap);
@@ -93,15 +93,16 @@ public class HttpImageView extends ImageView {
 
     /**
      * 设置图片压缩
+     *
      * @param url
      * @param reqWidth
      * @param reqHeight
      */
-    public void setImageUrlWithCompress(String url,int reqWidth,int reqHeight){
+    public void setImageUrlWithCompress(String url, int reqWidth, int reqHeight) {
         if (loadImageId != -1) {
             setImageResource(loadImageId);
         }
-        HttpRequestImage.getInstance().requestImageWithCompress(url, reqWidth, reqHeight,new ImageCallBack() {
+        HttpRequestImage.getInstance().requestImageWithCompress(url, reqWidth, reqHeight, new ImageCallBack() {
             @Override
             public void success(Bitmap bitmap) {
                 setImageBitmap(bitmap);
@@ -114,7 +115,6 @@ public class HttpImageView extends ImageView {
             }
         });
     }
-
 
 
     public void setInSimpleSize(int inSimpleSize) {

@@ -22,6 +22,7 @@ public class RestHttpRequest {
 
     /**
      * 通过动态代理，实例化接口
+     *
      * @param clss
      * @return
      */
@@ -65,7 +66,7 @@ public class RestHttpRequest {
                                     Future result = RestThreadPool.getInstance().putThreadPool(new Callable<Object>() {
                                         @Override
                                         public Object call() throws Exception {
-                                            return RestHttpConnection.getInstance().quest(finalUrl.toString(), HttpConnection.RequestType.GET,null,method.getReturnType());
+                                            return RestHttpConnection.getInstance().quest(finalUrl.toString(), HttpConnection.RequestType.GET, null, method.getReturnType());
                                         }
                                     });
                                     returnObject = result.get();
@@ -92,7 +93,7 @@ public class RestHttpRequest {
                                 Future result = RestThreadPool.getInstance().putThreadPool(new Callable() {
                                     @Override
                                     public Object call() throws Exception {
-                                        return RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(), HttpConnection.RequestType.POST,params,method.getReturnType());
+                                        return RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(), HttpConnection.RequestType.POST, params, method.getReturnType());
                                     }
                                 });
                                 returnObject = result.get();
@@ -111,16 +112,16 @@ public class RestHttpRequest {
     /**
      * Builder模式来添加信息
      */
-    public static final class Builder{
+    public static final class Builder {
 
         private static String baseUrl = "";
 
-        public Builder baseUrl(String baseUrl){
+        public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
             return this;
         }
 
-        public RestHttpRequest build(){
+        public RestHttpRequest build() {
             return new RestHttpRequest();
         }
     }

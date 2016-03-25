@@ -16,15 +16,15 @@ public class HttpQueue {
 
     private HttpQueue() {
         requestQueue = new LinkedBlockingDeque<>();
-        if(Utils.getNumberOfCPUCores() != 0){
+        if (Utils.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Utils.getNumberOfCPUCores());
-        }else
+        } else
             threadPool = Executors.newFixedThreadPool(4);
 
     }
 
-    private static class HttpQueueHolder{
-        private static final HttpQueue instance= new HttpQueue();
+    private static class HttpQueueHolder {
+        private static final HttpQueue instance = new HttpQueue();
     }
 
     public static HttpQueue getInstance() {

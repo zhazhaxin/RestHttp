@@ -36,7 +36,7 @@ public class RestHttpConnection {
         return SingletonInstance.instance;
     }
 
-    private static class SingletonInstance{
+    private static class SingletonInstance {
         private static final RestHttpConnection instance = new RestHttpConnection();
     }
 
@@ -53,10 +53,10 @@ public class RestHttpConnection {
      * 网络请求,每个线程执行自己的任务，每个线程都只有一个quest请求，相互不相影响，只是争夺CPU的资源，
      * 所以这里不需要同步，同步会降低效率
      *
-     * @param type     请求方式{POST,GET}
-     * @param param    请求的参数，HashMap键值对的形式
+     * @param type  请求方式{POST,GET}
+     * @param param 请求的参数，HashMap键值对的形式
      */
-    protected<T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param,Class<T> returnType) {
+    protected <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
@@ -118,10 +118,8 @@ public class RestHttpConnection {
                 /**
                  * 错误日志打印
                  */
-                synchronized (this){
-                    if(DebugUtils.isDebug){
-                        DebugUtils.responseLog(respondCode + info, requestTime);
-                    }
+                if (DebugUtils.isDebug) {
+                    DebugUtils.responseLog(respondCode + info, requestTime);
                 }
 
                 return null;
@@ -132,22 +130,18 @@ public class RestHttpConnection {
                 final String result = readInputStream(in);
                 in.close();
 
-                synchronized (this){
-                    if(DebugUtils.isDebug){
-                        DebugUtils.responseLog(respondCode + "\n" + result,requestTime);
-                    }
+                if (DebugUtils.isDebug) {
+                    DebugUtils.responseLog(respondCode + "\n" + result, requestTime);
                 }
 
                 Gson gson = new Gson();
-                T object = gson.fromJson(result,returnType);
+                T object = gson.fromJson(result, returnType);
                 return object;
             }
 
         } catch (final IOException e1) {
             e1.printStackTrace();
-            synchronized (this){
-                DebugUtils.responseLog(NO_NETWORK + "抛出异常：" + e1.getMessage(), requestTime);
-            }
+            DebugUtils.responseLog(NO_NETWORK + "抛出异常：" + e1.getMessage(), requestTime);
         }
         return null;
     }

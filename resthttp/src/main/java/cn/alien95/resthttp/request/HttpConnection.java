@@ -35,7 +35,7 @@ public class HttpConnection {
         return SingtonInstance.instance;
     }
 
-    private static class SingtonInstance{
+    private static class SingtonInstance {
         private static final HttpConnection instance = new HttpConnection();
     }
 
