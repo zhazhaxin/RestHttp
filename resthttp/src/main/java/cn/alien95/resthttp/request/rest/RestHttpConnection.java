@@ -24,7 +24,7 @@ public class RestHttpConnection {
 
     private static final String TAG = "RestHttpConnection";
     public static final int NO_NETWORK = 999;
-    private static RestHttpConnection instance;
+
     private HttpURLConnection urlConnection;
     private Map<String, String> header;
     private String logUrl;
@@ -33,15 +33,12 @@ public class RestHttpConnection {
     }
 
     protected static RestHttpConnection getInstance() {
-        if (instance == null) {
-            synchronized (HttpConnection.class) {
-                if (instance == null)
-                    instance = new RestHttpConnection();
-            }
-        }
-        return instance;
+        return SingletonInstance.instance;
     }
 
+    private static class SingletonInstance{
+        private static final RestHttpConnection instance = new RestHttpConnection();
+    }
 
     /**
      * 设置请求头header
@@ -117,9 +114,13 @@ public class RestHttpConnection {
                 in = urlConnection.getErrorStream();
                 final String info = readInputStream(in);
                 in.close();
-                //错误日志
-                if(DebugUtils.isDebug){
-                    DebugUtils.responseLog(respondCode + info, requestTime);
+                /**
+                 * 错误日志打印
+                 */
+                synchronized (this){
+                    if(DebugUtils.isDebug){
+                        DebugUtils.responseLog(respondCode + info, requestTime);
+                    }
                 }
 
                 return null;
@@ -130,8 +131,10 @@ public class RestHttpConnection {
                 final String result = readInputStream(in);
                 in.close();
 
-                if(DebugUtils.isDebug){
-                    DebugUtils.responseLog(respondCode + "\n" + result,requestTime);
+                synchronized (this){
+                    if(DebugUtils.isDebug){
+                        DebugUtils.responseLog(respondCode + "\n" + result,requestTime);
+                    }
                 }
 
                 Gson gson = new Gson();
@@ -141,7 +144,9 @@ public class RestHttpConnection {
 
         } catch (final IOException e1) {
             e1.printStackTrace();
-            DebugUtils.responseLog(NO_NETWORK + "抛出异常：" + e1.getMessage(), requestTime);
+            synchronized (this){
+                DebugUtils.responseLog(NO_NETWORK + "抛出异常：" + e1.getMessage(), requestTime);
+            }
         }
         return null;
     }

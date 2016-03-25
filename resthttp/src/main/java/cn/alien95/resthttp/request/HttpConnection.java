@@ -23,7 +23,6 @@ import cn.alien95.resthttp.util.DebugUtils;
 public class HttpConnection {
 
     public static final int NO_NETWORK = 999;
-    private static HttpConnection instance;
     private HttpURLConnection urlConnection;
     private Handler handler = new Handler();
     private Map<String, String> header;
@@ -33,13 +32,11 @@ public class HttpConnection {
     }
 
     protected static HttpConnection getInstance() {
-        if (instance == null) {
-            synchronized (HttpConnection.class) {
-                if (instance == null)
-                    instance = new HttpConnection();
-            }
-        }
-        return instance;
+        return SingtonInstance.instance;
+    }
+
+    private static class SingtonInstance{
+        private static final HttpConnection instance = new HttpConnection();
     }
 
     public enum RequestType {
