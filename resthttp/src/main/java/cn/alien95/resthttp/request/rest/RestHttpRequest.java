@@ -10,7 +10,6 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import cn.alien95.resthttp.request.HttpConnection;
 import cn.alien95.resthttp.request.rest.callback.Callback;
@@ -25,6 +24,8 @@ import cn.alien95.resthttp.request.rest.param.Query;
 public class RestHttpRequest {
 
     private final String TAG = "RestHttpRequest";
+    private boolean isAsynchronization = false;
+    private int callbackPosition = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
 
     /**
@@ -49,11 +50,11 @@ public class RestHttpRequest {
 
                         final Map<String, String> params = new HashMap<>();
 
-                        Object returnObject = null;
+                        final Object[] returnObject = {null};
 
                         for (final Annotation methodAnnotation : annotations) {
                             /**
-                             * GET请求处理
+                             * -----------------------------------GET请求处理-------------------------------------
                              */
                             if (methodAnnotation instanceof GET) {
                                 StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value().toString() + "?");
@@ -64,42 +65,55 @@ public class RestHttpRequest {
                                         }
                                     }
                                 }
+
                                 url = url.deleteCharAt(url.length() - 1);
 
-                                if (args[args.length - 1] instanceof Callback) {
-                                    final StringBuilder finalUrl1 = url;
+                                /**
+                                 * 判断是否异步处理
+                                 */
+                                for (int i = 0;i < args.length; i++) {
+                                    if (args[i] instanceof Callback) {
+                                        isAsynchronization = true;
+                                        callbackPosition = i;
+                                    }
+                                }
+
+                                if (isAsynchronization) {
+                                    /**
+                                     * 异步处理任务
+                                     */
+                                    final StringBuilder finalUrl2 = url;
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
-                                            final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl1.toString(), HttpConnection.RequestType.GET, null, method.getReturnType());
-
+                                            final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl2.toString(),
+                                                    HttpConnection.RequestType.GET, null, ((Callback) args[callbackPosition]).getActualClass());
                                             handler.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ((Callback) args[args.length - 1]).callback(reuslt);
+                                                    ((Callback) args[callbackPosition]).callback(reuslt);
                                                 }
                                             });
                                         }
                                     });
-                                }
-
-
-                                if (method.getReturnType() != Void.class) {
-                                    final StringBuilder finalUrl = url;
+                                } else {
                                     /**
-                                     * 任务加入线程池
+                                     * 同步处理任务
                                      */
-                                    Future result = RestThreadPool.getInstance().putThreadPool(new Callable<Object>() {
+                                    final StringBuilder finalUrl = url;
+                                    RestThreadPool.getInstance().putThreadPool(new Callable() {
                                         @Override
                                         public Object call() throws Exception {
-                                            return RestHttpConnection.getInstance().quest(finalUrl.toString(), HttpConnection.RequestType.GET, null, method.getReturnType());
+                                            returnObject[0] = RestHttpConnection.getInstance().quest(finalUrl.toString(),
+                                                    HttpConnection.RequestType.GET, null, method.getReturnType());
+                                            return returnObject[0];
                                         }
                                     });
-                                    returnObject = result.get();
                                 }
+
                             } else if (methodAnnotation instanceof POST) {
                                 /**
-                                 * POST请求处理
+                                 * -------------------------------POST请求处理---------------------------------
                                  */
                                 params.clear();
 
@@ -114,40 +128,51 @@ public class RestHttpRequest {
                                 }
 
                                 /**
-                                 * 判断异步回调参数callback
+                                 * 判断是否异步回调
                                  */
-
-                                if (args[args.length - 1] instanceof Callback) {
+                                for (int i = 0; i < args.length; i ++) {
+                                    if (args[i] instanceof Callback) {
+                                        isAsynchronization = true;
+                                        callbackPosition = i;
+                                    }
+                                }
+                                /**
+                                 * 异步处理任务
+                                 */
+                                if (isAsynchronization) {
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
                                             final Object reuslt = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
-                                                    HttpConnection.RequestType.POST, params, ((Callback)args[args.length - 1]).getActualClass());
+                                                    HttpConnection.RequestType.POST, params, ((Callback) args[callbackPosition]).getActualClass());
                                             handler.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ((Callback) args[args.length - 1]).callback(reuslt);
+                                                    ((Callback) args[callbackPosition]).callback(reuslt);
                                                 }
                                             });
                                         }
                                     });
+                                } else {
+                                    /**
+                                     * 同步处理任务，并且把结果返回给API方法
+                                     */
+                                    RestThreadPool.getInstance().putThreadPool(new Callable() {
+                                        @Override
+                                        public Object call() throws Exception {
+                                            returnObject[0] = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
+                                                    HttpConnection.RequestType.POST, params, method.getReturnType());
+                                            return returnObject[0];
+                                        }
+                                    });
                                 }
-                                /**
-                                 * 任务加入线程池
-                                 */
-//                                Future result = RestThreadPool.getInstance().putThreadPool(new Callable() {
-//                                    @Override
-//                                    public Object call() throws Exception {
-//                                        return RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(), HttpConnection.RequestType.POST, params, method.getReturnType());
-//                                    }
-//                                });
-//                                returnObject = result.get();
+
                             }
                         }
                         /**
                          * 执行的方法的返回值，如果方法是void，则返回null（默认）
                          */
-                        return returnObject;
+                        return returnObject[0];
                     }
                 });
 
