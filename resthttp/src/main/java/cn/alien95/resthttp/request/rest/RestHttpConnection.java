@@ -58,7 +58,7 @@ public class RestHttpConnection {
      * @param type     请求方式{POST,GET}
      * @param param    请求的参数，HashMap键值对的形式
      */
-    protected synchronized<T>  T quest(String url, HttpConnection.RequestType type, Map<String, String> param,Class<T> returnType) {
+    protected<T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param,Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
