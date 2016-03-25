@@ -24,8 +24,6 @@ import cn.alien95.resthttp.request.rest.param.Query;
 public class RestHttpRequest {
 
     private final String TAG = "RestHttpRequest";
-    private boolean isAsynchronization = false;
-    private int callbackPosition = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
 
     /**
@@ -42,6 +40,14 @@ public class RestHttpRequest {
                 }, new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+                        /**
+                         * 是够同步，默认false(不同步)
+                         */
+                        boolean isAsynchronization = false;
+                        /**
+                         * 在异步的情况下，callback参数的位置下标记录
+                         */
+                        int callbackPosition = 0;
 
                         final Annotation[] annotations = method.getAnnotations();
 
@@ -83,15 +89,16 @@ public class RestHttpRequest {
                                      * 异步处理任务
                                      */
                                     final StringBuilder finalUrl2 = url;
+                                    final int finalCallbackPosition = callbackPosition;
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
                                             final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl2.toString(),
-                                                    HttpConnection.RequestType.GET, null, ((Callback) args[callbackPosition]).getActualClass());
+                                                    HttpConnection.RequestType.GET, null, ((Callback) args[finalCallbackPosition]).getActualClass());
                                             handler.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ((Callback) args[callbackPosition]).callback(reuslt);
+                                                    ((Callback) args[finalCallbackPosition]).callback(reuslt);
                                                 }
                                             });
                                         }
@@ -140,15 +147,16 @@ public class RestHttpRequest {
                                  * 异步处理任务
                                  */
                                 if (isAsynchronization) {
+                                    final int finalCallbackPosition1 = callbackPosition;
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
                                             final Object reuslt = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
-                                                    HttpConnection.RequestType.POST, params, ((Callback) args[callbackPosition]).getActualClass());
+                                                    HttpConnection.RequestType.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
                                             handler.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    ((Callback) args[callbackPosition]).callback(reuslt);
+                                                    ((Callback) args[finalCallbackPosition1]).callback(reuslt);
                                                 }
                                             });
                                         }

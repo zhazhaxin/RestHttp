@@ -38,28 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
         final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
 
-        serviceAPI.login2("alien", "123456", new Callback<UserInfo>() {
-            @Override
-            public void callback(UserInfo result) {
-                Log.i("NetWork", "login2-response:" + result.getName());
-            }
-        });
-        Log.i("NetWork", "login2");
-        serviceAPI.login2("Lemon", "123456", new Callback<UserInfo>() {
-            @Override
-            public void callback(UserInfo result) {
-                Log.i("NetWork", "login3-response:" + result.getName());
-            }
-        });
-        Log.i("NetWork", "login3");
         serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
-                Log.i("NetWork","login4-response:" + result.getName());
                 post.setText(result.toString());
             }
         });
-        Log.i("NetWork","login4");
+
+        UserInfo userInfo = serviceAPI.login("Lemon" , "123456");
 
 
     }
