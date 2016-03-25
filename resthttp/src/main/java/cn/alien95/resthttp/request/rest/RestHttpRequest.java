@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import cn.alien95.resthttp.request.HttpConnection;
 import cn.alien95.resthttp.request.rest.callback.Callback;
@@ -25,7 +24,7 @@ public class RestHttpRequest {
 
     private final String TAG = "RestHttpRequest";
     private Handler handler = new Handler(Looper.getMainLooper());
-
+    private Map<String, String> params = new HashMap<>();
     /**
      * 通过动态代理，实例化接口
      *
@@ -54,16 +53,16 @@ public class RestHttpRequest {
                         Annotation[][] paramterAnnotations = method.getParameterAnnotations();
                         Class[] paramterTypes = method.getParameterTypes();
 
-                        final Map<String, String> params = new HashMap<>();
-
-                        final Object[] returnObject = {null};
+                        Object returnObject = null;
 
                         for (final Annotation methodAnnotation : annotations) {
                             /**
                              * -----------------------------------GET请求处理-------------------------------------
                              */
                             if (methodAnnotation instanceof GET) {
+
                                 StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value().toString() + "?");
+
                                 for (int i = 0; i < paramterAnnotations.length; i++) {
                                     for (int k = 0; k < paramterAnnotations[i].length; k++) {
                                         if (paramterAnnotations[i][k] instanceof Query) {
@@ -107,15 +106,8 @@ public class RestHttpRequest {
                                     /**
                                      * 同步处理任务
                                      */
-                                    final StringBuilder finalUrl = url;
-                                    RestThreadPool.getInstance().putThreadPool(new Callable() {
-                                        @Override
-                                        public Object call() throws Exception {
-                                            returnObject[0] = RestHttpConnection.getInstance().quest(finalUrl.toString(),
-                                                    HttpConnection.RequestType.GET, null, method.getReturnType());
-                                            return returnObject[0];
-                                        }
-                                    });
+                                    returnObject = RestHttpConnection.getInstance().quest(url.toString(),
+                                            HttpConnection.RequestType.GET, null, method.getReturnType());
                                 }
 
                             } else if (methodAnnotation instanceof POST) {
@@ -134,6 +126,8 @@ public class RestHttpRequest {
                                     }
                                 }
 
+                                final String url = Builder.baseUrl + ((POST) methodAnnotation).value();
+
                                 /**
                                  * 判断是否异步回调
                                  */
@@ -151,7 +145,7 @@ public class RestHttpRequest {
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
-                                            final Object reuslt = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
+                                            final Object reuslt = RestHttpConnection.getInstance().quest(url,
                                                     HttpConnection.RequestType.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
                                             handler.post(new Runnable() {
                                                 @Override
@@ -163,16 +157,10 @@ public class RestHttpRequest {
                                     });
                                 } else {
                                     /**
-                                     * 同步处理任务，并且把结果返回给API方法
+                                     * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
                                      */
-                                    RestThreadPool.getInstance().putThreadPool(new Callable() {
-                                        @Override
-                                        public Object call() throws Exception {
-                                            returnObject[0] = RestHttpConnection.getInstance().quest(Builder.baseUrl + ((POST) methodAnnotation).value(),
-                                                    HttpConnection.RequestType.POST, params, method.getReturnType());
-                                            return returnObject[0];
-                                        }
-                                    });
+                                    returnObject = RestHttpConnection.getInstance().quest(url,
+                                            HttpConnection.RequestType.POST, params, method.getReturnType());
                                 }
 
                             }
@@ -180,7 +168,7 @@ public class RestHttpRequest {
                         /**
                          * 执行的方法的返回值，如果方法是void，则返回null（默认）
                          */
-                        return returnObject[0];
+                        return returnObject;
                     }
                 });
 
