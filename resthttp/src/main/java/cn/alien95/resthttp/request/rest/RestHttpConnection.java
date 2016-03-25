@@ -50,7 +50,8 @@ public class RestHttpConnection {
     }
 
     /**
-     * 网络请求
+     * 网络请求,每个线程执行自己的任务，每个线程都只有一个quest请求，相互不相影响，只是争夺CPU的资源，
+     * 所以这里不需要同步，同步会降低效率
      *
      * @param type     请求方式{POST,GET}
      * @param param    请求的参数，HashMap键值对的形式

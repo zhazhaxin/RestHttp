@@ -26,6 +26,7 @@ public class RestHttpRequest {
      * @return
      */
     public Object create(Class<?> clss) {
+
         Object object = Proxy.newProxyInstance(clss.getClassLoader(),
                 new Class[]{
                         clss
