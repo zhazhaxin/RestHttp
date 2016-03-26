@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 异步操作
          */
-        serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
+        serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
                 post.setText(post.getText().toString() + "\n\n"

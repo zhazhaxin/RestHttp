@@ -2,6 +2,7 @@ package cn.alien95.resthttp.request.rest;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -145,6 +146,9 @@ public class RestHttpRequest {
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
+                                            for(Map.Entry<String,String> entry : params.entrySet()){
+                                                Log.i("NetWork","异步key :　" + entry.getKey() + "    " + "异步value : " + entry.getValue());
+                                            }
                                             final Object reuslt = RestHttpConnection.getInstance().quest(url,
                                                     HttpConnection.RequestType.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
                                             handler.post(new Runnable() {
@@ -159,6 +163,9 @@ public class RestHttpRequest {
                                     /**
                                      * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
                                      */
+                                    for(Map.Entry<String,String> entry : params.entrySet()){
+                                        Log.i("NetWork","同步key :　" + entry.getKey() + "    " + "同步value : " + entry.getValue());
+                                    }
                                     returnObject = RestHttpConnection.getInstance().quest(url,
                                             HttpConnection.RequestType.POST, params, method.getReturnType());
                                 }
