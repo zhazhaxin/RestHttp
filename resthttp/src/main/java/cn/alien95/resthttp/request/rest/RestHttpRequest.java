@@ -29,17 +29,18 @@ public class RestHttpRequest {
     /**
      * 通过动态代理，实例化接口
      *
-     * @param clss
+     * @param clazz
      * @return
      */
-    public Object create(Class<?> clss) {
+    public synchronized Object create(Class<?> clazz) {
 
-        Object object = Proxy.newProxyInstance(clss.getClassLoader(),
+        Object object = Proxy.newProxyInstance(clazz.getClassLoader(),
                 new Class[]{
-                        clss
+                        clazz
                 }, new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+                        Log.i("NetWork","invoke-method");
                         /**
                          * 是够同步，默认false(不同步)
                          */
@@ -116,6 +117,9 @@ public class RestHttpRequest {
                                  * -------------------------------POST请求处理---------------------------------
                                  */
                                 params.clear();
+                                if(params.isEmpty()){
+                                    Log.i("NetWork","params.isEmpty()");
+                                }
 
                                 for (int i = 0; i < paramterAnnotations.length; i++) {
                                     Class paramterType = paramterTypes[i]; //这里可以看出每个参数对应一个注解数组，想不通。。。
@@ -146,9 +150,11 @@ public class RestHttpRequest {
                                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                         @Override
                                         public void run() {
+
                                             for(Map.Entry<String,String> entry : params.entrySet()){
                                                 Log.i("NetWork","异步key :　" + entry.getKey() + "    " + "异步value : " + entry.getValue());
                                             }
+
                                             final Object reuslt = RestHttpConnection.getInstance().quest(url,
                                                     HttpConnection.RequestType.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
                                             handler.post(new Runnable() {

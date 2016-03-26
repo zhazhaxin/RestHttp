@@ -1,7 +1,5 @@
 package cn.alien95.resthttp.request.rest;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -135,7 +133,6 @@ public class RestHttpConnection {
                     DebugUtils.responseLog(respondCode + "\n" + result, requestTime);
                 }
 
-                Log.i("NetWork","returnType:" + returnType.getName());
                 if(returnType != null && returnType != void.class){
                     Gson gson = new Gson();
                     T object = gson.fromJson(result, returnType);
