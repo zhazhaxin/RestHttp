@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView get, post;
     private HttpImageView smallImage, bigImage;
     private Handler handler = new Handler();
-    private static final String IMAGE_SMALL_URL = "http://i02.pictn.sogoucdn.com/5602ce182cd6899e";
-    private static final String IMAGE_BIG_URL = "http://img03.sogoucdn.com/app/a/100520093/84bbacd9cddc14de-71e1f69c051f39b5-9b2699bc39567827fca983cfb05efe0a.jpg";
+    private static final String IMAGE_SMALL_URL = "http://a2.att.hudong.com/55/63/300000857388127072631279506.jpg";
+    private static final String IMAGE_BIG_URL = "http://media01.money4invest.com/2010/04/funny-dog-pictures.jpg";
     private static final String BASE_URL = "http://alien95.cn";
 
     @Override
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        get = (TextView) findViewById(R.id.get);
+//        get = (TextView) findViewById(R.id.get);
         post = (TextView) findViewById(R.id.post);
         smallImage = (HttpImageView) findViewById(R.id.small_image);
         bigImage = (HttpImageView) findViewById(R.id.big_image);
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        post.setText(post.getText().toString() + "\n\n"
+                        post.setText(post.getText().toString() + "\n"
                                 + userInfo.toString());
                     }
                 });
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
-                post.setText(post.getText().toString() + "\n\n"
+                post.setText(post.getText().toString() + "\n"
                         + result.toString());
             }
         });

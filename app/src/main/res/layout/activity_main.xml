@@ -10,17 +10,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/get"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp" />
+        <!--<TextView-->
+            <!--android:id="@+id/get"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="14sp" />-->
 
         <TextView
             android:id="@+id/post"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:textSize="14sp" />
 
         <cn.alien95.resthttp.view.HttpImageView

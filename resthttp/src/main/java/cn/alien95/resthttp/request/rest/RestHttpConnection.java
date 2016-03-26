@@ -63,7 +63,7 @@ public class RestHttpConnection {
         /**
          * 只有POST请求才应该有参数
          */
-        String paramStr = "";
+        String paramStr = "?";
         if (param != null) {
             for (Map.Entry<String, String> map : param.entrySet()) {
                 try {
@@ -72,8 +72,9 @@ public class RestHttpConnection {
                     e.printStackTrace();
                 }
             }
+            logUrl = logUrl + "?" + paramStr;
         }
-        logUrl += paramStr;
+
 
         /**
          * 打印网络请求日志日志
