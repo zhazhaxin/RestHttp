@@ -51,7 +51,7 @@
                 final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
         
                 /**
-                 * 同步操作
+                 * 同步操作,不受线程池控制，自己处理线程问题
                  */
                 new Thread(new Runnable() {
                     @Override
@@ -60,19 +60,20 @@
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                post.setText(userInfo.toString());
+                                post.setText(post.getText().toString() + "\n\n"
+                                        + userInfo.toString());
                             }
                         });
                     }
                 }).start();
         
                 /**
-                 * 异步操作
+                 * 异步操作，受线程池控制
                  */
-                serviceAPI.login2("Lemon95", "123456" ,new Callback<UserInfo>() {
+                serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
                     @Override
                     public void callback(UserInfo result) {
-                        post.setText(post.getText().toString() + "\n"
+                        post.setText(post.getText().toString() + "\n\n"
                                 + result.toString());
                     }
                 });
