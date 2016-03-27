@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.image;
+package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,7 +19,7 @@ import cn.alien95.resthttp.util.Utils;
 /**
  * Created by linlongxin on 2015/12/29.
  */
-public class DiskCache implements ImageCache {
+public class DiskCache implements Cache {
 
     private final String IMAGE_CACHE_PATH = "IMAGE_CACHE";
     private DiskLruCache diskLruCache;

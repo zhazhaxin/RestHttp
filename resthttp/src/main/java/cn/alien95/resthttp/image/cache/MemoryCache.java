@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.image;
+package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
@@ -9,7 +9,7 @@ import cn.alien95.resthttp.image.callback.DiskCallback;
 /**
  * Created by linlongxin on 2015/12/29.
  */
-public class MemoryCache implements ImageCache{
+public class MemoryCache implements Cache {
 
     private final String TAG = "MemoryCache";
 

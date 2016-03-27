@@ -3,7 +3,6 @@ package cn.alien95.resthttp.image;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +10,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cn.alien95.resthttp.image.callback.DiskCallback;
+import cn.alien95.resthttp.image.cache.CacheDispatcher;
+import cn.alien95.resthttp.image.cache.DiskCache;
+import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallBack;
 import cn.alien95.resthttp.request.HttpQueue;
 import cn.alien95.resthttp.util.DebugUtils;
@@ -26,12 +27,14 @@ public class HttpRequestImage {
 
     private MemoryCache memoryCache;
     private DiskCache diskCache;
+    private CacheDispatcher cacheDispatcher;
     private static HttpRequestImage instance;
     private Handler handler;
 
     private HttpRequestImage() {
         memoryCache = new MemoryCache();
         diskCache = new DiskCache();
+        cacheDispatcher = new CacheDispatcher();
         handler = new Handler();
     }
 
@@ -58,23 +61,7 @@ public class HttpRequestImage {
      * @param callBack 回调接口
      */
     public void requestImage(final String url, final ImageCallBack callBack) {
-        if (memoryCache.getBitmapFromCache(url) != null) {
-            Log.i(TAG, "Get Picture from memoryCache");
-            callBack.success(memoryCache.getBitmapFromCache(url));
-        } else {
-            diskCache.getBitmapFromCacheAsync(url, new DiskCallback() {
-                @Override
-                public void callback(Bitmap bitmap) {
-                    if (bitmap != null) {
-                        Log.i(TAG, "Get Picture from diskCache");
-                        callBack.success(bitmap);
-                    } else {
-                        Log.i(TAG, "Get Picture from the network");
-                        loadImageFromNet(url, callBack);
-                    }
-                }
-            });
-        }
+        cacheDispatcher.getImage(url,callBack);
     }
 
     /**
@@ -86,27 +73,7 @@ public class HttpRequestImage {
      * @param callBack
      */
     public synchronized void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallBack callBack) {
-        if (inSampleSize <= 1) {
-            requestImage(url, callBack);
-            return;
-        }
-        if (memoryCache.getBitmapFromCache(url + inSampleSize) != null) {
-            Log.i(TAG, "Compress Get Picture from memoryCache");
-            callBack.success(memoryCache.getBitmapFromCache(url + inSampleSize));
-        } else {
-            diskCache.getBitmapFromCacheAsync(url + inSampleSize, new DiskCallback() {
-                @Override
-                public void callback(Bitmap bitmap) {
-                    if (bitmap != null) {
-                        Log.i(TAG, "Compress Get Picture from diskCache");
-                        callBack.success(bitmap);
-                    } else {
-                        Log.i(TAG, "Compress Get Picture from the network");
-                        loadImageFromNetWithCompress(url, inSampleSize, callBack);
-                    }
-                }
-            });
-        }
+        cacheDispatcher.getImageWithCompress(url,inSampleSize,callBack);
 
     }
 
@@ -119,25 +86,7 @@ public class HttpRequestImage {
      * @param callBack
      */
     public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallBack callBack) {
-        String key = url + reqWidth + reqHeight;
-        if (memoryCache.getBitmapFromCache(key) != null) {
-            Log.i(TAG, "Compress Get Picture from memoryCache");
-            callBack.success(memoryCache.getBitmapFromCache(key));
-        } else {
-            diskCache.getBitmapFromCacheAsync(key, new DiskCallback() {
-                @Override
-                public void callback(Bitmap bitmap) {
-                    if (bitmap != null) {
-                        Log.i(TAG, "Compress Get Picture from diskCache");
-                        callBack.success(bitmap);
-                    } else {
-                        Log.i(TAG, "Compress Get Picture from the network");
-                        loadImageFromNetWithCompress(url, reqWidth, reqHeight, callBack);
-                    }
-                }
-            });
-        }
-
+        cacheDispatcher.getImageWithCompress(url,reqWidth,reqHeight,callBack);
     }
 
     public HttpURLConnection getHttpUrlConnection(String url) {
@@ -163,7 +112,7 @@ public class HttpRequestImage {
      * @param url
      * @param callBack
      */
-    private synchronized void loadImageFromNet(final String url, final ImageCallBack callBack) {
+    public synchronized void loadImageFromNet(final String url, final ImageCallBack callBack) {
         HttpQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
