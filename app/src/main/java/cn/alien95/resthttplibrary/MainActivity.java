@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
                                 + userInfo.toString());
                     }
                 });
+                serviceAPI.login("alien" , "123456");
+                serviceAPI.login("alien95" , "123456");
+                serviceAPI.login("123" , "123456");
+                serviceAPI.login("1234" , "123456");
+                serviceAPI.login("123432" , "123456");
             }
         }).start();
 

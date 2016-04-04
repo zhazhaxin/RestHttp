@@ -25,7 +25,6 @@ public class RestHttpConnection {
     private static final String TAG = "RestHttpConnection";
     public static final int NO_NETWORK = 999;
 
-    private HttpURLConnection urlConnection;
     private Map<String, String> header;
     private String logUrl;
 
@@ -55,7 +54,7 @@ public class RestHttpConnection {
      * @param type  请求方式{POST,GET}
      * @param param 请求的参数，HashMap键值对的形式
      */
-    protected synchronized <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
+    protected <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
@@ -82,7 +81,7 @@ public class RestHttpConnection {
         int requestTime = DebugUtils.requestLog(logUrl);
 
         try {
-            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);

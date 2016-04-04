@@ -23,7 +23,6 @@ import cn.alien95.resthttp.util.DebugUtils;
 public class HttpConnection {
 
     public static final int NO_NETWORK = 999;
-    private HttpURLConnection urlConnection;
     private Handler handler = new Handler();
     private Map<String, String> header;
     private String logUrl;
@@ -64,7 +63,7 @@ public class HttpConnection {
      * @param param    请求的参数，HashMap键值对的形式
      * @param callback 请求返回的回调
      */
-    protected synchronized void quest(String url, RequestType type, Map<String, String> param, final HttpCallBack callback) {
+    protected void quest(String url, RequestType type, Map<String, String> param, final HttpCallBack callback) {
 
         logUrl = url;
         final int respondCode;
@@ -88,7 +87,7 @@ public class HttpConnection {
          */
         final int requestTime = DebugUtils.requestLog(logUrl);
         try {
-            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
