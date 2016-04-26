@@ -7,6 +7,9 @@ public class Requst {
     public String url;
     public int inSimpleSize;
     public ImageCallback callback;
+    public int reqWidth;
+    public int reqHeight;
+    public boolean isControlWidthAndHeight = false;
 
     public Requst(String url, ImageCallback callback) {
         this.url = url;
@@ -17,5 +20,12 @@ public class Requst {
         this.url = url;
         this.inSimpleSize = inSimpleSize;
         this.callback = callback;
+    }
+
+    public Requst(String url,int reqWidth,int reqHeight){
+        this.url = url;
+        this.reqWidth = reqWidth;
+        this.reqHeight = reqHeight;
+        isControlWidthAndHeight = true;
     }
 }

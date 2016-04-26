@@ -76,13 +76,16 @@ public class HttpRequestImage {
      * @param callBack
      */
     public synchronized void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
+        /**
+         * 判断是否真的压缩了
+         */
         if(inSampleSize <= 1){
             if (MemoryCache.getInstance().isCache(url)|| DiskCache.getInstance().isCache(url)) {
                 cacheDispatcher.addCacheQueue(url, callBack);
             } else {
                 networkDispatcher.addNetwork(url, callBack);
             }
-        }else {
+        }else if (inSampleSize > 1){
             if (MemoryCache.getInstance().isCache(url + inSampleSize) || DiskCache.getInstance().isCache(url + inSampleSize)) {
                 cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
             } else {
@@ -101,7 +104,11 @@ public class HttpRequestImage {
      * @param callBack
      */
     public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        cacheDispatcher.getImageWithCompress(url, reqWidth, reqHeight, callBack);
+        if(MemoryCache.getInstance().isCache(url + reqWidth + "/" + reqHeight) || DiskCache.getInstance().isCache(url + reqWidth + "/" + reqHeight)){
+            cacheDispatcher.addCacheQueue(url,reqWidth,reqHeight);
+        }else {
+            networkDispatcher.addNetworkWithCompress(url,reqWidth,reqHeight);
+        }
     }
 
     public HttpURLConnection getHttpUrlConnection(String url) {

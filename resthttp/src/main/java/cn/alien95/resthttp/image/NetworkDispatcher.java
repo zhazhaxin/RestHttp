@@ -49,18 +49,27 @@ public class NetworkDispatcher {
         }
     }
 
+    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight) {
+        networkQueue.add(new Requst(url, reqWidth, reqHeight));
+        if (isNetworkQueueEmpty) {
+            start();
+        }
+    }
+
     public void start() {
         Requst requst;
         while (!networkQueue.isEmpty()) {
             requst = networkQueue.poll();
 
             /**
-             * 不压缩图片
+             * 三种图片处理方式
              */
-            if (requst.inSimpleSize <= 1) {
-                networkImage(requst.url, requst.callback);
-            } else {
+            if (requst.isControlWidthAndHeight) {
+                networkImageWithCompress(requst.url, requst.reqWidth, requst.reqHeight, requst.callback);
+            } else if (requst.inSimpleSize > 1) {
                 networkImageWithCompress(requst.url, requst.inSimpleSize, requst.callback);
+            } else if (requst.inSimpleSize <= 1) {
+                networkImage(requst.url, requst.callback);
             }
 
         }
