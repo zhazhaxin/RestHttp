@@ -49,8 +49,8 @@ public class NetworkDispatcher {
         }
     }
 
-    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight) {
-        networkQueue.add(new Requst(url, reqWidth, reqHeight));
+    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight,ImageCallback callback) {
+        networkQueue.add(new Requst(url, reqWidth, reqHeight,callback));
         if (isNetworkQueueEmpty) {
             start();
         }
@@ -165,6 +165,7 @@ public class NetworkDispatcher {
     }
 
     public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
+        Log.i(TAG, "Get compress picture from network");
         RequestQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
@@ -194,8 +195,8 @@ public class NetworkDispatcher {
                             public void run() {
                                 callBack.success(compressBitmap);
                                 if (compressBitmap != null) {
-                                    MemoryCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
-                                    DiskCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
+                                    MemoryCache.getInstance().putBitmapToCache(url + reqWidth + "/" + reqHeight, compressBitmap);
+                                    DiskCache.getInstance().putBitmapToCache(url + reqWidth + "/" + reqHeight, compressBitmap);
                                 }
                             }
                         });

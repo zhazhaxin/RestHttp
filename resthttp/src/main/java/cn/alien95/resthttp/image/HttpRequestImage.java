@@ -105,9 +105,9 @@ public class HttpRequestImage {
      */
     public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         if(MemoryCache.getInstance().isCache(url + reqWidth + "/" + reqHeight) || DiskCache.getInstance().isCache(url + reqWidth + "/" + reqHeight)){
-            cacheDispatcher.addCacheQueue(url,reqWidth,reqHeight);
+            cacheDispatcher.addCacheQueue(url,reqWidth,reqHeight,callBack);
         }else {
-            networkDispatcher.addNetworkWithCompress(url,reqWidth,reqHeight);
+            networkDispatcher.addNetworkWithCompress(url,reqWidth,reqHeight,callBack);
         }
     }
 

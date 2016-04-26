@@ -16,16 +16,17 @@ public class Requst {
         this.callback = callback;
     }
 
-    public Requst(String url,int inSimpleSize,ImageCallback callback){
+    public Requst(String url, int inSimpleSize, ImageCallback callback) {
         this.url = url;
         this.inSimpleSize = inSimpleSize;
         this.callback = callback;
     }
 
-    public Requst(String url,int reqWidth,int reqHeight){
+    public Requst(String url, int reqWidth, int reqHeight, ImageCallback callback) {
         this.url = url;
         this.reqWidth = reqWidth;
         this.reqHeight = reqHeight;
+        this.callback = callback;
         isControlWidthAndHeight = true;
     }
 }

@@ -42,8 +42,8 @@ public class CacheDispatcher {
         }
     }
 
-    public void addCacheQueue(String url, int reqWidth, int reqHeight) {
-        cacheQueue.add(new Requst(url, reqWidth, reqHeight));
+    public void addCacheQueue(String url, int reqWidth, int reqHeight,ImageCallback callback) {
+        cacheQueue.add(new Requst(url, reqWidth, reqHeight,callback));
         if (isCacheQueueEmpty) {
             start();
         }

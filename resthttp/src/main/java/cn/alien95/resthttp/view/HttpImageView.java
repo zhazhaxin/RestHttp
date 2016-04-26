@@ -63,6 +63,19 @@ public class HttpImageView extends ImageView {
                         setImageResource(failedImageId);
                 }
             });
+        }else {
+            HttpRequestImage.getInstance().requestImageWithCompress(url,inSimpleSize, new ImageCallback() {
+                @Override
+                public void success(Bitmap bitmap) {
+                    setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void failure() {
+                    if (failedImageId != -1)
+                        setImageResource(failedImageId);
+                }
+            });
         }
 
     }

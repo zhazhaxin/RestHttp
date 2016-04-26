@@ -36,16 +36,14 @@ public class MemoryCache implements Cache {
     public void putBitmapToCache(String key, Bitmap bitmap) {
         String cacheKey = getCacheKey(key);
         if (getBitmapFromCache(cacheKey) == null) {
-            Log.i(TAG, "memory---getBitmapFromCache == null");
             if (lruCache.put(cacheKey, bitmap) != null) {
-                Log.i(TAG, "memory cache success");
+                Log.i(TAG, "memory cache save success");
             }
         }
     }
 
     @Override
     public Bitmap getBitmapFromCache(String key) {
-        Log.i(TAG, "memory---getBitmapFromCache");
         return lruCache.get(getCacheKey(key));
     }
 
