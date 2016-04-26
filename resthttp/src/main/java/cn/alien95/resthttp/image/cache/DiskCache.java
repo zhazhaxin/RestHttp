@@ -3,6 +3,7 @@ package cn.alien95.resthttp.image.cache;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -23,9 +24,10 @@ public class DiskCache implements Cache {
 
     private final String IMAGE_CACHE_PATH = "IMAGE_CACHE";
     private DiskLruCache diskLruCache;
-    private Handler handler = new Handler();
+    private Handler handler;
 
     public DiskCache() {
+        handler = new Handler(Looper.getMainLooper());
         try {
             File cacheDir = Utils.getDiskCacheDir(IMAGE_CACHE_PATH);
             if (!cacheDir.exists()) {
@@ -38,21 +40,26 @@ public class DiskCache implements Cache {
         }
     }
 
+    /**
+     * 把Bitmap写入到缓存中
+     * @param imageUrl
+     * @param resourceBitmap
+     */
     @Override
-    public void putBitmapToCache(String imageUrl, Bitmap bitmap) {
-        final String key = Utils.MD5(imageUrl);
+    public void putBitmapToCache(final String imageUrl, final Bitmap resourceBitmap) {
+
         getBitmapFromCacheAsync(imageUrl, new DiskCallback() {
             @Override
             public void callback(Bitmap bitmap) {
-                if (bitmap == null) {
+                if (bitmap != null) {
                     return;
                 }
                 DiskLruCache.Editor editor;
                 try {
-                    editor = diskLruCache.edit(key);
+                    editor = diskLruCache.edit(getCacheKey(imageUrl));
                     if (editor != null) {
                         OutputStream outputStream = editor.newOutputStream(0);
-                        boolean success = bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                        boolean success = resourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                         outputStream.close();
                         if (success) {
                             editor.commit();
@@ -67,25 +74,26 @@ public class DiskCache implements Cache {
         });
     }
 
+
     @Override
     public Bitmap getBitmapFromCache(String key) {
         return null;
     }
 
     /**
-     * 从硬盘异步获取bitmap
+     * 根据imageUrl从缓存读取Bitmap
      *
      * @param imageUrl
      * @param callback
      */
     @Override
-    public void getBitmapFromCacheAsync(String imageUrl, final DiskCallback callback) {
-        final String key = Utils.MD5(imageUrl);
+    public void getBitmapFromCacheAsync(final String imageUrl, final DiskCallback callback) {
+
         HttpQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
                 try {
-                    DiskLruCache.Snapshot snapShot = diskLruCache.get(key);
+                    DiskLruCache.Snapshot snapShot = diskLruCache.get(getCacheKey(imageUrl));
                     if (snapShot != null) {
                         InputStream is = snapShot.getInputStream(0);
                         final Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -108,5 +116,9 @@ public class DiskCache implements Cache {
                 }
             }
         });
+    }
+
+    private String getCacheKey(String key){
+        return Utils.MD5(key);
     }
 }

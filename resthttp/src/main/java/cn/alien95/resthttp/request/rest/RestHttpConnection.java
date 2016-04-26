@@ -62,16 +62,18 @@ public class RestHttpConnection {
         /**
          * 只有POST请求才应该有参数
          */
-        String paramStr = "?";
+        StringBuilder paramStrBuilder = new StringBuilder();
         if (param != null) {
             for (Map.Entry<String, String> map : param.entrySet()) {
                 try {
-                    paramStr += "&" + URLEncoder.encode(map.getKey(), "UTF-8") + "=" + URLEncoder.encode(map.getValue(), "UTF-8");
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
-            logUrl = logUrl + "?" + paramStr;
+            paramStrBuilder.deleteCharAt(0);
+            logUrl = logUrl + "?" + paramStrBuilder;
         }
 
 
@@ -96,7 +98,7 @@ public class RestHttpConnection {
 
             if (type.equals(HttpConnection.RequestType.POST)) {
                 OutputStream ops = urlConnection.getOutputStream();
-                ops.write(paramStr.getBytes());
+                ops.write(paramStrBuilder.toString().getBytes());
                 ops.flush();
                 ops.close();
             }

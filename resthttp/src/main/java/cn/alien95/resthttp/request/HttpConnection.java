@@ -71,17 +71,20 @@ public class HttpConnection {
         /**
          * 只有POST才会有参数
          */
-        String paramStr = "";
+        StringBuilder paramStrBuilder = new StringBuilder();
         if (param != null) {
             for (Map.Entry<String, String> map : param.entrySet()) {
                 try {
-                    paramStr += "&" + URLEncoder.encode(map.getKey(), "UTF-8") + "=" + URLEncoder.encode(map.getValue(), "UTF-8");
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
+            paramStrBuilder.deleteCharAt(0);
+            logUrl = logUrl + "?" + paramStrBuilder;
         }
-        logUrl += paramStr;
+
         /**
          * 打印网络请求日志
          */
@@ -102,7 +105,7 @@ public class HttpConnection {
 
             if (type.equals(RequestType.POST)) {
                 OutputStream ops = urlConnection.getOutputStream();
-                ops.write(paramStr.getBytes());
+                ops.write(paramStrBuilder.toString().getBytes());
                 ops.flush();
                 ops.close();
             }

@@ -1,9 +1,11 @@
 package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import cn.alien95.resthttp.image.callback.DiskCallback;
+import cn.alien95.resthttp.util.Utils;
 
 
 /**
@@ -38,19 +40,31 @@ public class MemoryCache implements Cache {
 
     @Override
     public void putBitmapToCache(String key, Bitmap bitmap) {
-        if (getBitmapFromCache(key) == null) {
-            lruCache.put(key, bitmap);
+        Log.i(TAG,"memory---putBitmapToCache");
+        String cacheKey = getCacheKey(key);
+        if (getBitmapFromCache(cacheKey) == null) {
+            lruCache.put(cacheKey, bitmap);
         }
     }
 
     @Override
     public Bitmap getBitmapFromCache(String key) {
-        return lruCache.get(key);
+        Log.i(TAG,"memory---getBitmapFromCache");
+        return lruCache.get(getCacheKey(key));
     }
 
     @Override
     public void getBitmapFromCacheAsync(String imageUrl, DiskCallback callback) {
 
+    }
+
+    /**
+     * 对图片地址进行md5处理得到缓存key
+     * @param key
+     * @return
+     */
+    private String getCacheKey(String key){
+        return Utils.MD5(key);
     }
 
 }

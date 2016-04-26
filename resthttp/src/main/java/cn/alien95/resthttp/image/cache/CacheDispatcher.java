@@ -23,6 +23,7 @@ public class CacheDispatcher {
     }
 
     public void getImage(final String url, final ImageCallBack callBack){
+
         if (memoryCache.getBitmapFromCache(url) != null) {
             Log.i(TAG, "Get Picture from memoryCache");
             callBack.success(memoryCache.getBitmapFromCache(url));
@@ -47,11 +48,12 @@ public class CacheDispatcher {
             getImage(url, callBack);
             return;
         }
-        if (memoryCache.getBitmapFromCache(url + inSampleSize) != null) {
+        String key = url + inSampleSize;
+        if (memoryCache.getBitmapFromCache(key) != null) {
             Log.i(TAG, "Compress Get Picture from memoryCache");
-            callBack.success(memoryCache.getBitmapFromCache(url + inSampleSize));
+            callBack.success(memoryCache.getBitmapFromCache(key));
         } else {
-            diskCache.getBitmapFromCacheAsync(url + inSampleSize, new DiskCallback() {
+            diskCache.getBitmapFromCacheAsync(key, new DiskCallback() {
                 @Override
                 public void callback(Bitmap bitmap) {
                     if (bitmap != null) {
