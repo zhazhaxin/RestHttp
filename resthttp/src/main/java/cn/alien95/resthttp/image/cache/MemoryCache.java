@@ -10,46 +10,42 @@ import cn.alien95.resthttp.util.Utils;
 
 /**
  * Created by linlongxin on 2015/12/29.
+ * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
 public class MemoryCache implements Cache {
 
     private final String TAG = "MemoryCache";
 
+    private static MemoryCache instance;
+
     private LruCache<String, Bitmap> lruCache;
 
-    int maxMemory;
-
-    public MemoryCache() {
-        maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        malloc(maxMemory / 8);
+    private MemoryCache() {
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory());
+        lruCache = new LruCache<>(maxMemory / 8);
     }
 
-    /**
-     * @param size 单位：KB，内存分配大小
-     */
-    private void malloc(int size) {
-
-        lruCache = new LruCache<String, Bitmap>(size) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                // 重写此方法来衡量每张图片的大小，默认返回图片数量。
-                return bitmap.getByteCount() / 1024;
-            }
-        };
+    public static MemoryCache getInstance() {
+        if (instance == null) {
+            instance = new MemoryCache();
+        }
+        return instance;
     }
 
     @Override
     public void putBitmapToCache(String key, Bitmap bitmap) {
-        Log.i(TAG,"memory---putBitmapToCache");
         String cacheKey = getCacheKey(key);
         if (getBitmapFromCache(cacheKey) == null) {
-            lruCache.put(cacheKey, bitmap);
+            Log.i(TAG, "memory---getBitmapFromCache == null");
+            if (lruCache.put(cacheKey, bitmap) != null) {
+                Log.i(TAG, "memory cache success");
+            }
         }
     }
 
     @Override
     public Bitmap getBitmapFromCache(String key) {
-        Log.i(TAG,"memory---getBitmapFromCache");
+        Log.i(TAG, "memory---getBitmapFromCache");
         return lruCache.get(getCacheKey(key));
     }
 
@@ -58,12 +54,18 @@ public class MemoryCache implements Cache {
 
     }
 
+    @Override
+    public boolean isCache(String key) {
+        return lruCache.get(getCacheKey(key)) != null;
+    }
+
     /**
      * 对图片地址进行md5处理得到缓存key
+     *
      * @param key
      * @return
      */
-    private String getCacheKey(String key){
+    private String getCacheKey(String key) {
         return Utils.MD5(key);
     }
 

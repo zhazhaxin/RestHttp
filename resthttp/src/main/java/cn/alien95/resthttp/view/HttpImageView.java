@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import cn.alien95.resthttp.R;
 import cn.alien95.resthttp.image.HttpRequestImage;
-import cn.alien95.resthttp.image.callback.ImageCallBack;
+import cn.alien95.resthttp.image.callback.ImageCallback;
 
 
 /**
@@ -50,18 +50,21 @@ public class HttpImageView extends ImageView {
         if (loadImageId != -1) {
             setImageResource(loadImageId);
         }
-        HttpRequestImage.getInstance().requestImageWithCompress(url, inSimpleSize, new ImageCallBack() {
-            @Override
-            public void success(Bitmap bitmap) {
-                setImageBitmap(bitmap);
-            }
+        if(inSimpleSize <= 1){
+            HttpRequestImage.getInstance().requestImage(url, new ImageCallback() {
+                @Override
+                public void success(Bitmap bitmap) {
+                    setImageBitmap(bitmap);
+                }
 
-            @Override
-            public void failure() {
-                if (failedImageId != -1)
-                    setImageResource(failedImageId);
-            }
-        });
+                @Override
+                public void failure() {
+                    if (failedImageId != -1)
+                        setImageResource(failedImageId);
+                }
+            });
+        }
+
     }
 
     /**
@@ -77,7 +80,7 @@ public class HttpImageView extends ImageView {
         if (loadImageId != -1) {
             setImageResource(loadImageId);
         }
-        HttpRequestImage.getInstance().requestImageWithCompress(url, inSimpleSize, new ImageCallBack() {
+        HttpRequestImage.getInstance().requestImageWithCompress(url, inSimpleSize, new ImageCallback() {
             @Override
             public void success(Bitmap bitmap) {
                 setImageBitmap(bitmap);
@@ -102,7 +105,7 @@ public class HttpImageView extends ImageView {
         if (loadImageId != -1) {
             setImageResource(loadImageId);
         }
-        HttpRequestImage.getInstance().requestImageWithCompress(url, reqWidth, reqHeight, new ImageCallBack() {
+        HttpRequestImage.getInstance().requestImageWithCompress(url, reqWidth, reqHeight, new ImageCallback() {
             @Override
             public void success(Bitmap bitmap) {
                 setImageBitmap(bitmap);

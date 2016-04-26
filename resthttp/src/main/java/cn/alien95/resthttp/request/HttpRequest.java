@@ -51,7 +51,7 @@ public class HttpRequest extends Http {
     @Override
     public void get(final String url, final HttpCallBack callBack) {
         //请求加入队列，队列通过start()方法自动请求网络
-        HttpQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
                 httpConnection.quest(url, HttpConnection.RequestType.GET, null, callBack);
@@ -68,7 +68,7 @@ public class HttpRequest extends Http {
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallBack callBack) {
-        HttpQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
                 httpConnection.quest(url, HttpConnection.RequestType.POST, params, callBack);

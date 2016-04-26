@@ -10,11 +10,11 @@ import cn.alien95.resthttp.util.Utils;
 /**
  * Created by linlongxin on 2015/12/27.
  */
-public class HttpQueue {
+public class RequestQueue {
     private LinkedBlockingDeque<Runnable> requestQueue;
     private ExecutorService threadPool; //线程池
 
-    private HttpQueue() {
+    private RequestQueue() {
         requestQueue = new LinkedBlockingDeque<>();
         if (Utils.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Utils.getNumberOfCPUCores());
@@ -24,10 +24,10 @@ public class HttpQueue {
     }
 
     private static class HttpQueueHolder {
-        private static final HttpQueue instance = new HttpQueue();
+        private static final RequestQueue instance = new RequestQueue();
     }
 
-    public static HttpQueue getInstance() {
+    public static RequestQueue getInstance() {
         return HttpQueueHolder.instance;
     }
 

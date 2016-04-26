@@ -13,20 +13,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import cn.alien95.resthttp.image.callback.DiskCallback;
-import cn.alien95.resthttp.request.HttpQueue;
+import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.util.Utils;
 
 
 /**
  * Created by linlongxin on 2015/12/29.
+ * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
 public class DiskCache implements Cache {
 
     private final String IMAGE_CACHE_PATH = "IMAGE_CACHE";
+    private static DiskCache instance;
     private DiskLruCache diskLruCache;
     private Handler handler;
 
-    public DiskCache() {
+    private DiskCache() {
         handler = new Handler(Looper.getMainLooper());
         try {
             File cacheDir = Utils.getDiskCacheDir(IMAGE_CACHE_PATH);
@@ -40,8 +42,16 @@ public class DiskCache implements Cache {
         }
     }
 
+    public static DiskCache getInstance() {
+        if (instance == null) {
+            instance = new DiskCache();
+        }
+        return instance;
+    }
+
     /**
      * 把Bitmap写入到缓存中
+     *
      * @param imageUrl
      * @param resourceBitmap
      */
@@ -89,7 +99,7 @@ public class DiskCache implements Cache {
     @Override
     public void getBitmapFromCacheAsync(final String imageUrl, final DiskCallback callback) {
 
-        HttpQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -118,7 +128,19 @@ public class DiskCache implements Cache {
         });
     }
 
-    private String getCacheKey(String key){
+    @Override
+    public boolean isCache(String imageUrl) {
+        try {
+            if(diskLruCache.get(getCacheKey(imageUrl)) != null){
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private String getCacheKey(String key) {
         return Utils.MD5(key);
     }
 }

@@ -13,8 +13,8 @@ import java.net.URL;
 import cn.alien95.resthttp.image.cache.CacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
-import cn.alien95.resthttp.image.callback.ImageCallBack;
-import cn.alien95.resthttp.request.HttpQueue;
+import cn.alien95.resthttp.image.callback.ImageCallback;
+import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.util.DebugUtils;
 
 
@@ -24,17 +24,14 @@ import cn.alien95.resthttp.util.DebugUtils;
 public class HttpRequestImage {
 
     private final String TAG = "HttpRequestImage";
-
-    private MemoryCache memoryCache;
-    private DiskCache diskCache;
     private CacheDispatcher cacheDispatcher;
+    private NetworkDispatcher networkDispatcher;
     private static HttpRequestImage instance;
     private Handler handler;
 
     private HttpRequestImage() {
-        memoryCache = new MemoryCache();
-        diskCache = new DiskCache();
         cacheDispatcher = new CacheDispatcher();
+        networkDispatcher = new NetworkDispatcher();
         handler = new Handler();
     }
 
@@ -60,8 +57,14 @@ public class HttpRequestImage {
      * @param url      图片的网络地址
      * @param callBack 回调接口
      */
-    public void requestImage(final String url, final ImageCallBack callBack) {
-        cacheDispatcher.getImage(url,callBack);
+    public void requestImage(final String url, final ImageCallback callBack) {
+        if (MemoryCache.getInstance().isCache(url)) {
+            cacheDispatcher.addCacheQueue(url, callBack);
+        } else if (DiskCache.getInstance().isCache(url)) {
+            cacheDispatcher.addCacheQueue(url, callBack);
+        } else {
+            networkDispatcher.addNetwork(url, callBack);
+        }
     }
 
     /**
@@ -72,8 +75,20 @@ public class HttpRequestImage {
      * @param inSampleSize
      * @param callBack
      */
-    public synchronized void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallBack callBack) {
-        cacheDispatcher.getImageWithCompress(url,inSampleSize,callBack);
+    public synchronized void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
+        if(inSampleSize <= 1){
+            if (MemoryCache.getInstance().isCache(url)|| DiskCache.getInstance().isCache(url)) {
+                cacheDispatcher.addCacheQueue(url, callBack);
+            } else {
+                networkDispatcher.addNetwork(url, callBack);
+            }
+        }else {
+            if (MemoryCache.getInstance().isCache(url + inSampleSize) || DiskCache.getInstance().isCache(url + inSampleSize)) {
+                cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
+            } else {
+                networkDispatcher.addNetworkWithCompress(url, inSampleSize, callBack);
+            }
+        }
 
     }
 
@@ -85,8 +100,8 @@ public class HttpRequestImage {
      * @param reqHeight
      * @param callBack
      */
-    public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallBack callBack) {
-        cacheDispatcher.getImageWithCompress(url,reqWidth,reqHeight,callBack);
+    public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
+        cacheDispatcher.getImageWithCompress(url, reqWidth, reqHeight, callBack);
     }
 
     public HttpURLConnection getHttpUrlConnection(String url) {
@@ -106,82 +121,9 @@ public class HttpRequestImage {
         return urlConnection;
     }
 
-    /**
-     * 从网络加载图片
-     *
-     * @param url
-     * @param callBack
-     */
-    public synchronized void loadImageFromNet(final String url, final ImageCallBack callBack) {
-        HttpQueue.getInstance().addQuest(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection urlConnection = getHttpUrlConnection(url);
-                int respondCode;
-                try {
-                    urlConnection.connect();
-                    final InputStream inputStream = urlConnection.getInputStream();
-                    respondCode = urlConnection.getResponseCode();
-                    if (respondCode == HttpURLConnection.HTTP_OK) {
-                        final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callBack.success(bitmap);
-                                if (bitmap != null) {
-                                    memoryCache.putBitmapToCache(url, bitmap);
-                                    diskCache.putBitmapToCache(url, bitmap);
-                                }
 
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    /**
-     * 从网络加载并压缩图片
-     *
-     * @param url
-     * @param inSampleSize
-     * @param callBack
-     */
-    public synchronized void loadImageFromNetWithCompress(final String url, final int inSampleSize, final ImageCallBack callBack) {
-        HttpQueue.getInstance().addQuest(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection urlConnection = getHttpUrlConnection(url);
-                int respondCode;
-                try {
-                    final InputStream inputStream = urlConnection.getInputStream();
-                    respondCode = urlConnection.getResponseCode();
-                    if (respondCode == HttpURLConnection.HTTP_OK) {
-                        final Bitmap compressBitmap = ImageUtils.compressBitmapFromInputStream(inputStream, inSampleSize);
-                        inputStream.close();
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callBack.success(compressBitmap);
-                                if (compressBitmap != null) {
-                                    memoryCache.putBitmapToCache(url + inSampleSize, compressBitmap);
-                                    diskCache.putBitmapToCache(url + inSampleSize, compressBitmap);
-                                }
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public synchronized void loadImageFromNetWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallBack callBack) {
-        HttpQueue.getInstance().addQuest(new Runnable() {
+    public synchronized void loadImageFromNetWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
+        RequestQueue.getInstance().addQuest(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -210,8 +152,8 @@ public class HttpRequestImage {
                             public void run() {
                                 callBack.success(compressBitmap);
                                 if (compressBitmap != null) {
-                                    memoryCache.putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
-                                    diskCache.putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
+                                    MemoryCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
+                                    DiskCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
                                 }
                             }
                         });

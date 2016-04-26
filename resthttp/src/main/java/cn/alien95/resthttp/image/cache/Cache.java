@@ -13,4 +13,5 @@ public interface Cache {
     void putBitmapToCache(String key, Bitmap bitmap);
     Bitmap getBitmapFromCache(String key);
     void getBitmapFromCacheAsync(String imageUrl, DiskCallback callback);
+    boolean isCache(String key);
 }

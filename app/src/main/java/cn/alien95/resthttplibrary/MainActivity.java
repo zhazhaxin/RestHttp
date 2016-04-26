@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        get = (TextView) findViewById(R.id.get);
         post = (TextView) findViewById(R.id.post);
         smallImage = (HttpImageView) findViewById(R.id.small_image);
         bigImage = (HttpImageView) findViewById(R.id.big_image);
@@ -53,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
                                 + userInfo.toString());
                     }
                 });
-                serviceAPI.login("alien" , "123456");
-                serviceAPI.login("alien95" , "123456");
-                serviceAPI.login("123" , "123456");
-                serviceAPI.login("1234" , "123456");
-                serviceAPI.login("123432" , "123456");
+//                serviceAPI.login("alien" , "123456");
+//                serviceAPI.login("alien95" , "123456");
+//                serviceAPI.login("123" , "123456");
+//                serviceAPI.login("1234" , "123456");
+//                serviceAPI.login("123432" , "123456");
             }
         }).start();
 
@@ -67,11 +66,13 @@ public class MainActivity extends AppCompatActivity {
         serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
-                post.setText(post.getText().toString() + "\n"
-                        + result.toString());
+                if(result != null){
+                    post.setText(post.getText().toString() + "\n"
+                            + result.toString());
+                }
+
             }
         });
-
 
 
 

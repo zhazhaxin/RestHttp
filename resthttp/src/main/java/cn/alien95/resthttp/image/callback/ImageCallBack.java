@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public interface ImageCallBack{
+public interface ImageCallback {
 
     void success(Bitmap bitmap);
     void failure();
