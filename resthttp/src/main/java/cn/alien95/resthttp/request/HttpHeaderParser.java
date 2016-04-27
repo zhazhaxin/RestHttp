@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class HttpHeaderParser {
 
-    public static NetworkCache.Entry parseCacheHeaders(Response response) {
+    public static Cache.Entry parseCacheHeaders(Response response) {
         long now = System.currentTimeMillis();
 
         Map<String,String> headers = response.headers;
@@ -95,7 +95,7 @@ public class HttpHeaderParser {
             finalExpire = softExpire;
         }
 
-        NetworkCache.Entry entry = new NetworkCache.Entry();
+        Cache.Entry entry = new Cache.Entry();
         entry.data = response.data;
         entry.etag = serverEtag;
         entry.softTtl = softExpire;

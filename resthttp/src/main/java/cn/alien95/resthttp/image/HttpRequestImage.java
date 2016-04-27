@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cn.alien95.resthttp.image.cache.ImageCacheDispatcher;
+import cn.alien95.resthttp.image.cache.CacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
@@ -23,13 +23,13 @@ import cn.alien95.resthttp.util.DebugUtils;
  */
 public class HttpRequestImage {
 
-    private ImageCacheDispatcher cacheDispatcher;
+    private CacheDispatcher cacheDispatcher;
     private NetworkDispatcher networkDispatcher;
     private static HttpRequestImage instance;
     private Handler handler;
 
     private HttpRequestImage() {
-        cacheDispatcher = new ImageCacheDispatcher();
+        cacheDispatcher = new CacheDispatcher();
         networkDispatcher = new NetworkDispatcher();
         handler = new Handler();
     }
@@ -129,7 +129,7 @@ public class HttpRequestImage {
 
 
     public synchronized void loadImageFromNetWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        RequestQueue.getInstance().addRequestForImage(new Runnable() {
+        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);

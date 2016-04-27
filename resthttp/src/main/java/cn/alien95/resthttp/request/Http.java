@@ -21,6 +21,7 @@ public abstract class Http {
      */
     public static void initialize(Context context) {
         Utils.init(context);
+        NetworkCache.checkCacheRoot();
     }
 
     /**

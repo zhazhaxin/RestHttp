@@ -24,22 +24,22 @@ import cn.alien95.resthttp.util.RestHttpLog;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class HttpConnection {
+public class RequestConnection {
 
     public static final int NO_NETWORK = 999;
-    private Handler handler = new Handler();
-    private Map<String, String> header;
     private String logUrl;
+    private Map<String, String> header;
+    private Handler handler = new Handler();
 
-    private HttpConnection() {
+    private RequestConnection() {
     }
 
-    protected static HttpConnection getInstance() {
+    protected static RequestConnection getInstance() {
         return SingtonInstance.instance;
     }
 
     private static class SingtonInstance {
-        private static final HttpConnection instance = new HttpConnection();
+        private static final RequestConnection instance = new RequestConnection();
     }
 
 //    public enum RequestType {
@@ -158,7 +158,9 @@ public class HttpConnection {
 
                 Response response = new Response(result,headersStr);
 
-                HttpHeaderParser.parseCacheHeaders(response);
+                NetworkCache.getInstance().writeObjectToFile(HttpHeaderParser.parseCacheHeaders(response),
+                        NetworkCache.getInstance().getCacheFile(url));
+
 
                 handler.post(new Runnable() {
                     @Override

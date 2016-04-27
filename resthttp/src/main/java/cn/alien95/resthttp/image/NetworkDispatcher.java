@@ -43,7 +43,7 @@ public class NetworkDispatcher {
 
     public void networkImage(final String url, final ImageCallback callback) {
         RestHttpLog.i("Get picture from network");
-        RequestQueue.getInstance().addRequestForImage(new Runnable() {
+        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -100,7 +100,7 @@ public class NetworkDispatcher {
      */
     public synchronized void networkImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        RequestQueue.getInstance().addRequestForImage(new Runnable() {
+        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -131,7 +131,7 @@ public class NetworkDispatcher {
 
     public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        RequestQueue.getInstance().addRequestForImage(new Runnable() {
+        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);

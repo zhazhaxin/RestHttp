@@ -36,7 +36,7 @@ public class HttpRequest extends Http {
      * @param header
      */
     public void setHeader(Map<String, String> header) {
-        HttpConnection.getInstance().setHttpHeader(header);
+        RequestConnection.getInstance().setHttpHeader(header);
     }
 
     /**
@@ -47,8 +47,13 @@ public class HttpRequest extends Http {
      */
     @Override
     public void get(final String url, final HttpCallback callBack) {
-        //请求加入队列，队列通过start()方法自动请求网络
-        RequestQueue.getInstance().addRequest(url, Method.GET,callBack);
+        /**
+         * 请求加入队列
+         */
+        if (NetworkCache.getInstance().isExistsCache(url)) {
+            NetworkCacheDispatcher.getInstance().addCacheRequest(url,callBack);
+        } else
+            RequestQueue.getInstance().addRequest(url, Method.GET, callBack);
     }
 
     /**
@@ -60,7 +65,10 @@ public class HttpRequest extends Http {
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
-        RequestQueue.getInstance().addRequest(url,Method.POST,callBack);
+        if (NetworkCache.getInstance().isExistsCache(url)) {
+            NetworkCacheDispatcher.getInstance().addCacheRequest(url,callBack);
+        } else
+            RequestQueue.getInstance().addRequest(url, Method.POST, callBack);
     }
 
 }

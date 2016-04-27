@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.rest.NetworkRequest;
 import cn.alien95.resthttp.util.Utils;
 
 
@@ -14,15 +13,18 @@ import cn.alien95.resthttp.util.Utils;
  */
 public class RequestQueue {
 
-    private boolean isEmptyQueue = true;
+    private boolean isEmptyRequestQueue = true;
     private boolean isEmptyImgQueue = true;
-    private LinkedBlockingDeque<NetworkRequest> requestQueue;
-    private LinkedBlockingDeque<Runnable> imgRequest;
+    private boolean isEmptyNetworkCacheQueue = true;
+    private LinkedBlockingDeque<Request> requestQueue;
+    private LinkedBlockingDeque<Runnable> imgCacheQueue;
+    private LinkedBlockingDeque<Runnable> networkCacheQueue;
     private ExecutorService threadPool; //线程池
 
     private RequestQueue() {
         requestQueue = new LinkedBlockingDeque<>();
-        imgRequest = new LinkedBlockingDeque<>();
+        imgCacheQueue = new LinkedBlockingDeque<>();
+        networkCacheQueue = new LinkedBlockingDeque<>();
         if (Utils.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Utils.getNumberOfCPUCores());
         } else
@@ -39,38 +41,53 @@ public class RequestQueue {
     }
 
     public void addRequest(String httpUrl, int method, HttpCallback callback){
-        requestQueue.push(new NetworkRequest(httpUrl,method,callback));
-        if(isEmptyQueue){
+        requestQueue.push(new Request(httpUrl,method,callback));
+        if(isEmptyRequestQueue){
             start();
         }
     }
 
-    public void addRequestForImage(Runnable runnable){
-        imgRequest.push(runnable);
-        start();
+    public void addReadImgCacheAsyn(Runnable runnable){
+        imgCacheQueue.push(runnable);
+        if(isEmptyImgQueue){
+            start();
+        }
+    }
+
+    public void addReadNetworkCacheAsyn(Runnable runnable){
+        networkCacheQueue.push(runnable);
+        if(isEmptyNetworkCacheQueue){
+            start();
+        }
     }
 
     private void start() {
-        NetworkRequest request;
+        Request request;
         while (!requestQueue.isEmpty()) {
             request = requestQueue.poll();
-            final NetworkRequest finalRequest = request;
+            final Request finalRequest = request;
             threadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    HttpConnection.getInstance().quest(finalRequest.httpUrl, finalRequest.method
+                    RequestConnection.getInstance().quest(finalRequest.httpUrl, finalRequest.method
                             , null, finalRequest.callback);
                 }
             });
-            isEmptyQueue = false;
+            isEmptyRequestQueue = false;
         }
-        isEmptyQueue = true;
+        isEmptyRequestQueue = true;
 
-        while (!imgRequest.isEmpty()){
-            threadPool.execute(imgRequest.poll());
+        while (!imgCacheQueue.isEmpty()){
+            threadPool.execute(imgCacheQueue.poll());
             isEmptyImgQueue = false;
         }
         isEmptyImgQueue = true;
+
+        while (!networkCacheQueue.isEmpty()){
+            threadPool.execute(imgCacheQueue.poll());
+            isEmptyNetworkCacheQueue = false;
+        }
+        isEmptyNetworkCacheQueue = true;
     }
 
 }

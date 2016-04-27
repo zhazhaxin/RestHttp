@@ -100,6 +100,7 @@ public class Utils {
 
     /**
      * 获取cpu核数
+     *
      * @return
      */
     public static int getNumberOfCPUCores() {
@@ -135,4 +136,5 @@ public class Utils {
             return false;
         }
     };
+
 }
