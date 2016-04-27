@@ -1,7 +1,6 @@
 package cn.alien95.resthttp.request;
 
 import android.os.Handler;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.util.Set;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 
 /**
@@ -26,7 +26,6 @@ import cn.alien95.resthttp.util.DebugUtils;
  */
 public class HttpConnection {
 
-    private static final String TAG = "HttpConnection";
     public static final int NO_NETWORK = 999;
     private Handler handler = new Handler();
     private Map<String, String> header;
@@ -151,7 +150,7 @@ public class HttpConnection {
                 for (String key : keys){
                     String value = urlConnection.getHeaderField(key);
                     headersStr.put(key,value);
-                    Log.i(TAG,key + "  " + value);
+                    RestHttpLog.i(key + "  " + value);
                 }
 
                 final String result = readInputStream(in);

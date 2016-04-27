@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,13 +16,13 @@ import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/4/26.
  */
 public class NetworkDispatcher {
 
-    private static final String TAG = "NetworkDispatcher";
     private Handler handler;
 
     public NetworkDispatcher() {
@@ -43,7 +42,7 @@ public class NetworkDispatcher {
     }
 
     public void networkImage(final String url, final ImageCallback callback) {
-        Log.i(TAG, "Get picture from network");
+        RestHttpLog.i("Get picture from network");
         RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
@@ -100,7 +99,7 @@ public class NetworkDispatcher {
      * @param callBack
      */
     public synchronized void networkImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
-        Log.i(TAG, "Get compress picture from network");
+        RestHttpLog.i("Get compress picture from network");
         RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
@@ -131,7 +130,7 @@ public class NetworkDispatcher {
     }
 
     public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        Log.i(TAG, "Get compress picture from network");
+        RestHttpLog.i("Get compress picture from network");
         RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {

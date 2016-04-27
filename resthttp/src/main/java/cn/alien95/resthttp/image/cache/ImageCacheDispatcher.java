@@ -1,19 +1,17 @@
 package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.callback.DiskCallback;
 import cn.alien95.resthttp.image.callback.ImageCallback;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/3/27.
  */
 public class ImageCacheDispatcher {
-
-    private final String TAG = "ImageCacheDispatcher";
 
     private LinkedBlockingDeque<RequestImage> cacheQueue;
     private boolean isCacheQueueEmpty = true;
@@ -59,10 +57,10 @@ public class ImageCacheDispatcher {
              */
             if (requestImage.isControlWidthAndHeight) {
                 if (MemoryCache.getInstance().getBitmapFromCache(requestImage.url + requestImage.reqWidth + "/" + requestImage.reqHeight) != null) {
-                    Log.i(TAG, "Get compress picture from memoryCache");
+                    RestHttpLog.i("Get compress picture from memoryCache");
                     requestImage.callback.success(MemoryCache.getInstance().getBitmapFromCache(requestImage.url + requestImage.reqWidth + "/" + requestImage.reqHeight));
                 } else {
-                    Log.i(TAG, "Get compress picture from diskCache");
+                    RestHttpLog.i("Get compress picture from diskCache");
                     final ImageCallback finalCallback = requestImage.callback;
                     DiskCache.getInstance().getBitmapFromCacheAsync(requestImage.url + requestImage.reqWidth + "/" + requestImage.reqHeight, new DiskCallback() {
                         @Override
@@ -76,10 +74,10 @@ public class ImageCacheDispatcher {
                  */
             } else if (requestImage.inSimpleSize <= 1) {
                 if (MemoryCache.getInstance().getBitmapFromCache(requestImage.url) != null) {
-                    Log.i(TAG, "Get picture from memoryCache");
+                    RestHttpLog.i("Get picture from memoryCache");
                     requestImage.callback.success(MemoryCache.getInstance().getBitmapFromCache(requestImage.url));
                 } else {
-                    Log.i(TAG, "Get picture from diskCache");
+                    RestHttpLog.i("Get picture from diskCache");
                     final ImageCallback finalCallback = requestImage.callback;
                     DiskCache.getInstance().getBitmapFromCacheAsync(requestImage.url, new DiskCallback() {
                         @Override
@@ -96,10 +94,10 @@ public class ImageCacheDispatcher {
                  * 压缩图片缓存读取
                  */
                 if (MemoryCache.getInstance().getBitmapFromCache(requestImage.url + requestImage.inSimpleSize) != null) {
-                    Log.i(TAG, "Get compress picture from memoryCache");
+                    RestHttpLog.i("Get compress picture from memoryCache");
                     requestImage.callback.success(MemoryCache.getInstance().getBitmapFromCache(requestImage.url + requestImage.inSimpleSize));
                 } else {
-                    Log.i(TAG, "Get compress picture from diskCache");
+                    RestHttpLog.i("Get compress picture from diskCache");
                     final ImageCallback finalCallback = requestImage.callback;
                     DiskCache.getInstance().getBitmapFromCacheAsync(requestImage.url + requestImage.inSimpleSize, new DiskCallback() {
                         @Override

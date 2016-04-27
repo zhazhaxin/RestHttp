@@ -23,7 +23,6 @@ import cn.alien95.resthttp.util.DebugUtils;
  */
 public class HttpRequestImage {
 
-    private final String TAG = "HttpRequestImage";
     private ImageCacheDispatcher cacheDispatcher;
     private NetworkDispatcher networkDispatcher;
     private static HttpRequestImage instance;

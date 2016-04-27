@@ -1,10 +1,10 @@
 package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.util.LruCache;
 
 import cn.alien95.resthttp.image.callback.DiskCallback;
+import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Utils;
 
 
@@ -13,8 +13,6 @@ import cn.alien95.resthttp.util.Utils;
  * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
 public class MemoryCache implements ImageCache {
-
-    private final String TAG = "MemoryCache";
 
     private static MemoryCache instance;
 
@@ -37,7 +35,7 @@ public class MemoryCache implements ImageCache {
         String cacheKey = getCacheKey(key);
         if (getBitmapFromCache(cacheKey) == null) {
             if (lruCache.put(cacheKey, bitmap) != null) {
-                Log.i(TAG, "memory cache save success");
+                RestHttpLog.i("memory cache save success");
             }
         }
     }

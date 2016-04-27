@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class HttpHeaderParser {
 
-
     public static NetworkCache.Entry parseCacheHeaders(Response response) {
         long now = System.currentTimeMillis();
 
