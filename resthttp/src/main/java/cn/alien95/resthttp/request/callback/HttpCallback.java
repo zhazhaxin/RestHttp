@@ -1,6 +1,5 @@
 package cn.alien95.resthttp.request.callback;
 
-
 import cn.alien95.resthttp.util.DebugUtils;
 
 /**
