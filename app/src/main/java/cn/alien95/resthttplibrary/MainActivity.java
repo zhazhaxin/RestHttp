@@ -48,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        post.setText(post.getText().toString() + "\n"
-                                + userInfo.toString());
+                        if(userInfo != null){
+                            post.setText(post.getText().toString() + "\n"
+                                    + userInfo.toString());
+                        }
                     }
                 });
 //                serviceAPI.login("alien" , "123456");

@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
-import cn.alien95.resthttp.image.cache.Requst;
+import cn.alien95.resthttp.image.cache.RequestImage;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.util.DebugUtils;
@@ -27,7 +27,7 @@ public class NetworkDispatcher {
 
     private static final String TAG = "NetworkDispatcher";
     private Handler handler;
-    private LinkedBlockingDeque<Requst> networkQueue;
+    private LinkedBlockingDeque<RequestImage> networkQueue;
     private boolean isNetworkQueueEmpty = true;
 
     public NetworkDispatcher() {
@@ -36,40 +36,40 @@ public class NetworkDispatcher {
     }
 
     public void addNetwork(String url, ImageCallback callback) {
-        networkQueue.add(new Requst(url, callback));
+        networkQueue.add(new RequestImage(url, callback));
         if (isNetworkQueueEmpty) {
             start();
         }
     }
 
     public void addNetworkWithCompress(String url, int inSimpleSize, ImageCallback callback) {
-        networkQueue.add(new Requst(url, inSimpleSize, callback));
+        networkQueue.add(new RequestImage(url, inSimpleSize, callback));
         if (isNetworkQueueEmpty) {
             start();
         }
     }
 
     public void addNetworkWithCompress(String url, int reqWidth, int reqHeight,ImageCallback callback) {
-        networkQueue.add(new Requst(url, reqWidth, reqHeight,callback));
+        networkQueue.add(new RequestImage(url, reqWidth, reqHeight,callback));
         if (isNetworkQueueEmpty) {
             start();
         }
     }
 
     public void start() {
-        Requst requst;
+        RequestImage requestImage;
         while (!networkQueue.isEmpty()) {
-            requst = networkQueue.poll();
+            requestImage = networkQueue.poll();
 
             /**
              * 三种图片处理方式
              */
-            if (requst.isControlWidthAndHeight) {
-                networkImageWithCompress(requst.url, requst.reqWidth, requst.reqHeight, requst.callback);
-            } else if (requst.inSimpleSize > 1) {
-                networkImageWithCompress(requst.url, requst.inSimpleSize, requst.callback);
-            } else if (requst.inSimpleSize <= 1) {
-                networkImage(requst.url, requst.callback);
+            if (requestImage.isControlWidthAndHeight) {
+                networkImageWithCompress(requestImage.url, requestImage.reqWidth, requestImage.reqHeight, requestImage.callback);
+            } else if (requestImage.inSimpleSize > 1) {
+                networkImageWithCompress(requestImage.url, requestImage.inSimpleSize, requestImage.callback);
+            } else if (requestImage.inSimpleSize <= 1) {
+                networkImage(requestImage.url, requestImage.callback);
             }
 
         }

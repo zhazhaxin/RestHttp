@@ -37,7 +37,7 @@ public class RequestQueue {
     }
 
     private void start() {
-        while (requestQueue.peek() != null) {
+        while (!requestQueue.isEmpty()) {
             threadPool.execute(requestQueue.poll());
         }
     }
