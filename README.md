@@ -2,7 +2,7 @@
 
 - gradle依赖：
 
-        compile 'cn.alien95:resthttp:1.0.1'
+        compile 'cn.alien95:resthttp:1.0.1-beta'
 
 - 初始化：设置是否开启调试模式（默认关闭）,设置日志Log打印Tag
     
