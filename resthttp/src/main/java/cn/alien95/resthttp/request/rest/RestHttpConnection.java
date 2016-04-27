@@ -51,8 +51,8 @@ public class RestHttpConnection {
     /**
      * 这里很疑惑到底应该需不需要同步，看了JVM后应该觉得不需要同步处理，通过线程池并发执行
      *
-     * @param method  请求方式{POST,GET}
-     * @param param 请求的参数，HashMap键值对的形式
+     * @param method 请求方式{POST,GET}
+     * @param param  请求的参数，HashMap键值对的形式
      */
     protected <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
 
@@ -64,16 +64,18 @@ public class RestHttpConnection {
          */
         StringBuilder paramStrBuilder = new StringBuilder();
         if (param != null) {
-            for (Map.Entry<String, String> map : param.entrySet()) {
-                try {
-                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
-                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+            synchronized (this) {
+                for (Map.Entry<String, String> map : param.entrySet()) {
+                    try {
+                        paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                                .append(URLEncoder.encode(map.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
+                paramStrBuilder.deleteCharAt(0);
+                logUrl = logUrl + "?" + paramStrBuilder;
             }
-            paramStrBuilder.deleteCharAt(0);
-            logUrl = logUrl + "?" + paramStrBuilder;
         }
 
 

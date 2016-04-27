@@ -111,6 +111,7 @@ public class DiskCache implements ImageCache {
                             @Override
                             public void run() {
                                 callback.callback(bitmap);
+                                MemoryCache.getInstance().putBitmapToCache(imageUrl,bitmap);
                             }
                         });
                     } else {
