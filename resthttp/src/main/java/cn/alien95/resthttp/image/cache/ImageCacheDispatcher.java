@@ -11,14 +11,14 @@ import cn.alien95.resthttp.image.callback.ImageCallback;
 /**
  * Created by linlongxin on 2016/3/27.
  */
-public class CacheDispatcher {
+public class ImageCacheDispatcher {
 
-    private final String TAG = "CacheDispatcher";
+    private final String TAG = "ImageCacheDispatcher";
 
     private LinkedBlockingDeque<RequestImage> cacheQueue;
     private boolean isCacheQueueEmpty = true;
 
-    public CacheDispatcher() {
+    public ImageCacheDispatcher() {
         cacheQueue = new LinkedBlockingDeque<>();
     }
 

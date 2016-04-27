@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.callback.HttpCallBack;
@@ -136,8 +137,11 @@ public class HttpConnection {
                         }
                     }
                 });
-                return;
             } else {
+                /**
+                 * 状态码为200，请求成功。获取相应头，处理缓存
+                 */
+                Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 final String result = readInputStream(in);
                 in.close();
                 handler.post(new Runnable() {
@@ -150,7 +154,6 @@ public class HttpConnection {
                     }
                 });
             }
-
         } catch (final IOException e1) {
             e1.printStackTrace();
             handler.post(new Runnable() {

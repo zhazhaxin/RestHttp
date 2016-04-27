@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cn.alien95.resthttp.image.cache.CacheDispatcher;
+import cn.alien95.resthttp.image.cache.ImageCacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
@@ -24,13 +24,13 @@ import cn.alien95.resthttp.util.DebugUtils;
 public class HttpRequestImage {
 
     private final String TAG = "HttpRequestImage";
-    private CacheDispatcher cacheDispatcher;
+    private ImageCacheDispatcher cacheDispatcher;
     private NetworkDispatcher networkDispatcher;
     private static HttpRequestImage instance;
     private Handler handler;
 
     private HttpRequestImage() {
-        cacheDispatcher = new CacheDispatcher();
+        cacheDispatcher = new ImageCacheDispatcher();
         networkDispatcher = new NetworkDispatcher();
         handler = new Handler();
     }

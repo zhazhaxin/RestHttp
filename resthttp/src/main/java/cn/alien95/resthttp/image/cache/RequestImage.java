@@ -4,12 +4,12 @@ import cn.alien95.resthttp.image.callback.ImageCallback;
 
 public class RequestImage {
 
-    public String url;
     public int inSimpleSize;
-    public ImageCallback callback;
     public int reqWidth;
     public int reqHeight;
     public boolean isControlWidthAndHeight = false;
+    public String url;
+    public ImageCallback callback;
 
     public RequestImage(String url, ImageCallback callback) {
         this.url = url;

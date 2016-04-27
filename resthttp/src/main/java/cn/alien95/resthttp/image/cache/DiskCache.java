@@ -21,7 +21,7 @@ import cn.alien95.resthttp.util.Utils;
  * Created by linlongxin on 2015/12/29.
  * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
-public class DiskCache implements Cache {
+public class DiskCache implements ImageCache {
 
     private final String IMAGE_CACHE_PATH = "IMAGE_CACHE";
     private static DiskCache instance;
