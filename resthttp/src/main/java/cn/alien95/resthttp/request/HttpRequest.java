@@ -2,15 +2,13 @@ package cn.alien95.resthttp.request;
 
 import java.util.Map;
 
-import cn.alien95.resthttp.request.callback.HttpCallBack;
+import cn.alien95.resthttp.request.callback.HttpCallback;
 
 
 /**
  * Created by linlongxin on 2015/12/26.
  */
 public class HttpRequest extends Http {
-
-    private static HttpConnection httpConnection;
 
     private static HttpRequest instance;
 
@@ -29,7 +27,6 @@ public class HttpRequest extends Http {
                     instance = new HttpRequest();
             }
         }
-        httpConnection = HttpConnection.getInstance();
         return instance;
     }
 
@@ -39,7 +36,7 @@ public class HttpRequest extends Http {
      * @param header
      */
     public void setHeader(Map<String, String> header) {
-        httpConnection.setHttpHeader(header);
+        HttpConnection.getInstance().setHttpHeader(header);
     }
 
     /**
@@ -49,14 +46,9 @@ public class HttpRequest extends Http {
      * @param callBack 回调接口
      */
     @Override
-    public void get(final String url, final HttpCallBack callBack) {
+    public void get(final String url, final HttpCallback callBack) {
         //请求加入队列，队列通过start()方法自动请求网络
-        RequestQueue.getInstance().addQuest(new Runnable() {
-            @Override
-            public void run() {
-                httpConnection.quest(url, HttpConnection.RequestType.GET, null, callBack);
-            }
-        });
+        RequestQueue.getInstance().addRequest(url, Method.GET,callBack);
     }
 
     /**
@@ -67,13 +59,8 @@ public class HttpRequest extends Http {
      * @param callBack 回调接口
      */
     @Override
-    public void post(final String url, final Map<String, String> params, final HttpCallBack callBack) {
-        RequestQueue.getInstance().addQuest(new Runnable() {
-            @Override
-            public void run() {
-                httpConnection.quest(url, HttpConnection.RequestType.POST, params, callBack);
-            }
-        });
+    public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
+        RequestQueue.getInstance().addRequest(url,Method.POST,callBack);
     }
 
 }

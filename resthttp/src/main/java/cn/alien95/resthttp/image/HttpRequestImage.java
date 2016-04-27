@@ -130,7 +130,7 @@ public class HttpRequestImage {
 
 
     public synchronized void loadImageFromNetWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        RequestQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);

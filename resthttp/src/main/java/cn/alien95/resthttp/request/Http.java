@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.Map;
 
-import cn.alien95.resthttp.request.callback.HttpCallBack;
+import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.Utils;
 
@@ -29,7 +29,7 @@ public abstract class Http {
      * @param url
      * @param callBack
      */
-    public abstract void get(String url, HttpCallBack callBack);
+    public abstract void get(String url, HttpCallback callBack);
 
     /**
      * POST请求
@@ -38,7 +38,7 @@ public abstract class Http {
      * @param params
      * @param callBack
      */
-    public abstract void post(String url, Map<String, String> params, HttpCallBack callBack);
+    public abstract void post(String url, Map<String, String> params, HttpCallback callBack);
 
     /**
      * 设置开启调试模式，默认是关闭

@@ -11,11 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
-import cn.alien95.resthttp.image.cache.RequestImage;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.util.DebugUtils;
@@ -27,58 +25,26 @@ public class NetworkDispatcher {
 
     private static final String TAG = "NetworkDispatcher";
     private Handler handler;
-    private LinkedBlockingDeque<RequestImage> networkQueue;
-    private boolean isNetworkQueueEmpty = true;
 
     public NetworkDispatcher() {
         handler = new Handler(Looper.getMainLooper());
-        networkQueue = new LinkedBlockingDeque<>();
     }
 
     public void addNetwork(String url, ImageCallback callback) {
-        networkQueue.add(new RequestImage(url, callback));
-        if (isNetworkQueueEmpty) {
-            start();
-        }
+        networkImage(url,callback);
     }
 
     public void addNetworkWithCompress(String url, int inSimpleSize, ImageCallback callback) {
-        networkQueue.add(new RequestImage(url, inSimpleSize, callback));
-        if (isNetworkQueueEmpty) {
-            start();
-        }
+        networkImageWithCompress(url,inSimpleSize,callback);
     }
 
     public void addNetworkWithCompress(String url, int reqWidth, int reqHeight,ImageCallback callback) {
-        networkQueue.add(new RequestImage(url, reqWidth, reqHeight,callback));
-        if (isNetworkQueueEmpty) {
-            start();
-        }
-    }
-
-    public void start() {
-        RequestImage requestImage;
-        while (!networkQueue.isEmpty()) {
-            requestImage = networkQueue.poll();
-
-            /**
-             * 三种图片处理方式
-             */
-            if (requestImage.isControlWidthAndHeight) {
-                networkImageWithCompress(requestImage.url, requestImage.reqWidth, requestImage.reqHeight, requestImage.callback);
-            } else if (requestImage.inSimpleSize > 1) {
-                networkImageWithCompress(requestImage.url, requestImage.inSimpleSize, requestImage.callback);
-            } else if (requestImage.inSimpleSize <= 1) {
-                networkImage(requestImage.url, requestImage.callback);
-            }
-
-        }
-        isNetworkQueueEmpty = true;
+        networkImageWithCompress(url,reqWidth,reqHeight,callback);
     }
 
     public void networkImage(final String url, final ImageCallback callback) {
         Log.i(TAG, "Get picture from network");
-        RequestQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -135,7 +101,7 @@ public class NetworkDispatcher {
      */
     public synchronized void networkImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         Log.i(TAG, "Get compress picture from network");
-        RequestQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -166,7 +132,7 @@ public class NetworkDispatcher {
 
     public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         Log.i(TAG, "Get compress picture from network");
-        RequestQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);

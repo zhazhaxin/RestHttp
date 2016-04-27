@@ -6,7 +6,7 @@ import cn.alien95.resthttp.util.DebugUtils;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public abstract class HttpCallBack {
+public abstract class HttpCallback {
 
 
     public abstract void success(String info);

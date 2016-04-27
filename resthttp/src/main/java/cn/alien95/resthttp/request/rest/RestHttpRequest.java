@@ -6,12 +6,11 @@ import android.util.Log;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.alien95.resthttp.request.HttpConnection;
+import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.request.rest.callback.Callback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
@@ -59,7 +58,7 @@ public class RestHttpRequest {
     class ServiceAPIHandler implements InvocationHandler {
 
         @Override
-        public Object invoke(Object proxy, Method method, final Object[] args) throws Throwable {
+        public Object invoke(Object proxy, java.lang.reflect.Method method, final Object[] args) throws Throwable {
             /**
              * 考虑同步处理任务时需要自己去处理线程问题，可能引起多线程安全问题，需要同步处理
              */
@@ -119,7 +118,7 @@ public class RestHttpRequest {
                                 @Override
                                 public void run() {
                                     final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl2.toString(),
-                                            HttpConnection.RequestType.GET, null, ((Callback) args[finalCallbackPosition]).getActualClass());
+                                            Method.GET, null, ((Callback) args[finalCallbackPosition]).getActualClass());
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -133,7 +132,7 @@ public class RestHttpRequest {
                              * 同步处理任务
                              */
                             returnObject = RestHttpConnection.getInstance().quest(url.toString(),
-                                    HttpConnection.RequestType.GET, null, method.getReturnType());
+                                    Method.GET, null, method.getReturnType());
                         }
 
                     } else if (methodAnnotation instanceof POST) {
@@ -173,7 +172,7 @@ public class RestHttpRequest {
                                 public void run() {
 
                                     final Object reuslt = RestHttpConnection.getInstance().quest(url,
-                                            HttpConnection.RequestType.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
+                                            Method.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -187,7 +186,7 @@ public class RestHttpRequest {
                              * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
                              */
                             returnObject = RestHttpConnection.getInstance().quest(url,
-                                    HttpConnection.RequestType.POST, params, method.getReturnType());
+                                    Method.POST, params, method.getReturnType());
                         }
 
                     }

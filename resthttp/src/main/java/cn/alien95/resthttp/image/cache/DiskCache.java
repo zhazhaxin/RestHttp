@@ -99,7 +99,7 @@ public class DiskCache implements ImageCache {
     @Override
     public void getBitmapFromCacheAsync(final String imageUrl, final DiskCallback callback) {
 
-        RequestQueue.getInstance().addQuest(new Runnable() {
+        RequestQueue.getInstance().addRequestForImage(new Runnable() {
             @Override
             public void run() {
                 try {

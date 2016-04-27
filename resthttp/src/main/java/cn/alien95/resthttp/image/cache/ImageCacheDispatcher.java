@@ -110,6 +110,7 @@ public class ImageCacheDispatcher {
                 }
             }
 
+            isCacheQueueEmpty = false;
         }
         isCacheQueueEmpty = true;
     }

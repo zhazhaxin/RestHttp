@@ -13,7 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import cn.alien95.resthttp.request.HttpConnection;
+import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.util.DebugUtils;
 
 
@@ -51,10 +51,10 @@ public class RestHttpConnection {
     /**
      * 这里很疑惑到底应该需不需要同步，看了JVM后应该觉得不需要同步处理，通过线程池并发执行
      *
-     * @param type  请求方式{POST,GET}
+     * @param method  请求方式{POST,GET}
      * @param param 请求的参数，HashMap键值对的形式
      */
-    protected <T> T quest(String url, HttpConnection.RequestType type, Map<String, String> param, Class<T> returnType) {
+    protected <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
@@ -88,7 +88,12 @@ public class RestHttpConnection {
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
-            urlConnection.setRequestMethod(String.valueOf(type));
+            if (method == Method.GET) {
+                urlConnection.setRequestMethod("GET");
+            } else if (method == Method.POST) {
+                urlConnection.setRequestMethod("POST");
+            }
+
 
             if (header != null) {
                 for (Map.Entry<String, String> entry : header.entrySet()) {
@@ -96,7 +101,7 @@ public class RestHttpConnection {
                 }
             }
 
-            if (type.equals(HttpConnection.RequestType.POST)) {
+            if (method == Method.POST) {
                 OutputStream ops = urlConnection.getOutputStream();
                 ops.write(paramStrBuilder.toString().getBytes());
                 ops.flush();
@@ -135,7 +140,7 @@ public class RestHttpConnection {
                     DebugUtils.responseLog(respondCode + "\n" + result, requestTime);
                 }
 
-                if(returnType != null && returnType != void.class){
+                if (returnType != null && returnType != void.class) {
                     Gson gson = new Gson();
                     T object = gson.fromJson(result, returnType);
                     return object;

@@ -1,6 +1,7 @@
 package cn.alien95.resthttp.request;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +12,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import cn.alien95.resthttp.request.callback.HttpCallBack;
+import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
 
 
@@ -23,6 +26,7 @@ import cn.alien95.resthttp.util.DebugUtils;
  */
 public class HttpConnection {
 
+    private static final String TAG = "HttpConnection";
     public static final int NO_NETWORK = 999;
     private Handler handler = new Handler();
     private Map<String, String> header;
@@ -39,14 +43,14 @@ public class HttpConnection {
         private static final HttpConnection instance = new HttpConnection();
     }
 
-    public enum RequestType {
-        GET("GET"), POST("POST");
-        private String requestType;
-
-        RequestType(String type) {
-            this.requestType = type;
-        }
-    }
+//    public enum RequestType {
+//        GET("GET"), POST("POST");
+//        private String requestType;
+//
+//        RequestType(String type) {
+//            this.requestType = type;
+//        }
+//    }
 
     /**
      * 设置请求头header
@@ -60,11 +64,11 @@ public class HttpConnection {
     /**
      * 网络请求
      *
-     * @param type     请求方式{POST,GET}
+     * @param method     请求方式{POST,GET}
      * @param param    请求的参数，HashMap键值对的形式
      * @param callback 请求返回的回调
      */
-    protected void quest(String url, RequestType type, Map<String, String> param, final HttpCallBack callback) {
+    protected void quest(String url, int method, Map<String, String> param, final HttpCallback callback) {
 
         logUrl = url;
         final int respondCode;
@@ -96,7 +100,7 @@ public class HttpConnection {
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
-            urlConnection.setRequestMethod(String.valueOf(type));
+            urlConnection.setRequestMethod(String.valueOf(method));
 
             if (header != null) {
                 for (Map.Entry<String, String> entry : header.entrySet()) {
@@ -104,7 +108,7 @@ public class HttpConnection {
                 }
             }
 
-            if (type.equals(RequestType.POST)) {
+            if (method == Method.POST) {
                 OutputStream ops = urlConnection.getOutputStream();
                 ops.write(paramStrBuilder.toString().getBytes());
                 ops.flush();
@@ -142,8 +146,21 @@ public class HttpConnection {
                  * 状态码为200，请求成功。获取相应头，处理缓存
                  */
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
+                Set<String> keys = headers.keySet();
+                HashMap<String,String> headersStr = new HashMap<>();
+                for (String key : keys){
+                    String value = urlConnection.getHeaderField(key);
+                    headersStr.put(key,value);
+                    Log.i(TAG,key + "  " + value);
+                }
+
                 final String result = readInputStream(in);
                 in.close();
+
+                Response response = new Response(result,headersStr);
+
+                HttpHeaderParser.parseCacheHeaders(response);
+
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
