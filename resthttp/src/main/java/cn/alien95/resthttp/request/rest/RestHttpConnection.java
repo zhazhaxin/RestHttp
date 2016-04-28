@@ -11,10 +11,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import cn.alien95.resthttp.request.HttpHeaderParser;
 import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.NetworkCache;
+import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 
 /**
@@ -31,7 +38,7 @@ public class RestHttpConnection {
     private RestHttpConnection() {
     }
 
-    protected static RestHttpConnection getInstance() {
+    public static RestHttpConnection getInstance() {
         return SingletonInstance.instance;
     }
 
@@ -54,7 +61,7 @@ public class RestHttpConnection {
      * @param method 请求方式{POST,GET}
      * @param param  请求的参数，HashMap键值对的形式
      */
-    protected <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
+    public <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
 
         logUrl = url;
         final int respondCode;
@@ -133,10 +140,30 @@ public class RestHttpConnection {
                 return null;
             } else {
                 /**
-                 * 请求成功
+                 * 请求成功,处理缓存
                  */
+
+                Map<String, List<String>> headers = urlConnection.getHeaderFields();
+                Set<String> keys = headers.keySet();
+                HashMap<String, String> headersStr = new HashMap<>();
+                RestHttpLog.i("响应头信息：");
+                for (String key : keys) {
+                    String value = urlConnection.getHeaderField(key);
+                    headersStr.put(key, value);
+                    RestHttpLog.i(key + "  " + value);
+                }
+
                 final String result = readInputStream(in);
                 in.close();
+
+                Response response = new Response(result, headersStr);
+
+                /**
+                 * 打印Entry日志
+                 */
+                RestHttpLog.i(HttpHeaderParser.parseCacheHeaders(response).toString());
+
+                NetworkCache.getInstance().put(url,HttpHeaderParser.parseCacheHeaders(response));
 
                 if (DebugUtils.isDebug) {
                     DebugUtils.responseLog(respondCode + "\n" + result, requestTime);

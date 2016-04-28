@@ -23,7 +23,7 @@ import cn.alien95.resthttp.util.Utils;
  */
 public class DiskCache implements ImgCache {
 
-    private final String IMAGE_CACHE_PATH = "IMAGE_CACHE";
+    private final String IMAGE_CACHE_PATH = "ImageCache";
     private static DiskCache instance;
     private DiskLruCache diskLruCache;
     private Handler handler;

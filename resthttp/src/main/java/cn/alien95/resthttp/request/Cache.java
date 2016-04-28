@@ -80,5 +80,18 @@ public interface Cache {
         public boolean refreshNeeded() {
             return this.softTtl < System.currentTimeMillis();
         }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "data='" + data + '\'' +
+                    ", etag='" + etag + '\'' +
+                    ", serverDate=" + serverDate +
+                    ", lastModified=" + lastModified +
+                    ", ttl=" + ttl +
+                    ", softTtl=" + softTtl +
+                    ", responseHeaders=" + responseHeaders +
+                    '}';
+        }
     }
 }

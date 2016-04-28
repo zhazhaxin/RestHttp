@@ -42,15 +42,6 @@ public class RequestConnection {
         private static final RequestConnection instance = new RequestConnection();
     }
 
-//    public enum RequestType {
-//        GET("GET"), POST("POST");
-//        private String requestType;
-//
-//        RequestType(String type) {
-//            this.requestType = type;
-//        }
-//    }
-
     /**
      * 设置请求头header
      *
@@ -147,6 +138,7 @@ public class RequestConnection {
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
                 HashMap<String,String> headersStr = new HashMap<>();
+                RestHttpLog.i("响应头信息：");
                 for (String key : keys){
                     String value = urlConnection.getHeaderField(key);
                     headersStr.put(key,value);
@@ -158,9 +150,7 @@ public class RequestConnection {
 
                 Response response = new Response(result,headersStr);
 
-                NetworkCache.getInstance().writeObjectToFile(HttpHeaderParser.parseCacheHeaders(response),
-                        NetworkCache.getInstance().getCacheFile(url));
-
+                NetworkCache.getInstance().put(logUrl,HttpHeaderParser.parseCacheHeaders(response));
 
                 handler.post(new Runnable() {
                     @Override

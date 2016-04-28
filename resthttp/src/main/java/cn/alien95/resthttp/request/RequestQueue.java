@@ -1,5 +1,6 @@
 package cn.alien95.resthttp.request;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -40,8 +41,8 @@ public class RequestQueue {
         return HttpQueueHolder.instance;
     }
 
-    public void addRequest(String httpUrl, int method, HttpCallback callback){
-        requestQueue.push(new Request(httpUrl,method,callback));
+    public void addRequest(String httpUrl, int method, Map<String,String> params,HttpCallback callback){
+        requestQueue.push(new Request(httpUrl,method,params,callback));
         if(isEmptyRequestQueue){
             start();
         }
@@ -70,7 +71,7 @@ public class RequestQueue {
                 @Override
                 public void run() {
                     RequestConnection.getInstance().quest(finalRequest.httpUrl, finalRequest.method
-                            , null, finalRequest.callback);
+                            , finalRequest.params, finalRequest.callback);
                 }
             });
             isEmptyRequestQueue = false;

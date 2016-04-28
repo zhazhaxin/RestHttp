@@ -38,7 +38,7 @@ public class HttpHeaderParser {
         boolean hasCacheControl = false;
         boolean mustRevalidate = false;
 
-        String serverEtag = null;
+        String serverEtag;
         String headerValue;
 
         headerValue = headers.get("Date");
@@ -151,4 +151,7 @@ public class HttpHeaderParser {
 //    public static String parseCharset(Map<String, String> headers) {
 //        return parseCharset(headers, HTTP.DEFAULT_CONTENT_CHARSET);
 //    }
+
+
+
 }

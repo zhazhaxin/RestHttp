@@ -1,5 +1,7 @@
 package cn.alien95.resthttp.request;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
@@ -51,9 +53,9 @@ public class HttpRequest extends Http {
          * 请求加入队列
          */
         if (NetworkCache.getInstance().isExistsCache(url)) {
-            NetworkCacheDispatcher.getInstance().addCacheRequest(url,callBack);
+            NetworkCacheDispatcher.getInstance().addCacheRequest(url,Method.GET,null,callBack);
         } else
-            RequestQueue.getInstance().addRequest(url, Method.GET, callBack);
+            RequestQueue.getInstance().addRequest(url, Method.GET,null, callBack);
     }
 
     /**
@@ -65,10 +67,30 @@ public class HttpRequest extends Http {
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
-        if (NetworkCache.getInstance().isExistsCache(url)) {
-            NetworkCacheDispatcher.getInstance().addCacheRequest(url,callBack);
+        if (NetworkCache.getInstance().isExistsCache(getCacheKey(url,params))) {
+            NetworkCacheDispatcher.getInstance().addCacheRequest(url,Method.POST,params,callBack);
         } else
-            RequestQueue.getInstance().addRequest(url, Method.POST, callBack);
+            RequestQueue.getInstance().addRequest(url, Method.POST, params, callBack);
+    }
+
+    private String getCacheKey(String url, Map<String, String> params) {
+        /**
+         * 只有POST才会有参数
+         */
+        StringBuilder paramStrBuilder = new StringBuilder();
+        if (params != null) {
+            for (Map.Entry<String, String> map : params.entrySet()) {
+                try {
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            paramStrBuilder.deleteCharAt(0);
+            url = url + "?" + paramStrBuilder;
+        }
+        return url;
     }
 
 }

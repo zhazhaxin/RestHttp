@@ -28,8 +28,8 @@ public class NetworkCache implements Cache {
         cacheFiles = Arrays.asList(networkCacheRoot.listFiles());
     }
 
-    public static NetworkCache getInstance(){
-        if(instance == null){
+    public static NetworkCache getInstance() {
+        if (instance == null) {
             instance = new NetworkCache();
         }
         return instance;
@@ -41,7 +41,10 @@ public class NetworkCache implements Cache {
     }
 
     @Override
-    public void put(String key, Entry entry) {
+    public synchronized void put(String key, Entry entry) {
+        if (isExistsCache(key)) {
+            return;
+        }
         File newFile = new File(networkCacheRoot, getCacheFileName(key));
         writeObjectToFile(entry, newFile);
         cacheFiles.add(newFile);
@@ -60,18 +63,24 @@ public class NetworkCache implements Cache {
     @Override
     public void remove(String key) {
         String fileName = getCacheFileName(key);
-        for (File file : cacheFiles) {
-            if (file.getName().equals(fileName)) {
-                file.delete();
+        synchronized (NetworkCache.class) {
+            for (File file : cacheFiles) {
+                if (file.getName().equals(fileName)) {
+                    file.delete();
+                }
             }
         }
+
     }
 
     @Override
     public void clear() {
-        for (File file : cacheFiles) {
-            file.delete();
+        synchronized (NetworkCache.class) {
+            for (File file : cacheFiles) {
+                file.delete();
+            }
         }
+
     }
 
 
@@ -90,7 +99,7 @@ public class NetworkCache implements Cache {
      * @param object
      * @param cache
      */
-    public void writeObjectToFile(Object object, File cache) {
+    private void writeObjectToFile(Object object, File cache) {
         if (!cache.exists()) {
             try {
                 cache.createNewFile();
@@ -115,7 +124,7 @@ public class NetworkCache implements Cache {
      * @param <T>
      * @return
      */
-    private  <T> T readObjectFromFile(File cache) {
+    private <T> T readObjectFromFile(File cache) {
         if (!cache.exists()) {
             RestHttpLog.i("File does not exist");
             return null;
@@ -148,9 +157,11 @@ public class NetworkCache implements Cache {
      */
     public boolean isExistsCache(String key) {
         String fileName = getCacheFileName(key);
-        for (File file : cacheFiles) {
-            if (file.getName().equals(fileName)) {
-                return true;
+        synchronized (NetworkCache.class) {
+            for (File file : cacheFiles) {
+                if (file.getName().equals(fileName)) {
+                    return true;
+                }
             }
         }
         return false;

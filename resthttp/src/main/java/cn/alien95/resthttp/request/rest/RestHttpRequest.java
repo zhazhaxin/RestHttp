@@ -4,18 +4,23 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.Method;
-import cn.alien95.resthttp.request.rest.callback.Callback;
+import cn.alien95.resthttp.request.NetworkCache;
+import cn.alien95.resthttp.request.NetworkCacheDispatcher;
+import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/3/24.
@@ -102,7 +107,7 @@ public class RestHttpRequest {
                          * 判断是否异步处理
                          */
                         for (int i = 0; i < args.length; i++) {
-                            if (args[i] instanceof Callback) {
+                            if (args[i] instanceof RestCallback) {
                                 isAsynchronization = true;
                                 callbackPosition = i;
                             }
@@ -118,11 +123,11 @@ public class RestHttpRequest {
                                 @Override
                                 public void run() {
                                     final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl2.toString(),
-                                            Method.GET, null, ((Callback) args[finalCallbackPosition]).getActualClass());
+                                            Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass());
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ((Callback) args[finalCallbackPosition]).callback(reuslt);
+                                            ((RestCallback) args[finalCallbackPosition]).callback(reuslt);
                                         }
                                     });
                                 }
@@ -157,7 +162,7 @@ public class RestHttpRequest {
                          * 判断是否异步回调
                          */
                         for (int i = 0; i < args.length; i++) {
-                            if (args[i] instanceof Callback) {
+                            if (args[i] instanceof RestCallback) {
                                 isAsynchronization = true;
                                 callbackPosition = i;
                             }
@@ -167,20 +172,32 @@ public class RestHttpRequest {
                          */
                         if (isAsynchronization) {
                             final int finalCallbackPosition1 = callbackPosition;
-                            RestThreadPool.getInstance().putThreadPool(new Runnable() {
-                                @Override
-                                public void run() {
 
-                                    final Object reuslt = RestHttpConnection.getInstance().quest(url,
-                                            Method.POST, params, ((Callback) args[finalCallbackPosition1]).getActualClass());
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ((Callback) args[finalCallbackPosition1]).callback(reuslt);
-                                        }
-                                    });
-                                }
-                            });
+                            /**
+                             * 缓存处理
+                             */
+                            if (NetworkCache.getInstance().isExistsCache(getCacheKey(url,params))) {
+                                NetworkCacheDispatcher.getInstance().addRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
+                                RestHttpLog.i("get data from cache");
+                            } else {
+                                RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        final Object reuslt = RestHttpConnection.getInstance().quest(url,
+                                                Method.POST, params, ((RestCallback) args[finalCallbackPosition1]).getActualClass());
+
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ((RestCallback) args[finalCallbackPosition1]).callback(reuslt);
+                                            }
+                                        });
+                                    }
+
+                                });
+                            }
+
                         } else {
                             /**
                              * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
@@ -197,5 +214,26 @@ public class RestHttpRequest {
                 return returnObject;
             }
         }
+    }
+
+
+    private String getCacheKey(String url, Map<String, String> params) {
+        /**
+         * 只有POST才会有参数
+         */
+        StringBuilder paramStrBuilder = new StringBuilder();
+        if (params != null) {
+            for (Map.Entry<String, String> map : params.entrySet()) {
+                try {
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            paramStrBuilder.deleteCharAt(0);
+            url = url + "?" + paramStrBuilder;
+        }
+        return url;
     }
 }

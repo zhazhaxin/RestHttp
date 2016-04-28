@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import cn.alien95.resthttp.request.rest.RestHttpRequest;
-import cn.alien95.resthttp.request.rest.callback.Callback;
+import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.view.HttpImageView;
 import cn.alien95.resthttplibrary.bean.UserInfo;
 
@@ -54,18 +54,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-//                serviceAPI.login("alien" , "123456");
-//                serviceAPI.login("alien95" , "123456");
-//                serviceAPI.login("123" , "123456");
-//                serviceAPI.login("1234" , "123456");
-//                serviceAPI.login("123432" , "123456");
+                serviceAPI.login("alien" , "123456");
+                serviceAPI.login("alien95" , "123456");
+                serviceAPI.login("123" , "123456");
+                serviceAPI.login("1234" , "123456");
+                serviceAPI.login("123432" , "123456");
             }
         }).start();
 
         /**
          * 异步操作，受线程池控制
          */
-        serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
+        serviceAPI.login2("alien95", "123456" ,new RestCallback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
                 if(result != null){
