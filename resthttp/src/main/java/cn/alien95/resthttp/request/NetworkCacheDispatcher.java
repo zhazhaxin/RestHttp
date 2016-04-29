@@ -44,11 +44,14 @@ public class NetworkCacheDispatcher {
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
             entry = NetworkCache.getInstance().get(request.httpUrl);
-            if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params,request.callback);
-            } else {
-                getCacheAsyn(request.httpUrl, request.callback);
+            if (entry != null) {
+                if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                    RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
+                } else {
+                    getCacheAsyn(request.httpUrl, request.callback);
+                }
             }
+
             isEmptyQueue = false;
         }
 
@@ -58,12 +61,15 @@ public class NetworkCacheDispatcher {
         while (!restCacheQueue.isEmpty()) {
             request = restCacheQueue.poll();
             entry = NetworkCache.getInstance().get(request.httpUrl);
-            if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                RestHttpConnection.getInstance().quest(request.httpUrl,
-                        Method.POST, request.params, request.restRestCallback.getActualClass());
-            } else {
-                getRestCacheAysn(request.httpUrl, request.restRestCallback);
+            if (entry != null) {
+                if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                    RestHttpConnection.getInstance().quest(request.httpUrl,
+                            Method.POST, request.params, request.restRestCallback.getActualClass());
+                } else {
+                    getRestCacheAysn(request.httpUrl, request.restRestCallback);
+                }
             }
+
             isRestEmptyQueue = false;
         }
 
@@ -71,8 +77,8 @@ public class NetworkCacheDispatcher {
         isRestEmptyQueue = true;
     }
 
-    public void addCacheRequest(String url,int method,Map<String, String> params,HttpCallback callback){
-        cacheQueue.add(new Request(url,method,params, callback));
+    public void addCacheRequest(String url, int method, Map<String, String> params, HttpCallback callback) {
+        cacheQueue.add(new Request(url, method, params, callback));
         if (isEmptyQueue) {
             start();
         }

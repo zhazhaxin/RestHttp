@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.alien95.resthttp.request.Cache;
 import cn.alien95.resthttp.request.HttpHeaderParser;
 import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.request.NetworkCache;
@@ -161,9 +162,12 @@ public class RestHttpConnection {
                 /**
                  * 打印Entry日志
                  */
-                RestHttpLog.i(HttpHeaderParser.parseCacheHeaders(response).toString());
-
-                NetworkCache.getInstance().put(url,HttpHeaderParser.parseCacheHeaders(response));
+                Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
+                if (entry != null) {  //证明带有缓存
+                    NetworkCache.getInstance().put(logUrl, entry);
+                    RestHttpLog.i(logUrl);
+                    RestHttpLog.i(entry.toString());
+                }
 
                 if (DebugUtils.isDebug) {
                     DebugUtils.responseLog(respondCode + "\n" + result, requestTime);

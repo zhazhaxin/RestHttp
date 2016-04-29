@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.alien95.resthttp.util.RestHttpLog;
@@ -25,7 +25,10 @@ public class NetworkCache implements Cache {
     private static NetworkCache instance;
 
     private NetworkCache() {
-        cacheFiles = Arrays.asList(networkCacheRoot.listFiles());
+        cacheFiles = new ArrayList<>();
+        for (File file : networkCacheRoot.listFiles()) {
+            cacheFiles.add(file);
+        }
     }
 
     public static NetworkCache getInstance() {
@@ -41,7 +44,7 @@ public class NetworkCache implements Cache {
     }
 
     @Override
-    public synchronized void put(String key, Entry entry) {
+    public void put(String key, Entry entry) {
         if (isExistsCache(key)) {
             return;
         }
@@ -63,23 +66,21 @@ public class NetworkCache implements Cache {
     @Override
     public void remove(String key) {
         String fileName = getCacheFileName(key);
-        synchronized (NetworkCache.class) {
-            for (File file : cacheFiles) {
-                if (file.getName().equals(fileName)) {
-                    file.delete();
-                }
+        for (File file : cacheFiles) {
+            if (file.getName().equals(fileName)) {
+                file.delete();
             }
         }
+
 
     }
 
     @Override
     public void clear() {
-        synchronized (NetworkCache.class) {
-            for (File file : cacheFiles) {
-                file.delete();
-            }
+        for (File file : cacheFiles) {
+            file.delete();
         }
+
 
     }
 
@@ -157,13 +158,12 @@ public class NetworkCache implements Cache {
      */
     public boolean isExistsCache(String key) {
         String fileName = getCacheFileName(key);
-        synchronized (NetworkCache.class) {
-            for (File file : cacheFiles) {
-                if (file.getName().equals(fileName)) {
-                    return true;
-                }
+        for (File file : cacheFiles) {
+            if (file.getName().equals(fileName)) {
+                return true;
             }
         }
+
         return false;
     }
 

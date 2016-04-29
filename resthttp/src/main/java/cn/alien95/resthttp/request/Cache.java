@@ -1,12 +1,13 @@
 package cn.alien95.resthttp.request;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Created by linlongxin on 2016/4/27.
  */
-public interface Cache {
+public interface Cache extends Serializable{
 
     /**
      * Retrieves an entry from the cache.

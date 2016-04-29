@@ -54,7 +54,7 @@ public class RequestConnection {
     /**
      * 网络请求
      *
-     * @param method     请求方式{POST,GET}
+     * @param method   请求方式{POST,GET}
      * @param param    请求的参数，HashMap键值对的形式
      * @param callback 请求返回的回调
      */
@@ -137,20 +137,28 @@ public class RequestConnection {
                  */
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
-                HashMap<String,String> headersStr = new HashMap<>();
+                HashMap<String, String> headersStr = new HashMap<>();
                 RestHttpLog.i("响应头信息：");
-                for (String key : keys){
+                for (String key : keys) {
                     String value = urlConnection.getHeaderField(key);
-                    headersStr.put(key,value);
+                    headersStr.put(key, value);
                     RestHttpLog.i(key + "  " + value);
                 }
 
                 final String result = readInputStream(in);
                 in.close();
 
-                Response response = new Response(result,headersStr);
+                Response response = new Response(result, headersStr);
 
-                NetworkCache.getInstance().put(logUrl,HttpHeaderParser.parseCacheHeaders(response));
+                /**
+                 * 打印Entry日志
+                 */
+                Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
+                if (entry != null) {  //证明带有缓存
+                    NetworkCache.getInstance().put(logUrl, entry);
+                    RestHttpLog.i(logUrl);
+                    RestHttpLog.i(entry.toString());
+                }
 
                 handler.post(new Runnable() {
                     @Override
