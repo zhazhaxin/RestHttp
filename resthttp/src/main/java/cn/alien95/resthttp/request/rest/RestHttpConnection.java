@@ -147,7 +147,7 @@ public class RestHttpConnection {
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
                 HashMap<String, String> headersStr = new HashMap<>();
-                RestHttpLog.i("响应头信息：");
+                RestHttpLog.i(logUrl + "响应头信息：");
                 for (String key : keys) {
                     String value = urlConnection.getHeaderField(key);
                     headersStr.put(key, value);
@@ -165,7 +165,6 @@ public class RestHttpConnection {
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
                 if (entry != null) {  //证明带有缓存
                     NetworkCache.getInstance().put(logUrl, entry);
-                    RestHttpLog.i(logUrl);
                     RestHttpLog.i(entry.toString());
                 }
 

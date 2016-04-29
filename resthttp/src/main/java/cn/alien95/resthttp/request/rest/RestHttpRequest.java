@@ -178,7 +178,7 @@ public class RestHttpRequest {
                              */
                             if (NetworkCache.getInstance().isExistsCache(getCacheKey(url,params))) {
                                 NetworkCacheDispatcher.getInstance().addRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
-                                RestHttpLog.i("get data from cache");
+                                RestHttpLog.i("network cache is exists");
                             } else {
                                 RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                     @Override
@@ -234,6 +234,7 @@ public class RestHttpRequest {
             paramStrBuilder.deleteCharAt(0);
             url = url + "?" + paramStrBuilder;
         }
+        RestHttpLog.i("cache-key :　" + url);
         return url;
     }
 }

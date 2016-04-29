@@ -5,12 +5,15 @@ import android.os.Looper;
 
 import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/4/27.
@@ -47,6 +50,7 @@ public class NetworkCacheDispatcher {
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
+                    RestHttpLog.i("network cache is out of date");
                 } else {
                     getCacheAsyn(request.httpUrl, request.callback);
                 }
@@ -65,8 +69,9 @@ public class NetworkCacheDispatcher {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpConnection.getInstance().quest(request.httpUrl,
                             Method.POST, request.params, request.restRestCallback.getActualClass());
+                    RestHttpLog.i("network cache is out of date");
                 } else {
-                    getRestCacheAysn(request.httpUrl, request.restRestCallback);
+                    getRestCacheAysn(getCacheKey(request.httpUrl, request.params), request.restRestCallback);
                 }
             }
 
@@ -113,6 +118,7 @@ public class NetworkCacheDispatcher {
     }
 
     public <T> void getRestCacheAysn(final String url, final RestCallback<T> callback) {
+        RestHttpLog.i("get network data from cache");
         RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
             @Override
             public void run() {
@@ -130,6 +136,27 @@ public class NetworkCacheDispatcher {
                 });
             }
         });
+    }
+
+    private String getCacheKey(String url, Map<String, String> params) {
+        /**
+         * 只有POST才会有参数
+         */
+        StringBuilder paramStrBuilder = new StringBuilder();
+        if (params != null) {
+            for (Map.Entry<String, String> map : params.entrySet()) {
+                try {
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            paramStrBuilder.deleteCharAt(0);
+            url = url + "?" + paramStrBuilder;
+        }
+        RestHttpLog.i("cache-key :　" + url);
+        return url;
     }
 
 }
