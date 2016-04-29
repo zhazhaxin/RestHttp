@@ -21,6 +21,7 @@ import cn.alien95.resthttp.request.HttpHeaderParser;
 import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.request.NetworkCache;
 import cn.alien95.resthttp.request.Response;
+import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 
@@ -29,9 +30,6 @@ import cn.alien95.resthttp.util.RestHttpLog;
  * Created by linlongxin on 2016/3/24.
  */
 public class RestHttpConnection {
-
-    private static final String TAG = "RestHttpConnection";
-    public static final int NO_NETWORK = 999;
 
     private Map<String, String> header;
     private String logUrl;
@@ -86,7 +84,6 @@ public class RestHttpConnection {
             }
         }
 
-
         /**
          * 打印网络请求日志日志
          */
@@ -103,7 +100,6 @@ public class RestHttpConnection {
             } else if (method == Method.POST) {
                 urlConnection.setRequestMethod("POST");
             }
-
 
             if (header != null) {
                 for (Map.Entry<String, String> entry : header.entrySet()) {
@@ -143,11 +139,12 @@ public class RestHttpConnection {
                 /**
                  * 请求成功,处理缓存
                  */
-
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
                 HashMap<String, String> headersStr = new HashMap<>();
-                RestHttpLog.i(logUrl + "响应头信息：");
+
+                RestHttpLog.i(logUrl + "  响应头信息：");
+
                 for (String key : keys) {
                     String value = urlConnection.getHeaderField(key);
                     headersStr.put(key, value);
@@ -163,10 +160,8 @@ public class RestHttpConnection {
                  * 打印Entry日志
                  */
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
-                if (entry != null) {  //证明带有缓存
-
-                    NetworkCache.getInstance().put(logUrl, entry);
-
+                if (entry != null) {  //应该存储缓存数据
+                    NetworkCache.getInstance().put(CacheKeyUtils.getCacheKey(logUrl), entry);
                     RestHttpLog.i(entry.toString());
                 }
 
@@ -183,7 +178,7 @@ public class RestHttpConnection {
 
         } catch (final IOException e1) {
             e1.printStackTrace();
-            DebugUtils.responseLog(NO_NETWORK + "抛出异常：" + e1.getMessage(), requestTime);
+            DebugUtils.responseLog("NETWORK_ERROR" + " 抛出异常：" + e1.getMessage(), requestTime);
         }
         return null;
     }

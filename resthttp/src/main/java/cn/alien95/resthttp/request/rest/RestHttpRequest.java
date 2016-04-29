@@ -19,14 +19,12 @@ import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
 import cn.alien95.resthttp.util.CacheKeyUtils;
-import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/3/24.
  */
 public class RestHttpRequest {
 
-    private final String TAG = "RestHttpRequest";
     private Handler handler = new Handler(Looper.getMainLooper());
     private Map<String, String> params = new HashMap<>();
 
@@ -178,7 +176,6 @@ public class RestHttpRequest {
                              */
                             if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {
                                 NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
-                                RestHttpLog.i("network cache is exists");
                             } else {
                                 RestThreadPool.getInstance().putThreadPool(new Runnable() {
                                     @Override
@@ -200,13 +197,14 @@ public class RestHttpRequest {
 
                         } else {
                             /**
-                             * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
+                             * 同步请求，判断缓存处理
                              */
-                        if(NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url,params))){
-                            NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(url,Method.POST,params,method.getReturnType());
-                        }
-                            returnObject = RestHttpConnection.getInstance().quest(url,
-                                    Method.POST, params, method.getReturnType());
+                            if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {  //存在缓存
+                                returnObject = NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(url, Method.POST, params, method.getReturnType());
+                            } else { //无缓存
+                                returnObject = RestHttpConnection.getInstance().quest(url,
+                                        Method.POST, params, method.getReturnType());
+                            }
                         }
 
                     }

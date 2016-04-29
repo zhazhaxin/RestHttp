@@ -50,7 +50,7 @@ public interface Cache extends Serializable{
     /**
      * Data and metadata for an entry returned by the cache.
      */
-    class Entry {
+    class Entry implements Serializable{
         /** The data returned from cache. */
         public String data;
 

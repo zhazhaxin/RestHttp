@@ -29,7 +29,7 @@ public class NetworkCacheDispatcher {
     private NetworkCacheDispatcher() {
         cacheQueue = new LinkedBlockingDeque<>();
         restCacheQueue = new LinkedBlockingDeque<>();
-        handler = new Handler(Looper.myLooper());
+        handler = new Handler(Looper.getMainLooper());
     }
 
     public static NetworkCacheDispatcher getInstance() {
@@ -53,11 +53,18 @@ public class NetworkCacheDispatcher {
         }
     }
 
-    public void addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class resultType) {
-        restCacheQueue.add(new Request(url, method, params, false, resultType));
-        if (isRestEmptyQueue) {
-            start();
+    public Object addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class tClass) {
+        final Cache.Entry entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(url, params));
+
+        if (entry != null) {
+            if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                RestHttpConnection.getInstance().quest(url,
+                        method, params, tClass);
+            } else {
+                return getRestCacheSync(CacheKeyUtils.getCacheKey(url, params), tClass);
+            }
         }
+        return null;
     }
 
 
@@ -70,7 +77,7 @@ public class NetworkCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = NetworkCache.getInstance().get(request.httpUrl);
+            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
@@ -93,14 +100,8 @@ public class NetworkCacheDispatcher {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpConnection.getInstance().quest(request.httpUrl,
                             Method.POST, request.params, request.restRestCallback.getActualClass());
-                    RestHttpLog.i("network cache is out of date");
                 } else {
-                    RestHttpLog.i("start network cache read");
-                    if (request.isAsyn) {  //异步
-                        getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
-                    } else {  //同步
-                        return getRestCacheSync(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.resultType);
-                    }
+                    getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
                 }
             }
 
@@ -135,6 +136,7 @@ public class NetworkCacheDispatcher {
     }
 
     public <T> T getRestCacheSync(String key, Class<T> tClass) {
+        RestHttpLog.i("get network data from sync cache");
         final Cache.Entry entry = NetworkCache.getInstance().get(key);
         if (tClass != null && tClass != void.class) {
             Gson gson = new Gson();
@@ -145,7 +147,7 @@ public class NetworkCacheDispatcher {
     }
 
     public <T> void getRestCacheAysn(final String key, final RestCallback<T> callback) {
-        RestHttpLog.i("get network data from cache");
+        RestHttpLog.i("get network data from aysn cache");
         RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
             @Override
             public void run() {

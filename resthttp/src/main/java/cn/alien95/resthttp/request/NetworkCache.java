@@ -49,7 +49,7 @@ public class NetworkCache implements Cache {
         if (isExistsCache(key)) {
             return;
         }
-        File newFile = new File(networkCacheRoot, CacheKeyUtils.getCacheKey(key));
+        File newFile = getCacheFile(key);
         writeObjectToFile(entry, newFile);
         cacheFiles.add(newFile);
     }

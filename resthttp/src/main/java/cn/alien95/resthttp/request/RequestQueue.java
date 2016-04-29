@@ -85,7 +85,7 @@ public class RequestQueue {
         isEmptyImgQueue = true;
 
         while (!networkCacheQueue.isEmpty()){
-            threadPool.execute(imgCacheQueue.poll());
+            threadPool.execute(networkCacheQueue.poll());
             isEmptyNetworkCacheQueue = false;
         }
         isEmptyNetworkCacheQueue = true;

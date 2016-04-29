@@ -16,8 +16,6 @@
 
 package cn.alien95.resthttp.request;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Map;
 
 
@@ -111,11 +109,11 @@ public class HttpHeaderParser {
      * Parse date in RFC1123 format, and return its value as epoch
      */
     public static long parseDateAsEpoch(String dateStr) {
-        try {
-            return DateFormat.getInstance().parse(dateStr).getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return DateFormat.getInstance().parse(dateStr).getTime();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
         return 0;
     }
 

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
+import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 
@@ -154,8 +155,8 @@ public class RequestConnection {
                  * 打印Entry日志
                  */
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
-                if (entry != null) {  //证明带有缓存
-                    NetworkCache.getInstance().put(logUrl, entry);
+                if (entry != null) {  //响应头带有缓存
+                    NetworkCache.getInstance().put(CacheKeyUtils.getCacheKey(logUrl), entry);
                     RestHttpLog.i(entry.toString());
                 }
 
