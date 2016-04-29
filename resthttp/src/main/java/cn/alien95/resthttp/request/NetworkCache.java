@@ -50,8 +50,9 @@ public class NetworkCache implements Cache {
             return;
         }
         File newFile = getCacheFile(key);
-        writeObjectToFile(entry, newFile);
-        cacheFiles.add(newFile);
+        if (writeObjectToFile(entry, newFile)) {
+            cacheFiles.add(newFile);
+        }
     }
 
     @Override
@@ -98,12 +99,13 @@ public class NetworkCache implements Cache {
      * @param object
      * @param cache
      */
-    private void writeObjectToFile(Object object, File cache) {
+    private boolean writeObjectToFile(Object object, File cache) {
         if (!cache.exists()) {
             try {
                 cache.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
         }
         try {
@@ -113,7 +115,9 @@ public class NetworkCache implements Cache {
             os.close();
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     /**

@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by linlongxin on 2016/4/27.
  */
-public interface Cache extends Serializable{
+public interface Cache{
 
     /**
      * Retrieves an entry from the cache.
