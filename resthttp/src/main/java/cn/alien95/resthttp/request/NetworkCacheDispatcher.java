@@ -91,7 +91,7 @@ public class NetworkCacheDispatcher {
         }
 
         /**
-         * Restful接口缓存处理方式
+         * Restful接口缓存处理,只要异步
          */
         while (!restCacheQueue.isEmpty()) {
             request = restCacheQueue.poll();

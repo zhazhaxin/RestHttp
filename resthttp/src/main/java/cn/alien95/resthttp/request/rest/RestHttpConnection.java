@@ -60,8 +60,7 @@ public class RestHttpConnection {
      * @param method 请求方式{POST,GET}
      * @param param  请求的参数，HashMap键值对的形式
      */
-    public <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
-
+    public synchronized <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
         logUrl = url;
         final int respondCode;
 

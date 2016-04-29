@@ -17,6 +17,7 @@ public class RestThreadPool {
     private final String TAG = "RestThreadPool";
     private LinkedBlockingDeque<Runnable> requestQueue;
     private ExecutorService threadPool;
+    private boolean isEmptyQueue = true;
 
     private RestThreadPool() {
         requestQueue = new LinkedBlockingDeque<>();
@@ -34,18 +35,23 @@ public class RestThreadPool {
         return HttpQueueHolder.instance;
     }
 
-    public<T> Future<T> putThreadPool(Callable callable) {
+    public <T> Future<T> putThreadPool(Callable callable) {
         return threadPool.submit(callable);
     }
 
-    public void putThreadPool(Runnable runnable){
+    public void putThreadPool(Runnable runnable) {
         requestQueue.add(runnable);
-        start();
-    }
-    private void start(){
-        while (!requestQueue.isEmpty()){
-            threadPool.execute(requestQueue.poll());
+        if (isEmptyQueue) {
+            start();
         }
+    }
+
+    private void start() {
+        while (!requestQueue.isEmpty()) {
+            threadPool.execute(requestQueue.poll());
+            isEmptyQueue = false;
+        }
+        isEmptyQueue = true;
     }
 
 }
