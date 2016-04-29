@@ -4,11 +4,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +18,7 @@ import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
+import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
@@ -167,6 +166,7 @@ public class RestHttpRequest {
                                 callbackPosition = i;
                             }
                         }
+
                         /**
                          * 异步处理任务
                          */
@@ -174,10 +174,10 @@ public class RestHttpRequest {
                             final int finalCallbackPosition1 = callbackPosition;
 
                             /**
-                             * 缓存处理
+                             * 判断是否带有缓存,如果有缓存，异步获取缓存
                              */
-                            if (NetworkCache.getInstance().isExistsCache(getCacheKey(url,params))) {
-                                NetworkCacheDispatcher.getInstance().addRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
+                            if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {
+                                NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
                                 RestHttpLog.i("network cache is exists");
                             } else {
                                 RestThreadPool.getInstance().putThreadPool(new Runnable() {
@@ -202,6 +202,9 @@ public class RestHttpRequest {
                             /**
                              * 同步处理任务，并且把结果返回给API方法.切记：Android不允许在主线程网络请求
                              */
+                        if(NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url,params))){
+                            NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(url,Method.POST,params,method.getReturnType());
+                        }
                             returnObject = RestHttpConnection.getInstance().quest(url,
                                     Method.POST, params, method.getReturnType());
                         }
@@ -217,24 +220,4 @@ public class RestHttpRequest {
     }
 
 
-    private String getCacheKey(String url, Map<String, String> params) {
-        /**
-         * 只有POST才会有参数
-         */
-        StringBuilder paramStrBuilder = new StringBuilder();
-        if (params != null) {
-            for (Map.Entry<String, String> map : params.entrySet()) {
-                try {
-                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
-                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-            paramStrBuilder.deleteCharAt(0);
-            url = url + "?" + paramStrBuilder;
-        }
-        RestHttpLog.i("cache-key :　" + url);
-        return url;
-    }
 }

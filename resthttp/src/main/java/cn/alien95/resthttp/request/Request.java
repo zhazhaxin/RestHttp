@@ -15,6 +15,8 @@ public class Request {
     public Map<String,String> params;
     public HttpCallback callback;
     public RestCallback<?> restRestCallback;
+    public boolean isAsyn = true;
+    public Class resultType;
 
     public Request(String httpUrl,int method, Map<String,String> params, HttpCallback callback){
         this.httpUrl = httpUrl;
@@ -35,6 +37,14 @@ public class Request {
         this.method = method;
         this.params = params;
         this.restRestCallback = restCallback;
+    }
+
+    public Request(String httpUrl,int method,Map<String,String> params,boolean isAsyn,Class resultType){
+        this.httpUrl = httpUrl;
+        this.method = method;
+        this.params = params;
+        this.isAsyn = isAsyn;
+        this.resultType = resultType;
     }
 
 }

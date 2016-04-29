@@ -5,14 +5,13 @@ import android.os.Looper;
 
 import com.google.gson.Gson;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
@@ -40,10 +39,35 @@ public class NetworkCacheDispatcher {
         return instance;
     }
 
-    public void start() {
+    public void addCacheRequest(String url, int method, Map<String, String> params, HttpCallback callback) {
+        cacheQueue.add(new Request(url, method, params, callback));
+        if (isEmptyQueue) {
+            start();
+        }
+    }
+
+    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, RestCallback<?> restCallback) {
+        restCacheQueue.add(new Request(url, method, params, restCallback));
+        if (isRestEmptyQueue) {
+            start();
+        }
+    }
+
+    public void addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class resultType) {
+        restCacheQueue.add(new Request(url, method, params, false, resultType));
+        if (isRestEmptyQueue) {
+            start();
+        }
+    }
+
+
+    public Object start() {
         Request request;
         Cache.Entry entry;
 
+        /**
+         * 普通请求方式
+         */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
             entry = NetworkCache.getInstance().get(request.httpUrl);
@@ -64,14 +88,19 @@ public class NetworkCacheDispatcher {
          */
         while (!restCacheQueue.isEmpty()) {
             request = restCacheQueue.poll();
-            entry = NetworkCache.getInstance().get(request.httpUrl);
+            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpConnection.getInstance().quest(request.httpUrl,
                             Method.POST, request.params, request.restRestCallback.getActualClass());
                     RestHttpLog.i("network cache is out of date");
                 } else {
-                    getRestCacheAysn(getCacheKey(request.httpUrl, request.params), request.restRestCallback);
+                    RestHttpLog.i("start network cache read");
+                    if (request.isAsyn) {  //异步
+                        getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
+                    } else {  //同步
+                        return getRestCacheSync(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.resultType);
+                    }
                 }
             }
 
@@ -80,21 +109,9 @@ public class NetworkCacheDispatcher {
 
         isEmptyQueue = true;
         isRestEmptyQueue = true;
+        return null;
     }
 
-    public void addCacheRequest(String url, int method, Map<String, String> params, HttpCallback callback) {
-        cacheQueue.add(new Request(url, method, params, callback));
-        if (isEmptyQueue) {
-            start();
-        }
-    }
-
-    public void addRestCacheRequest(String url, int method, Map<String, String> params, RestCallback<?> restCallback) {
-        restCacheQueue.add(new Request(url, method, params, restCallback));
-        if (isEmptyQueue) {
-            start();
-        }
-    }
 
     /**
      * 异步读取文件并转化为对象
@@ -117,12 +134,22 @@ public class NetworkCacheDispatcher {
         });
     }
 
-    public <T> void getRestCacheAysn(final String url, final RestCallback<T> callback) {
+    public <T> T getRestCacheSync(String key, Class<T> tClass) {
+        final Cache.Entry entry = NetworkCache.getInstance().get(key);
+        if (tClass != null && tClass != void.class) {
+            Gson gson = new Gson();
+            T result = (T) gson.fromJson(entry.data, tClass);
+            return result;
+        }
+        return null;
+    }
+
+    public <T> void getRestCacheAysn(final String key, final RestCallback<T> callback) {
         RestHttpLog.i("get network data from cache");
         RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
             @Override
             public void run() {
-                final Cache.Entry entry = NetworkCache.getInstance().get(url);
+                final Cache.Entry entry = NetworkCache.getInstance().get(key);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -136,27 +163,6 @@ public class NetworkCacheDispatcher {
                 });
             }
         });
-    }
-
-    private String getCacheKey(String url, Map<String, String> params) {
-        /**
-         * 只有POST才会有参数
-         */
-        StringBuilder paramStrBuilder = new StringBuilder();
-        if (params != null) {
-            for (Map.Entry<String, String> map : params.entrySet()) {
-                try {
-                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
-                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-            paramStrBuilder.deleteCharAt(0);
-            url = url + "?" + paramStrBuilder;
-        }
-        RestHttpLog.i("cache-key :　" + url);
-        return url;
     }
 
 }

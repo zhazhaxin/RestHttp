@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Utils;
 
@@ -48,7 +49,7 @@ public class NetworkCache implements Cache {
         if (isExistsCache(key)) {
             return;
         }
-        File newFile = new File(networkCacheRoot, getCacheFileName(key));
+        File newFile = new File(networkCacheRoot, CacheKeyUtils.getCacheKey(key));
         writeObjectToFile(entry, newFile);
         cacheFiles.add(newFile);
     }
@@ -65,13 +66,12 @@ public class NetworkCache implements Cache {
 
     @Override
     public void remove(String key) {
-        String fileName = getCacheFileName(key);
+        String fileName = CacheKeyUtils.getCacheKey(key);
         for (File file : cacheFiles) {
             if (file.getName().equals(fileName)) {
                 file.delete();
             }
         }
-
 
     }
 
@@ -80,8 +80,6 @@ public class NetworkCache implements Cache {
         for (File file : cacheFiles) {
             file.delete();
         }
-
-
     }
 
 
@@ -157,9 +155,9 @@ public class NetworkCache implements Cache {
      * @return
      */
     public boolean isExistsCache(String key) {
-        String fileName = getCacheFileName(key);
+
         for (File file : cacheFiles) {
-            if (file.getName().equals(fileName)) {
+            if (file.getName().equals(key)) {
                 return true;
             }
         }
@@ -167,12 +165,8 @@ public class NetworkCache implements Cache {
         return false;
     }
 
-    private String getCacheFileName(String url) {
-        return Utils.MD5(url);
-    }
-
-    public File getCacheFile(String url) {
-        return new File(networkCacheRoot, getCacheFileName(url));
+    public File getCacheFile(String key) {
+        return new File(networkCacheRoot, key);
     }
 
 }

@@ -164,7 +164,9 @@ public class RestHttpConnection {
                  */
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
                 if (entry != null) {  //证明带有缓存
+
                     NetworkCache.getInstance().put(logUrl, entry);
+
                     RestHttpLog.i(entry.toString());
                 }
 
