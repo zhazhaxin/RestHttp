@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import cn.alien95.resthttp.request.HttpRequest;
-import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpRequest;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.view.HttpImageView;
@@ -53,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (userInfo != null) {
                             post.setText(post.getText().toString() + "\n POST :  "
-                                    + userInfo.toString() + "\n GET :  " + userInfo1.toString());
+                                    + userInfo.toString());
+                        }
+                        if (userInfo1 != null) {
+                            post.setText(post.getText().toString() + "\n GET :  " + userInfo1.toString());
                         }
                     }
                 });
@@ -85,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        HttpRequest.getInstance().get("https://resume.zeroling.com/", new HttpCallback() {
-            @Override
-            public void success(String info) {
-                post.setText("\n ..........." + info);
-            }
-        });
+//        HttpRequest.getInstance().get("https://resume.zeroling.com/", new HttpCallback() {
+//            @Override
+//            public void success(String info) {
+//                post.setText(post.getText().toString() + "\n ..........." + info);
+//            }
+//        });
 
     }
 

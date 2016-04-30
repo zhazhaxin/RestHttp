@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.rest.RestThreadPool;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
@@ -46,7 +47,7 @@ public class NetworkCacheDispatcher {
         }
     }
 
-    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, RestCallback<?> restCallback) {
+    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, RestCallback<Object> restCallback) {
         restCacheQueue.add(new Request(url, method, params, restCallback));
         if (isRestEmptyQueue) {
             start();
@@ -77,13 +78,13 @@ public class NetworkCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl));
+            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl,request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
                     RestHttpLog.i("network cache is out of date");
                 } else {
-                    getCacheAsyn(request.httpUrl, request.callback);
+                    getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl,request.params), request.callback);
                 }
             }
 
@@ -98,7 +99,21 @@ public class NetworkCacheDispatcher {
             entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                    RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
+                    final Request finalRequest = request;
+                    RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Object reuslt = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,
+                                    Method.GET, null, finalRequest.resultType);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finalRequest.restRestCallback.callback(reuslt);
+                                }
+                            });
+                        }
+                    });
+
                 } else {
                     getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
                 }
@@ -116,14 +131,14 @@ public class NetworkCacheDispatcher {
     /**
      * 异步读取文件并转化为对象
      *
-     * @param url
+     * @param key
      * @param callback
      */
-    public void getCacheAsyn(final String url, final HttpCallback callback) {
+    public void getCacheAsyn(final String key, final HttpCallback callback) {
         RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
             @Override
             public void run() {
-                final Cache.Entry entry = NetworkCache.getInstance().get(url);
+                final Cache.Entry entry = NetworkCache.getInstance().get(key);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {

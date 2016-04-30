@@ -144,7 +144,7 @@ public class RequestConnection {
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
                 HashMap<String, String> headersStr = new HashMap<>();
-                RestHttpLog.i(logUrl + "响应头信息：");
+                RestHttpLog.i(logUrl + "  响应头信息：");
                 for (String key : keys) {
                     String value = urlConnection.getHeaderField(key);
                     headersStr.put(key, value);

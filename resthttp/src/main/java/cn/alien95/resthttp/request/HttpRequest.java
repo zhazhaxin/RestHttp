@@ -49,9 +49,9 @@ public class HttpRequest extends Http {
     @Override
     public void get(final String url, final HttpCallback callBack) {
         /**
-         * 请求加入队列
+         * 缓存判断
          */
-        if (NetworkCache.getInstance().isExistsCache(url)) {
+        if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url))) {
             NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
             RequestQueue.getInstance().addRequest(url, Method.GET, null, callBack);
@@ -66,6 +66,9 @@ public class HttpRequest extends Http {
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
+        /**
+         * 缓存判断
+         */
         if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {
             NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
