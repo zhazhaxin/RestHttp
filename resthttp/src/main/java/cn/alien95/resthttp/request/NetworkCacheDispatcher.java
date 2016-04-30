@@ -98,8 +98,7 @@ public class NetworkCacheDispatcher {
             entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                    RestHttpConnection.getInstance().quest(request.httpUrl,
-                            Method.POST, request.params, request.restRestCallback.getActualClass());
+                    RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
                 } else {
                     getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
                 }

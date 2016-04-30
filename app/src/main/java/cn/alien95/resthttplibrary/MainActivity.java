@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import cn.alien95.resthttp.request.HttpRequest;
+import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpRequest;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.view.HttpImageView;
@@ -44,39 +46,51 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final UserInfo userInfo = serviceAPI.login("Lemon" , "123456");
+                final UserInfo userInfo = serviceAPI.login("Lemon", "123456");
+                final UserInfo userInfo1 = serviceAPI.loginGetSync("Alien", "123456");
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(userInfo != null){
-                            post.setText(post.getText().toString() + "\n"
-                                    + userInfo.toString());
+                        if (userInfo != null) {
+                            post.setText(post.getText().toString() + "\n POST :  "
+                                    + userInfo.toString() + "\n GET :  " + userInfo1.toString());
                         }
                     }
                 });
-                serviceAPI.login("alien" , "123456");
-                serviceAPI.login("alien95" , "123456");
-                serviceAPI.login("123" , "123456");
-                serviceAPI.login("1234" , "123456");
-                serviceAPI.login("123432" , "123456");
             }
         }).start();
 
         /**
          * 异步操作，受线程池控制
          */
-        serviceAPI.login2("alien95", "123456" ,new RestCallback<UserInfo>() {
+        serviceAPI.login2("Fuck", "123456", new RestCallback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
-                if(result != null){
-                    post.setText(post.getText().toString() + "\n"
+                if (result != null) {
+                    post.setText(post.getText().toString() + "\n POST :  "
                             + result.toString());
                 }
 
             }
         });
 
+        serviceAPI.loginGetAsyn("Fucker", "123456", new RestCallback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                if (result != null) {
+                    post.setText(post.getText().toString() + "\n GET :  "
+                            + result.toString());
+                }
 
+            }
+        });
+
+        HttpRequest.getInstance().get("https://resume.zeroling.com/", new HttpCallback() {
+            @Override
+            public void success(String info) {
+                post.setText("\n ..........." + info);
+            }
+        });
 
     }
 

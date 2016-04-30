@@ -64,6 +64,8 @@ public class RequestQueue {
 
     private void start() {
         Request request;
+
+        //网络请求队列
         while (!requestQueue.isEmpty()) {
             request = requestQueue.poll();
             final Request finalRequest = request;
@@ -78,12 +80,14 @@ public class RequestQueue {
         }
         isEmptyRequestQueue = true;
 
+        //图片缓存
         while (!imgCacheQueue.isEmpty()){
             threadPool.execute(imgCacheQueue.poll());
             isEmptyImgQueue = false;
         }
         isEmptyImgQueue = true;
 
+        //服务器缓存处理
         while (!networkCacheQueue.isEmpty()){
             threadPool.execute(networkCacheQueue.poll());
             isEmptyNetworkCacheQueue = false;

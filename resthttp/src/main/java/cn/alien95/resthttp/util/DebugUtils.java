@@ -27,7 +27,7 @@ public class DebugUtils {
 
     public static synchronized int requestLog(String info) {
         if (isDebug) {
-            Log.i(DEBUG_TAG, requestTimes + " times Quest:" + info);
+            Log.i(DEBUG_TAG, requestTimes + " times Request:" + info);
         }
         return requestTimes++;
     }
@@ -40,7 +40,7 @@ public class DebugUtils {
 
     public static synchronized void requestImageLog(String info) {
         if (isDebug) {
-            Log.i(DEBUG_TAG, requestTimes + " times QuestImage:" + info);
+            Log.i(DEBUG_TAG, requestTimes + " times RequestImage:" + info);
             requestTimes++;
         }
     }

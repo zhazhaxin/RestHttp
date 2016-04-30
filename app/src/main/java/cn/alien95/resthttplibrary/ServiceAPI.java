@@ -2,8 +2,10 @@ package cn.alien95.resthttplibrary;
 
 
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
+import cn.alien95.resthttp.request.rest.param.Query;
 import cn.alien95.resthttplibrary.bean.UserInfo;
 
 /**
@@ -32,5 +34,21 @@ public interface ServiceAPI {
      */
 
     @POST("/v1/users/login.php")
-    void login2(@Field("name") String name, @Field("password") String password, RestCallback<UserInfo> restCallback);
+    void login2(@Field("name")
+                String name,
+                @Field("password")
+                String password, RestCallback<UserInfo> restCallback);
+
+    @GET("/v1/users/login_get.php")
+    UserInfo loginGetSync(@Query("name")
+                          String name,
+                          @Query("password")
+                          String password);
+
+    @GET("/v1/users/login_get.php")
+    void loginGetAsyn(@Query("name")
+                          String name,
+                          @Query("password")
+                          String password,RestCallback<UserInfo> restCallback);
+
 }

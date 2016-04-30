@@ -61,7 +61,7 @@ public class RestHttpRequest {
         @Override
         public Object invoke(Object proxy, java.lang.reflect.Method method, final Object[] args) throws Throwable {
             /**
-             * 是够同步，默认false(不同步)
+             * 是否异步，默认同步
              */
             boolean isAsynchronization = false;
             /**
@@ -82,7 +82,7 @@ public class RestHttpRequest {
                  */
                 if (methodAnnotation instanceof GET) {
 
-                    StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value().toString() + "?");
+                    StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value() + "?");
 
                     for (int i = 0; i < paramterAnnotations.length; i++) {
                         for (int k = 0; k < paramterAnnotations[i].length; k++) {
@@ -104,31 +104,42 @@ public class RestHttpRequest {
                         }
                     }
 
+                    final String urlStr = url.toString();
+                    final int finalCallbackPosition = callbackPosition;
+
                     if (isAsynchronization) {
                         /**
-                         * 异步处理任务
+                         * 异步处理任务，判断缓存
                          */
-                        final StringBuilder finalUrl2 = url;
-                        final int finalCallbackPosition = callbackPosition;
-                        RestThreadPool.getInstance().putThreadPool(new Runnable() {
-                            @Override
-                            public void run() {
-                                final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl2.toString(),
-                                        Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass());
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ((RestCallback) args[finalCallbackPosition]).callback(reuslt);
-                                    }
-                                });
-                            }
-                        });
+                        if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(urlStr))) {  //存在缓存
+                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, (RestCallback) args[finalCallbackPosition]);
+                        } else {
+                            Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
+                            RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final Object reuslt = RestHttpConnection.getInstance().quest(urlStr,
+                                            Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass());
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ((RestCallback) args[finalCallbackPosition]).callback(reuslt);
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     } else {
                         /**
                          * 同步处理任务
                          */
-                        returnObject = RestHttpConnection.getInstance().quest(url.toString(),
-                                Method.GET, null, method.getReturnType());
+                        if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(urlStr))) {  //存在缓存
+                            returnObject = NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(urlStr, Method.GET, null, method.getReturnType());
+                        } else { //无缓存
+                            Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
+                            returnObject = RestHttpConnection.getInstance().quest(urlStr,
+                                    Method.GET, null, method.getReturnType());
+                        }
                     }
 
                 } else if (methodAnnotation instanceof POST) {

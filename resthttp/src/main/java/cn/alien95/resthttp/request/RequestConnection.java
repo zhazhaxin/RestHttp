@@ -1,6 +1,7 @@
 package cn.alien95.resthttp.request;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,11 +29,11 @@ import cn.alien95.resthttp.util.RestHttpLog;
 public class RequestConnection {
 
     public static final int NO_NETWORK = 999;
-    private String logUrl;
     private Map<String, String> header;
-    private Handler handler = new Handler();
+    private Handler handler;
 
     private RequestConnection() {
+        handler = new Handler(Looper.getMainLooper());
     }
 
     protected static RequestConnection getInstance() {
@@ -61,7 +62,7 @@ public class RequestConnection {
      */
     protected void quest(String url, int method, Map<String, String> param, final HttpCallback callback) {
 
-        logUrl = url;
+        String logUrl = url;
         final int respondCode;
 
         /**
@@ -91,7 +92,11 @@ public class RequestConnection {
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
-            urlConnection.setRequestMethod(String.valueOf(method));
+            if(method == Method.GET){
+                urlConnection.setRequestMethod("GET");
+            }else if(method == Method.POST){
+                urlConnection.setRequestMethod("POST");
+            }
 
             if (header != null) {
                 for (Map.Entry<String, String> entry : header.entrySet()) {

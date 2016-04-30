@@ -32,7 +32,6 @@ import cn.alien95.resthttp.util.RestHttpLog;
 public class RestHttpConnection {
 
     private Map<String, String> header;
-    private String logUrl;
 
     private RestHttpConnection() {
     }
@@ -60,8 +59,8 @@ public class RestHttpConnection {
      * @param method 请求方式{POST,GET}
      * @param param  请求的参数，HashMap键值对的形式
      */
-    public synchronized <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
-        logUrl = url;
+    public <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
+        String logUrl = url;
         final int respondCode;
 
         /**
