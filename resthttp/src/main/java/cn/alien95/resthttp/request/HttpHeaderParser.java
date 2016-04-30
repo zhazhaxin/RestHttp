@@ -53,7 +53,7 @@ public class HttpHeaderParser {
             for (int i = 0; i < tokens.length; i++) {
                 String token = tokens[i].trim();
                 if (token.equals("no-cache") || token.equals("no-store")) {
-                    RestHttpLog.i("这里no-cache不应该缓存啊，，，返回nulll");
+                    RestHttpLog.i("no-cache和no-store不应该缓存。。。。。。。。。。返回null");
                     return null;
                 } else if (token.startsWith("max-age=")) {
                     try {

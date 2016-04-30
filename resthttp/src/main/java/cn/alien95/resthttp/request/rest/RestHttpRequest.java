@@ -13,6 +13,7 @@ import java.util.Map;
 import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.request.NetworkCache;
 import cn.alien95.resthttp.request.NetworkCacheDispatcher;
+import cn.alien95.resthttp.request.RequestQueue;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
@@ -115,7 +116,7 @@ public class RestHttpRequest {
                             NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
-                            RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                            RequestQueue.getInstance().addRestRequest(new Runnable() {
                                 @Override
                                 public void run() {
                                     final Object reuslt = RestHttpConnection.getInstance().quest(urlStr,
@@ -182,7 +183,7 @@ public class RestHttpRequest {
                             NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {  //无缓存
                             final String finalUrl = url;
-                            RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                            RequestQueue.getInstance().addRestRequest(new Runnable() {
                                 @Override
                                 public void run() {
                                     Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());

@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
-import cn.alien95.resthttp.request.rest.RestThreadPool;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
@@ -116,7 +115,7 @@ public class NetworkCacheDispatcher {
                     /**
                      * 这里只有异步
                      */
-                    RestThreadPool.getInstance().putThreadPool(new Runnable() {
+                    RequestQueue.getInstance().addRestRequest(new Runnable() {
                         @Override
                         public void run() {
                             final Object result = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,

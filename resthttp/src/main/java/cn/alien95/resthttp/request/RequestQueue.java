@@ -18,16 +18,16 @@ public class RequestQueue {
 
     private boolean isEmptyRequestQueue = true;
     private boolean isEmptyImgQueue = true;
-    private boolean isEmptyNetworkCacheQueue = true;
+    private boolean isEmptyRestQueue = true;
     private LinkedBlockingDeque<Request> requestQueue;
     private LinkedBlockingDeque<Runnable> imgCacheQueue;
-    private LinkedBlockingDeque<Runnable> networkCacheQueue;
+    private LinkedBlockingDeque<Runnable> restQueue;
     private ExecutorService threadPool; //线程池
 
     private RequestQueue() {
         requestQueue = new LinkedBlockingDeque<>();
         imgCacheQueue = new LinkedBlockingDeque<>();
-        networkCacheQueue = new LinkedBlockingDeque<>();
+        restQueue = new LinkedBlockingDeque<>();
         if (Utils.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Utils.getNumberOfCPUCores());
         } else
@@ -50,6 +50,13 @@ public class RequestQueue {
     public void addRequest(String httpUrl, int method, Map<String,String> params,HttpCallback callback){
         requestQueue.push(new Request(httpUrl,method,params,callback));
         if(isEmptyRequestQueue){
+            start();
+        }
+    }
+
+    public void addRestRequest(Runnable runnable){
+        restQueue.add(runnable);
+        if(isEmptyRestQueue){
             start();
         }
     }
@@ -87,11 +94,11 @@ public class RequestQueue {
         isEmptyImgQueue = true;
 
         //服务器缓存处理
-        while (!networkCacheQueue.isEmpty()){
-            threadPool.execute(networkCacheQueue.poll());
-            isEmptyNetworkCacheQueue = false;
+        while (!restQueue.isEmpty()){
+            threadPool.execute(restQueue.poll());
+            isEmptyRestQueue = false;
         }
-        isEmptyNetworkCacheQueue = true;
+        isEmptyRestQueue = true;
     }
 
 }
