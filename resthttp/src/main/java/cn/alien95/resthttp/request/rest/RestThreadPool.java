@@ -35,7 +35,7 @@ public class RestThreadPool {
         return HttpQueueHolder.instance;
     }
 
-    public <T> Future<T> putThreadPool(Callable callable) {
+    public Future putThreadPool(Callable callable) {
         return threadPool.submit(callable);
     }
 

@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 异步操作，受线程池控制
          */
-        serviceAPI.login2("Fuck", "123456", new RestCallback<UserInfo>() {
+        serviceAPI.login2("Fuck", "12345", new RestCallback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
                 if (result != null) {

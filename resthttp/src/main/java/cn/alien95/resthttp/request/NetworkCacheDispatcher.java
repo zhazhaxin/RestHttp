@@ -6,6 +6,8 @@ import android.os.Looper;
 import com.google.gson.Gson;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
@@ -72,7 +74,7 @@ public class NetworkCacheDispatcher {
                 return RestHttpConnection.getInstance().quest(url,
                         method, params, tClass);
             } else {
-                return getRestCacheSync(CacheKeyUtils.getCacheKey(url, params), tClass);
+                return getRestCacheSync(entry, tClass);
             }
         }
         return null;
@@ -84,17 +86,17 @@ public class NetworkCacheDispatcher {
         Cache.Entry entry;
 
         /**
-         * 普通请求方式
+         * 普通请求方式，都是异步
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
+            entry = getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpLog.i("缓存过期");
                     RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
                 } else {
-                    getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.callback);
+                    request.callback.success(entry.data);
                 }
             }
 
@@ -106,7 +108,7 @@ public class NetworkCacheDispatcher {
          */
         while (!restCacheQueue.isEmpty()) {
             request = restCacheQueue.poll();
-            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
+            entry = getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpLog.i("缓存过期");
@@ -129,7 +131,12 @@ public class NetworkCacheDispatcher {
                     });
 
                 } else {
-                    getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.restRestCallback);
+                    Class returnType = request.restRestCallback.getActualClass();
+                    if (returnType != null && returnType != void.class) {
+                        request.restRestCallback.callback(new Gson().fromJson(entry.data, returnType));
+                    } else {
+                        request.restRestCallback.callback(null);
+                    }
                 }
             }
 
@@ -146,52 +153,48 @@ public class NetworkCacheDispatcher {
      * 异步读取文件并转化为对象
      *
      * @param key
-     * @param callback
      */
-    public void getCacheAsyn(final String key, final HttpCallback callback) {
-        RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
-            @Override
-            public void run() {
-                RestHttpLog.i("get network data from sync cache");
-                final Cache.Entry entry = NetworkCache.getInstance().get(key);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.success(entry.data);
-                    }
-                });
-            }
-        });
+    public Cache.Entry getCacheAsyn(final String key) {
+        try {
+            return (Cache.Entry) RequestQueue.getInstance().putThreadPool(new Callable<Cache.Entry>() {
+                @Override
+                public Cache.Entry call() throws Exception {
+                    RestHttpLog.i("get network data from sync cache");
+                    return NetworkCache.getInstance().get(key);
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public <T> T getRestCacheSync(String key, Class<T> tClass) {
+    public <T> T getRestCacheSync(Cache.Entry entry, Class<T> tClass) {
         RestHttpLog.i("get network data from sync cache");
-        final Cache.Entry entry = NetworkCache.getInstance().get(key);
         if (tClass != null && tClass != void.class) {
             return new Gson().fromJson(entry.data, tClass);
         }
         return null;
     }
 
-    public <T> void getRestCacheAysn(final String key, final RestCallback<T> callback) {
+    public <T> Cache.Entry getRestCacheAysn(final String key) {
         RestHttpLog.i("get network data from aysn cache");
-        RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
-            @Override
-            public void run() {
-                final Cache.Entry entry = NetworkCache.getInstance().get(key);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Class returnType = callback.getActualClass();
-                        if (returnType != null && returnType != void.class) {
-                            Gson gson = new Gson();
-                            T result = (T) gson.fromJson(entry.data, returnType);
-                            callback.callback(result);
-                        }
-                    }
-                });
-            }
-        });
+        try {
+            return (Cache.Entry) RequestQueue.getInstance().putThreadPool(new Callable<Cache.Entry>() {
+                @Override
+                public Cache.Entry call() throws Exception {
+
+                    return NetworkCache.getInstance().get(key);
+                }
+            }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

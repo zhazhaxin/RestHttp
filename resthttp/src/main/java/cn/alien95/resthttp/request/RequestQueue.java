@@ -1,8 +1,10 @@
 package cn.alien95.resthttp.request;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
@@ -41,6 +43,10 @@ public class RequestQueue {
         return HttpQueueHolder.instance;
     }
 
+    public Future putThreadPool(Callable callable) {
+        return threadPool.submit(callable);
+    }
+
     public void addRequest(String httpUrl, int method, Map<String,String> params,HttpCallback callback){
         requestQueue.push(new Request(httpUrl,method,params,callback));
         if(isEmptyRequestQueue){
@@ -51,13 +57,6 @@ public class RequestQueue {
     public void addReadImgCacheAsyn(Runnable runnable){
         imgCacheQueue.push(runnable);
         if(isEmptyImgQueue){
-            start();
-        }
-    }
-
-    public void addReadNetworkCacheAsyn(Runnable runnable){
-        networkCacheQueue.push(runnable);
-        if(isEmptyNetworkCacheQueue){
             start();
         }
     }

@@ -18,13 +18,15 @@ package cn.alien95.resthttp.request;
 
 import java.util.Map;
 
+import cn.alien95.resthttp.util.RestHttpLog;
+
 
 public class HttpHeaderParser {
 
     public static Cache.Entry parseCacheHeaders(Response response) {
         long now = System.currentTimeMillis();
 
-        Map<String,String> headers = response.headers;
+        Map<String, String> headers = response.headers;
 
         long serverDate = 0;
         long lastModified = 0;
@@ -51,6 +53,7 @@ public class HttpHeaderParser {
             for (int i = 0; i < tokens.length; i++) {
                 String token = tokens[i].trim();
                 if (token.equals("no-cache") || token.equals("no-store")) {
+                    RestHttpLog.i("这里no-cache不应该缓存啊，，，返回nulll");
                     return null;
                 } else if (token.startsWith("max-age=")) {
                     try {
@@ -149,7 +152,6 @@ public class HttpHeaderParser {
 //    public static String parseCharset(Map<String, String> headers) {
 //        return parseCharset(headers, HTTP.DEFAULT_CONTENT_CHARSET);
 //    }
-
 
 
 }
