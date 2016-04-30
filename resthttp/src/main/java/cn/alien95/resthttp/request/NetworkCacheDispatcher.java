@@ -152,6 +152,7 @@ public class NetworkCacheDispatcher {
         RequestQueue.getInstance().addReadNetworkCacheAsyn(new Runnable() {
             @Override
             public void run() {
+                RestHttpLog.i("get network data from sync cache");
                 final Cache.Entry entry = NetworkCache.getInstance().get(key);
                 handler.post(new Runnable() {
                     @Override

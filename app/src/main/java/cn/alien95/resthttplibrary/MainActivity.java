@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import cn.alien95.resthttp.request.HttpRequest;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpRequest;
@@ -53,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (userInfo != null) {
-                            post.setText(post.getText().toString() + "\n POST :  "
+                            post.setText(post.getText().toString() + "\n POST :       "
                                     + userInfo.toString());
                         }
                         if (userInfo1 != null) {
-                            post.setText(post.getText().toString() + "\n GET :  " + userInfo1.toString());
-                        }else {
+                            post.setText(post.getText().toString() + "\n GET :       " + userInfo1.toString());
+                        } else {
                             RestHttpLog.i("userInfo1为空");
                         }
                     }
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void callback(UserInfo result) {
                 if (result != null) {
-                    post.setText(post.getText().toString() + "\n POST :  "
+                    post.setText(post.getText().toString() + "\n POST :       "
                             + result.toString());
                 }
 
@@ -84,19 +86,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void callback(UserInfo result) {
                 if (result != null) {
-                    post.setText(post.getText().toString() + "\n GET :  "
+                    post.setText(post.getText().toString() + "\n GET :        "
                             + result.toString());
-                }else {
+                } else {
                     RestHttpLog.i("result为空");
                 }
 
             }
         });
 
-        HttpRequest.getInstance().get("https://resume.zeroling.com/", new HttpCallback() {
+        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
-                post.setText(post.getText().toString() + "\n ..........." + info);
+                post.setText(post.getText().toString() + "\n 普通请求...........GET：     " + info);
+            }
+        });
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("name", "Lemon95");
+        params.put("password", "123456");
+        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
+            @Override
+            public void success(String info) {
+                post.setText(post.getText().toString() + "\n 普通请求...........POST：     " + info);
             }
         });
 

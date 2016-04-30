@@ -46,12 +46,12 @@ public class NetworkCache implements Cache {
 
     @Override
     public void put(String key, Entry entry) {
-        if (isExistsCache(key)) {
-            return;
-        }
-        File newFile = getCacheFile(key);
-        if (writeObjectToFile(entry, newFile)) {
-            cacheFiles.add(newFile);
+        Entry cacheEntry = get(key);
+        if(cacheEntry == null || cacheEntry.refreshNeeded() || cacheEntry.isExpired()){
+            File newFile = getCacheFile(key);
+            if (writeObjectToFile(entry, newFile)) {
+                cacheFiles.add(newFile);
+            }
         }
     }
 
