@@ -1,28 +1,30 @@
 ### RestHttp网络库 --- 基于HttpURLConnection
 
-- gradle依赖：
-
-        compile 'cn.alien95:resthttp:1.0.1-beta1'
+gradle依赖：
+```java
+compile 'cn.alien95:resthttp:1.0.1-beta1'
+```
 
 ###使用
 
-- 初始化：设置日志TAG
-    
-        public class App extends Application {
-            @Override
-            public void onCreate() {
-                super.onCreate();
-        
-                Http.initialize(this);
-                if(BuildConfig.DEBUG){
-                    Http.setDebug(true,"NetWork");
-                }
-            }
+初始化：设置日志TAG
+```java
+public class App extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Http.initialize(this);
+        if(BuildConfig.DEBUG){
+            Http.setDebug(true,"NetWork");
         }
+    }
+}
+```
 
 ####使用接口的方式请求网络数据：
 
- - 先在接口中写好API
+先在接口中写好API
 
 ```java
 public interface ServiceAPI {
@@ -67,8 +69,7 @@ public interface ServiceAPI {
 
 }
 ```
-        
- - java代码：
+
 ```java
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
@@ -131,16 +132,20 @@ public interface ServiceAPI {
         
 ####通常的请求方式：
         
-```java
 GET请求：
-        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+
+```java     HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
             }
         });
+```
+
 POST请求：
-        HashMap<String, String> params = new HashMap<>();
+
+```java
+HashMap<String, String> params = new HashMap<>();
         params.put("name", "Lemon95");
         params.put("password", "123456");
         HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
@@ -153,54 +158,52 @@ POST请求：
 
 ####图片加载（包括了内存缓存和硬盘缓存）
 
-    (1)加载小图：
+布局文件：
 
-         <cn.alien95.resthttp.view.HttpImageView
-                     android:id="@+id/small_image"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_marginTop="16dp"
-                     android:adjustViewBounds="true" />
-                    
-    然后在java代码中：
+```xml
+       <cn.alien95.resthttp.view.HttpImageView
+            android:id="@+id/small_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true" />
 
-        smallImage.setImageUrl(IMAGE_SMALL_URL);    设置一个图片地址就好了。                                       
+        <cn.alien95.resthttp.view.HttpImageView
+            android:id="@+id/big_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true" />
+```
 
-    (2)加载大图时可以进行图片压缩处理：
+java代码：可以指定压缩比例，固定的宽和高
 
-         <cn.alien95.resthttp.view.HttpImageView
-                     android:id="@+id/big_image"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_marginTop="16dp"
-                     android:adjustViewBounds="true" />
-                    
-    也可以通过：
+```java
+smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
+bigImage.setImageUrl(IMAGE_BIG_URL);                                      
+```
 
-        public void setInSimpleSize(int inSimpleSize);  设置压缩参数。
-        
-    还可以通过：
+也可以通过：
 
-        public void setImageUrlWithCompress(String url, int inSimpleSize);  设置压缩参数。
-
-还可给图片指定宽度和高度：
-
-        smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
-        
-
+```java
+public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
+```
 
 ####注意事项：
         
-    还依赖了其他库(避免重复依赖)：
+还依赖了其他库(避免重复依赖)：
 
-        compile 'com.jakewharton:disklrucache:2.0.2'
-        compile 'com.google.code.gson:gson:2.6.2'      
-        
-    效果图：
+```java
+    compile 'com.jakewharton:disklrucache:2.0.2'
+    compile 'com.google.code.gson:gson:2.6.2'      
+```
+     
+效果图：
 
-    <img src="request.png" width="320" height="569" alt="POST"/>
-    <img src="image.png" width="320" height="569"/>
+<img src="request.png" width="320" height="569" alt="POST"/>
+<img src="image.png" width="320" height="569"/>
+    
+日志打印輸出：
 
-    日志打印輸出：
+<img src="log.png" width="1172" height="402"/>
 
-    <img src="log.png" width="1172" height="402"/>
