@@ -43,32 +43,38 @@ public class RequestQueue {
         return HttpQueueHolder.instance;
     }
 
+    /**
+     * 异步读取服务器缓存文件
+     *
+     * @param callable
+     * @return
+     */
     public Future putThreadPool(Callable callable) {
         return threadPool.submit(callable);
     }
 
-    public void addRequest(String httpUrl, int method, Map<String,String> params,HttpCallback callback){
-        requestQueue.push(new Request(httpUrl,method,params,callback));
-        if(isEmptyRequestQueue){
-            start();
+    public void addRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
+        requestQueue.push(new Request(httpUrl, method, params, callback));
+        if (isEmptyRequestQueue) {
+            startRequest();
         }
     }
 
-    public void addRestRequest(Runnable runnable){
+    public void addRestRequest(Runnable runnable) {
         restQueue.add(runnable);
-        if(isEmptyRestQueue){
-            start();
+        if (isEmptyRestQueue) {
+            startRestRequest();
         }
     }
 
-    public void addReadImgCacheAsyn(Runnable runnable){
+    public void addReadImgCacheAsyn(Runnable runnable) {
         imgCacheQueue.push(runnable);
-        if(isEmptyImgQueue){
-            start();
+        if (isEmptyImgQueue) {
+            startExecuteImageCache();
         }
     }
 
-    private void start() {
+    private void startRequest() {
         Request request;
 
         //网络请求队列
@@ -85,16 +91,20 @@ public class RequestQueue {
             isEmptyRequestQueue = false;
         }
         isEmptyRequestQueue = true;
+    }
 
+    public void startExecuteImageCache() {
         //图片缓存
-        while (!imgCacheQueue.isEmpty()){
+        while (!imgCacheQueue.isEmpty()) {
             threadPool.execute(imgCacheQueue.poll());
             isEmptyImgQueue = false;
         }
         isEmptyImgQueue = true;
+    }
 
+    public void startRestRequest() {
         //服务器缓存处理
-        while (!restQueue.isEmpty()){
+        while (!restQueue.isEmpty()) {
             threadPool.execute(restQueue.poll());
             isEmptyRestQueue = false;
         }
