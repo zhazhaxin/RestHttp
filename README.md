@@ -203,7 +203,7 @@ smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
 bigImage.setImageUrl(IMAGE_BIG_URL);                                      
 ```
 
-也可以通过：
+ - 也可以通过：
 
 ```java
 public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
