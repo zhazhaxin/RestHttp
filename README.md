@@ -8,6 +8,7 @@ compile 'cn.alien95:resthttp:1.0.1-beta1'
 ###使用
 
 初始化：设置日志TAG
+
 ```java
 public class App extends Application {
     @Override
@@ -128,13 +129,31 @@ public interface ServiceAPI {
 
             }
         });
+
+        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+            @Override
+            public void success(String info) {
+                result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
+            }
+        });
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("name", "Lemon95");
+        params.put("password", "123456");
+        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
+            @Override
+            public void success(String info) {
+                result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
+            }
+        });
 ```
         
 ####通常的请求方式：
         
 GET请求：
 
-```java     HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+```java
+HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
@@ -158,10 +177,10 @@ HashMap<String, String> params = new HashMap<>();
 
 ####图片加载（包括了内存缓存和硬盘缓存）
 
-布局文件：
+`布局文件`：
 
 ```xml
-       <cn.alien95.resthttp.view.HttpImageView
+        <cn.alien95.resthttp.view.HttpImageView
             android:id="@+id/small_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -176,7 +195,8 @@ HashMap<String, String> params = new HashMap<>();
             android:adjustViewBounds="true" />
 ```
 
-java代码：可以指定压缩比例，固定的宽和高
+`java代码`：
+ - 可以指定压缩比例，固定的宽和高
 
 ```java
 smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
