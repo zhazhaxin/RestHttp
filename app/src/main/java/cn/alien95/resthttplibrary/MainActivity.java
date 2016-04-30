@@ -18,7 +18,7 @@ import cn.alien95.resthttplibrary.bean.UserInfo;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView get, post;
+    private TextView result;
     private HttpImageView smallImage, bigImage;
     private Handler handler = new Handler();
     private static final String IMAGE_SMALL_URL = "http://a2.att.hudong.com/55/63/300000857388127072631279506.jpg";
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        post = (TextView) findViewById(R.id.post);
+        result = (TextView) findViewById(R.id.post);
         smallImage = (HttpImageView) findViewById(R.id.small_image);
         bigImage = (HttpImageView) findViewById(R.id.big_image);
 
@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (userInfo != null) {
-                            post.setText(post.getText().toString() + "\n POST :       "
+                            result.setText(result.getText().toString() + "\n POST :       "
                                     + userInfo.toString());
                         }
                         if (userInfo1 != null) {
-                            post.setText(post.getText().toString() + "\n GET :       " + userInfo1.toString());
+                            result.setText(result.getText().toString() + "\n GET :       " + userInfo1.toString());
                         } else {
                             RestHttpLog.i("userInfo1为空");
                         }
@@ -71,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 异步操作，受线程池控制
          */
-        serviceAPI.login2("Fuck", "12345", new RestCallback<UserInfo>() {
+        serviceAPI.loginAsyn("Fuck", "12345", new RestCallback<UserInfo>() {
             @Override
             public void callback(UserInfo result) {
                 if (result != null) {
-                    post.setText(post.getText().toString() + "\n POST :       "
+                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n POST :       "
                             + result.toString());
                 }
 
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void callback(UserInfo result) {
                 if (result != null) {
-                    post.setText(post.getText().toString() + "\n GET :        "
+                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n GET :        "
                             + result.toString());
                 } else {
                     RestHttpLog.i("result为空");
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
-                post.setText(post.getText().toString() + "\n 普通请求...........GET：     " + info);
+                result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
             }
         });
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
             @Override
             public void success(String info) {
-                post.setText(post.getText().toString() + "\n 普通请求...........POST：     " + info);
+                result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
             }
         });
 

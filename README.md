@@ -1,112 +1,157 @@
-### RestHttp网络库
+### RestHttp网络库 --- 基于HttpURLConnection
 
 - gradle依赖：
 
-        compile 'cn.alien95:resthttp:1.0.1-beta'
+        compile 'cn.alien95:resthttp:1.0.1-beta1'
 
-- 初始化：设置是否开启调试模式（默认关闭）,设置日志Log打印Tag
+###使用
+
+- 初始化：设置日志TAG
     
-        Http.initialize(this);
-        if(BuildConfig.DEBUG){
+        public class App extends Application {
+            @Override
+            public void onCreate() {
+                super.onCreate();
+        
+                Http.initialize(this);
+                if(BuildConfig.DEBUG){
                     Http.setDebug(true,"NetWork");
                 }
-
-- 面向接口请求：
-
-        在接口中写好API
-
-        public interface ServiceAPI {
-        
-                /** 
-                 * 同步请求方式：不能包含Callback参数，切记：Android主线程不能进行网络操作
-                 * @param name
-                 * @param password
-                 * @return 返回一个经过Gson解析后的对象
-                 */
-                
-                @POST("/v1/users/login.php")
-                UserInfo login(@Field("name")
-                               String name,
-                               @Field("password")
-                               String password);
-            
-                /**
-                 * 异步请求：必须有一个Callback参数作为回调
-                 * @param name
-                 * @param password 
-                 * @param callback  回调泛型类
-                 */
-                
-                @POST("/v1/users/login.php")
-                void login2(@Field("name") String name, @Field("password") String password, Callback<UserInfo> callback);
+            }
         }
 
-        
-  java代码：
+####使用接口的方式请求网络数据：
 
+ - 先在接口中写好API
+
+```java
+public interface ServiceAPI {
+
+    /**
+     * 同步请求方式：不能包含Callback参数
+     * @param name
+     * @param password
+     * @return 返回一个经过Gson解析后的对象
+     */
+
+    @POST("/v1/users/login.php")
+    UserInfo login(@Field("name")
+                   String name,
+                   @Field("password")
+                   String password);
+
+    /**
+     * 异步请求：必须有一个Callback参数作为回调
+     * @param name
+     * @param password
+     * @param restCallback  回调泛型类
+     */
+
+    @POST("/v1/users/login.php")
+    void loginAsyn(@Field("name")
+                String name,
+                   @Field("password")
+                String password, RestCallback<UserInfo> restCallback);
+
+    @GET("/v1/users/login_get.php")
+    UserInfo loginGetSync(@Query("name")
+                          String name,
+                          @Query("password")
+                          String password);
+
+    @GET("/v1/users/login_get.php")
+    void loginGetAsyn(@Query("name")
+                          String name,
+                          @Query("password")
+                          String password,RestCallback<UserInfo> restCallback);
+
+}
+```
+        
+ - java代码：
+```java
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
-                        .baseUrl(BASE_URL)
-                        .build();
-        
-                final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
-        
-                /**
-                 * 同步操作,不受线程池控制，自己处理线程问题
-                 */
-                new Thread(new Runnable() {
+                .baseUrl(BASE_URL)
+                .build();
+
+        final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
+
+        /**
+         * 同步操作,不受线程池控制，自己处理线程问题
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final UserInfo userInfo = serviceAPI.login("Lemon", "123456");
+                final UserInfo userInfo1 = serviceAPI.loginGetSync("Alien", "123456");
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        final UserInfo userInfo = serviceAPI.login("Lemon" , "123456");
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                post.setText(post.getText().toString() + "\n\n"
-                                        + userInfo.toString());
-                            }
-                        });
-                    }
-                }).start();
-        
-                /**
-                 * 异步操作，受线程池控制
-                 */
-                serviceAPI.login2("alien95", "123456" ,new Callback<UserInfo>() {
-                    @Override
-                    public void callback(UserInfo result) {
-                        post.setText(post.getText().toString() + "\n\n"
-                                + result.toString());
+                        if (userInfo != null) {
+                            result.setText(result.getText().toString() + "\n POST :       "
+                                    + userInfo.toString());
+                        }
+                        if (userInfo1 != null) {
+                            result.setText(result.getText().toString() + "\n GET :       " + userInfo1.toString());
+                        } else {
+                            RestHttpLog.i("userInfo1为空");
+                        }
                     }
                 });
-        
-        
-- 普通请求方式：
-        
-    (1)get请求：
-        
-                HttpRequest.getInstance().get(GET_URL, new HttpCallBack() {
-                            @Override
-                            public void success(String info) {
-                                get.setText("GET:\n" + info);
-                            }
-                        });
-        
-    (2)post请求：
-        
-                 public void httpPostRequest() {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("name", "alien95");
-                        params.put("password", "123456");
-                        HttpRequest.getInstance().post(POST_URL, params, new HttpCallBack() {
-                            @Override
-                            public void success(String info) {
-                                post.setText("POST:\n" + info);
-                            }
-                            
-    (3)添加header
+            }
+        }).start();
 
-        public void setHttpHeader(Map<String, String> header);
+        /**
+         * 异步操作，受线程池控制
+         */
+        serviceAPI.loginAsyn("Fuck", "12345", new RestCallback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                if (result != null) {
+                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n POST :       "
+                            + result.toString());
+                }
 
-- 图片加载（包括了内存缓存和硬盘缓存）
+            }
+        });
+
+        serviceAPI.loginGetAsyn("Fucker", "123456", new RestCallback<UserInfo>() {
+            @Override
+            public void callback(UserInfo result) {
+                if (result != null) {
+                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n GET :        "
+                            + result.toString());
+                } else {
+                    RestHttpLog.i("result为空");
+                }
+
+            }
+        });
+```
+        
+####通常的请求方式：
+        
+```java
+GET请求：
+        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+            @Override
+            public void success(String info) {
+                result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
+            }
+        });
+POST请求：
+        HashMap<String, String> params = new HashMap<>();
+        params.put("name", "Lemon95");
+        params.put("password", "123456");
+        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
+            @Override
+            public void success(String info) {
+                result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
+            }
+        });
+```
+
+####图片加载（包括了内存缓存和硬盘缓存）
 
     (1)加载小图：
 
@@ -138,7 +183,13 @@
 
         public void setImageUrlWithCompress(String url, int inSimpleSize);  设置压缩参数。
 
-- 注意事项：
+还可给图片指定宽度和高度：
+
+        smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
+        
+
+
+####注意事项：
         
     还依赖了其他库(避免重复依赖)：
 
@@ -147,9 +198,9 @@
         
     效果图：
 
-    <img src="post.png" width="320" height="569" alt="POST"/>
+    <img src="request.png" width="320" height="569" alt="POST"/>
     <img src="image.png" width="320" height="569"/>
 
     日志打印輸出：
 
-    <img src="log.png" width="1001" height="303"/>
+    <img src="log.png" width="1172" height="402"/>

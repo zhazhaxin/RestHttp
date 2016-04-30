@@ -14,7 +14,7 @@ import cn.alien95.resthttplibrary.bean.UserInfo;
 public interface ServiceAPI {
 
     /**
-     * 同步请求方式：不能包含Callback参数，切记：Android主线程不能进行网络操作
+     * 同步请求方式：不能包含Callback参数
      * @param name
      * @param password
      * @return 返回一个经过Gson解析后的对象
@@ -34,9 +34,9 @@ public interface ServiceAPI {
      */
 
     @POST("/v1/users/login.php")
-    void login2(@Field("name")
+    void loginAsyn(@Field("name")
                 String name,
-                @Field("password")
+                   @Field("password")
                 String password, RestCallback<UserInfo> restCallback);
 
     @GET("/v1/users/login_get.php")
