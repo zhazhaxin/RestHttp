@@ -30,7 +30,6 @@ public class CacheKeyUtils {
             paramStrBuilder.deleteCharAt(0);
             url = url + "?" + paramStrBuilder;
         }
-        RestHttpLog.i("key :　" + url);
         return Utils.MD5(url);
     }
 

@@ -112,7 +112,7 @@ public class RestHttpRequest {
                          * 异步处理任务，判断缓存
                          */
                         if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(urlStr))) {  //存在缓存
-                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, (RestCallback) args[finalCallbackPosition]);
+                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             RestThreadPool.getInstance().putThreadPool(new Runnable() {
@@ -174,12 +174,12 @@ public class RestHttpRequest {
                      * 异步处理任务
                      */
                     if (isAsynchronization) {
-                        final int finalCallbackPosition1 = callbackPosition;
+                        final int finalCallbackPosition = callbackPosition;
                         /**
                          * 判断是否带有缓存,如果有缓存，异步获取缓存
                          */
                         if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {  //有缓存
-                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, (RestCallback) args[finalCallbackPosition1]);
+                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {  //无缓存
                             final String finalUrl = url;
                             RestThreadPool.getInstance().putThreadPool(new Runnable() {
@@ -187,12 +187,12 @@ public class RestHttpRequest {
                                 public void run() {
                                     Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                                     final Object reuslt = RestHttpConnection.getInstance().quest(finalUrl,
-                                            Method.POST, params, ((RestCallback) args[finalCallbackPosition1]).getActualClass());
+                                            Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass());
 
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ((RestCallback) args[finalCallbackPosition1]).callback(reuslt);
+                                            ((RestCallback) args[finalCallbackPosition]).callback(reuslt);
                                         }
                                     });
                                 }

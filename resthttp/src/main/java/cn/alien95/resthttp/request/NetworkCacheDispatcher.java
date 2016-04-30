@@ -47,19 +47,29 @@ public class NetworkCacheDispatcher {
         }
     }
 
-    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, RestCallback<Object> restCallback) {
-        restCacheQueue.add(new Request(url, method, params, restCallback));
+    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, Class resultType, RestCallback<Object> restCallback) {
+        restCacheQueue.add(new Request(url, method, params, resultType, restCallback));
         if (isRestEmptyQueue) {
             start();
         }
     }
 
+    /**
+     * 同步直接处理
+     *
+     * @param url
+     * @param method
+     * @param params
+     * @param tClass
+     * @return
+     */
     public Object addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class tClass) {
         final Cache.Entry entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(url, params));
 
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                RestHttpConnection.getInstance().quest(url,
+                RestHttpLog.i("缓存过期");
+                return RestHttpConnection.getInstance().quest(url,
                         method, params, tClass);
             } else {
                 return getRestCacheSync(CacheKeyUtils.getCacheKey(url, params), tClass);
@@ -78,13 +88,13 @@ public class NetworkCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl,request.params));
+            entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                    RestHttpLog.i("缓存过期");
                     RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
-                    RestHttpLog.i("network cache is out of date");
                 } else {
-                    getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl,request.params), request.callback);
+                    getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params), request.callback);
                 }
             }
 
@@ -99,16 +109,20 @@ public class NetworkCacheDispatcher {
             entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                    RestHttpLog.i("缓存过期");
                     final Request finalRequest = request;
+                    /**
+                     * 这里只有异步
+                     */
                     RestThreadPool.getInstance().putThreadPool(new Runnable() {
                         @Override
                         public void run() {
-                            final Object reuslt = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,
-                                    Method.GET, null, finalRequest.resultType);
+                            final Object result = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,
+                                    finalRequest.method, finalRequest.params, finalRequest.resultType);
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    finalRequest.restRestCallback.callback(reuslt);
+                                    finalRequest.restRestCallback.callback(result);
                                 }
                             });
                         }
@@ -153,9 +167,7 @@ public class NetworkCacheDispatcher {
         RestHttpLog.i("get network data from sync cache");
         final Cache.Entry entry = NetworkCache.getInstance().get(key);
         if (tClass != null && tClass != void.class) {
-            Gson gson = new Gson();
-            T result = (T) gson.fromJson(entry.data, tClass);
-            return result;
+            return new Gson().fromJson(entry.data, tClass);
         }
         return null;
     }

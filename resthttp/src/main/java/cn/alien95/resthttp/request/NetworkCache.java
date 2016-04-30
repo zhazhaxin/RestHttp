@@ -129,7 +129,7 @@ public class NetworkCache implements Cache {
      */
     private <T> T readObjectFromFile(File cache) {
         if (!cache.exists()) {
-            RestHttpLog.i("File does not exist");
+            RestHttpLog.i("Cache file does not exist");
             return null;
         }
         ObjectInputStream is = null;

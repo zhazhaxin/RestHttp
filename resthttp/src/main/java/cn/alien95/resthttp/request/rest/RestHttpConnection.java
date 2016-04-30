@@ -168,9 +168,7 @@ public class RestHttpConnection {
                 }
 
                 if (returnType != null && returnType != void.class) {
-                    Gson gson = new Gson();
-                    T object = gson.fromJson(result, returnType);
-                    return object;
+                    return new Gson().fromJson(result, returnType);
                 }
             }
 
