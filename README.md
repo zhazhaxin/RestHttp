@@ -1,7 +1,7 @@
 #RestHttp网络库 --- 基于HttpURLConnection
 
 > - RestHttp提供了三级缓存（服务器缓存，内存缓存，硬盘缓存），通过动态代理的方式实现了面向接口调用API。
-> - 封装了HttpURLConnection，简单易用API。
+> - 封装了HttpURLConnection，简单易用的API设计。
 > - Debug模式下设置日志TAG，所有网络请求日志输出，方便调试。
 
 gradle依赖
