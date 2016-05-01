@@ -71,6 +71,8 @@ public interface ServiceAPI {
 }
 ```
 
+请求的java类
+
 ```java
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
