@@ -1,11 +1,12 @@
-### RestHttp网络库 --- 基于HttpURLConnection
+#RestHttp网络库 --- 基于HttpURLConnection
 
-gradle依赖：
+gradle依赖
+
 ```java
 compile 'cn.alien95:resthttp:1.0.1-beta1'
 ```
 
-###使用
+##使用方法
 
 初始化：设置日志TAG
 
@@ -23,9 +24,9 @@ public class App extends Application {
 }
 ```
 
-####使用接口的方式请求网络数据：
+###使用接口的方式请求网络数据：
 
-先在接口中写好API
+API接口类
 
 ```java
 public interface ServiceAPI {
@@ -71,7 +72,7 @@ public interface ServiceAPI {
 }
 ```
 
-请求的java类
+网络请求java类
 
 ```java
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
@@ -150,9 +151,9 @@ public interface ServiceAPI {
         });
 ```
         
-####通常的请求方式：
+###通常的请求方式
         
-GET请求：
+GET请求
 
 ```java
 HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
@@ -163,7 +164,7 @@ HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new Ht
         });
 ```
 
-POST请求：
+POST请求
 
 ```java
 HashMap<String, String> params = new HashMap<>();
@@ -177,27 +178,28 @@ HashMap<String, String> params = new HashMap<>();
         });
 ```
 
-####图片加载（包括了内存缓存和硬盘缓存）
+###图片加载（包括了内存缓存和硬盘缓存）
 
-`布局文件`：
+`xml布局文件`：
 
 ```xml
-        <cn.alien95.resthttp.view.HttpImageView
-            android:id="@+id/small_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:adjustViewBounds="true" />
+   <cn.alien95.resthttp.view.HttpImageView
+       android:id="@+id/small_image"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="16dp"
+       android:adjustViewBounds="true" />
 
-        <cn.alien95.resthttp.view.HttpImageView
-            android:id="@+id/big_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:adjustViewBounds="true" />
+   <cn.alien95.resthttp.view.HttpImageView
+       android:id="@+id/big_image"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="16dp"
+       android:adjustViewBounds="true" />
 ```
 
-`java代码`：
+java代码
+
  - 可以指定压缩比例，固定的宽和高
 
 ```java
@@ -211,16 +213,16 @@ bigImage.setImageUrl(IMAGE_BIG_URL);
 public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
 ```
 
-####注意事项：
+###注意事项
         
-还依赖了其他库(避免重复依赖)：
+依赖的其他库
 
 ```java
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.google.code.gson:gson:2.6.2'      
 ```
      
-效果图：
+###[Demo](https://github.com/llxdaxia/RestHttp/tree/dev/app)
 
 <img src="request.png" width="320" height="569" alt="POST"/>
 <img src="image.png" width="320" height="569"/>
