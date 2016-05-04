@@ -123,18 +123,18 @@ public class NetworkCacheDispatcher {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    finalRequest.restRestCallback.callback(result);
+                                    finalRequest.restCallback.callback(result);
                                 }
                             });
                         }
                     });
 
                 } else {
-                    Class returnType = request.restRestCallback.getActualClass();
+                    Class returnType = request.restCallback.getActualClass();
                     if (returnType != null && returnType != void.class) {
-                        request.restRestCallback.callback(new Gson().fromJson(entry.data, returnType));
+                        request.restCallback.callback(new Gson().fromJson(entry.data, returnType));
                     } else {
-                        request.restRestCallback.callback(null);
+                        request.restCallback.callback(null);
                     }
                 }
             }

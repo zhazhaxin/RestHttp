@@ -14,7 +14,7 @@ public class Request {
     public String httpUrl;
     public Map<String,String> params;
     public HttpCallback callback;
-    public RestCallback<Object> restRestCallback;
+    public RestCallback<Object> restCallback;
     public Class resultType;
 
     public Request(String httpUrl,int method, Map<String,String> params, HttpCallback callback){
@@ -36,7 +36,7 @@ public class Request {
         this.method = method;
         this.params = params;
         this.resultType = resultType;
-        this.restRestCallback = restCallback;
+        this.restCallback = restCallback;
     }
 
 }
