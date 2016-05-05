@@ -17,7 +17,7 @@ public class ImageUtils {
      * @param inSampleSize 压缩的长或宽比例，大小缩小平方倍
      * @return
      */
-    public static Bitmap compressBitmapFromInputStream(InputStream inputStream, int inSampleSize) {
+    public static Bitmap getBitmap(InputStream inputStream, int inSampleSize) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
         return BitmapFactory.decodeStream(inputStream, null, options);

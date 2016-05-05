@@ -17,32 +17,34 @@ import cn.alien95.resthttp.util.Util;
 public class ThreadPool {
 
     private boolean isEmptyRequestQueue = true;
-    private boolean isEmptyImgQueue = true;
+    private boolean isEmptyRequestImgQueue = true;
     private boolean isEmptyRestQueue = true;
     private LinkedBlockingDeque<Request> requestQueue;
-    private LinkedBlockingDeque<Runnable> imgCacheQueue;
-    private LinkedBlockingDeque<Runnable> restQueue;
-    private LinkedBlockingDeque<Callable> diskQueue;
+    private LinkedBlockingDeque<Runnable> restRequestQueue;
+    private LinkedBlockingDeque<Runnable> imgRequestQueue;
     private ExecutorService threadPool; //线程池
+
+    private static ThreadPool instance;
 
     private ThreadPool() {
         requestQueue = new LinkedBlockingDeque<>();
-        imgCacheQueue = new LinkedBlockingDeque<>();
-        restQueue = new LinkedBlockingDeque<>();
-        diskQueue = new LinkedBlockingDeque<>();
+        imgRequestQueue = new LinkedBlockingDeque<>();
+        restRequestQueue = new LinkedBlockingDeque<>();
         if (Util.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Util.getNumberOfCPUCores());
         } else
             threadPool = Executors.newFixedThreadPool(4);
-
-    }
-
-    private static class HttpQueueHolder {
-        private static final ThreadPool instance = new ThreadPool();
     }
 
     public static ThreadPool getInstance() {
-        return HttpQueueHolder.instance;
+        if (instance == null) {
+            synchronized (ThreadPool.class) {
+                if (instance == null) {
+                    instance = new ThreadPool();
+                }
+            }
+        }
+        return instance;
     }
 
     /**
@@ -63,16 +65,16 @@ public class ThreadPool {
     }
 
     public void addRestRequest(Runnable runnable) {
-        restQueue.add(runnable);
+        restRequestQueue.add(runnable);
         if (isEmptyRestQueue) {
             startRestRequest();
         }
     }
 
-    public void addReadImgCacheAsyn(Runnable runnable) {
-        imgCacheQueue.push(runnable);
-        if (isEmptyImgQueue) {
-            startExecuteImageCache();
+    public void addRequestImg(Runnable runnable) {
+        imgRequestQueue.push(runnable);
+        if (isEmptyRequestImgQueue) {
+            startRequestImg();
         }
     }
 
@@ -97,25 +99,25 @@ public class ThreadPool {
     }
 
     /**
-     * 图片缓存轮询读取
-     */
-    public void startExecuteImageCache() {
-        while (!imgCacheQueue.isEmpty()) {
-            threadPool.execute(imgCacheQueue.poll());
-            isEmptyImgQueue = false;
-        }
-        isEmptyImgQueue = true;
-    }
-
-    /**
      * Rest请求轮询读取
      */
     public void startRestRequest() {
-        while (!restQueue.isEmpty()) {
-            threadPool.execute(restQueue.poll());
+        while (!restRequestQueue.isEmpty()) {
+            threadPool.execute(restRequestQueue.poll());
             isEmptyRestQueue = false;
         }
         isEmptyRestQueue = true;
+    }
+
+    /**
+     * 网络请求图片轮询
+     */
+    public void startRequestImg() {
+        while (!imgRequestQueue.isEmpty()) {
+            threadPool.execute(imgRequestQueue.poll());
+            isEmptyRequestImgQueue = false;
+        }
+        isEmptyRequestImgQueue = true;
     }
 
 }

@@ -22,16 +22,17 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/4/26.
  */
-public class NetworkDispatcher {
+public class NetRequestDispatcher {
 
     private Handler handler;
 
-    public NetworkDispatcher() {
+
+    public NetRequestDispatcher() {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public void addNetwork(String url, ImageCallback callback) {
-        networkImage(url, callback);
+    public void addRequestImg(String url, ImageCallback callback) {
+        loadImg(url, callback);
     }
 
     public void addRequestImgWithCompress(String url, int inSimpleSize, ImageCallback callback) {
@@ -42,9 +43,9 @@ public class NetworkDispatcher {
         loadImgWithCompress(url, reqWidth, reqHeight, callback);
     }
 
-    public void networkImage(final String url, final ImageCallback callback) {
+    public void loadImg(final String url, final ImageCallback callback) {
         RestHttpLog.i("Get picture from network");
-        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addRequestImg(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -73,25 +74,6 @@ public class NetworkDispatcher {
         });
     }
 
-
-    public HttpURLConnection getHttpUrlConnection(String url) {
-        DebugUtils.requestImageLog(url);
-        HttpURLConnection urlConnection = null;
-        try {
-            urlConnection = (HttpURLConnection) new URL(url).openConnection();
-            urlConnection.setRequestMethod("GET");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//                urlConnection.setDoOutput(true);   //沃日，为毛请求图片不能添加这句
-        urlConnection.setDoInput(true);
-        urlConnection.setConnectTimeout(10 * 1000);
-        urlConnection.setReadTimeout(10 * 1000);
-        //对HttpURLConnection对象的一切配置都必须要在connect()函数执行之前完成。
-        return urlConnection;
-    }
-
-
     /**
      * 从网络加载并压缩图片
      *
@@ -101,7 +83,7 @@ public class NetworkDispatcher {
      */
     public synchronized void loadImgWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addRequestImg(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -110,7 +92,7 @@ public class NetworkDispatcher {
                     final InputStream inputStream = urlConnection.getInputStream();
                     respondCode = urlConnection.getResponseCode();
                     if (respondCode == HttpURLConnection.HTTP_OK) {
-                        final Bitmap compressBitmap = ImageUtils.compressBitmapFromInputStream(inputStream, inSampleSize);
+                        final Bitmap compressBitmap = ImageUtils.getBitmap(inputStream, inSampleSize);
                         inputStream.close();
                         handler.post(new Runnable() {
                             @Override
@@ -132,7 +114,7 @@ public class NetworkDispatcher {
 
     public synchronized void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addRequestImg(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -174,6 +156,22 @@ public class NetworkDispatcher {
         });
     }
 
+    public HttpURLConnection getHttpUrlConnection(String url) {
+        DebugUtils.requestImageLog(url);
+        HttpURLConnection urlConnection = null;
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+            urlConnection.setRequestMethod("GET");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//                urlConnection.setDoOutput(true);   //沃日，为毛请求图片不能添加这句
+        urlConnection.setDoInput(true);
+        urlConnection.setConnectTimeout(10 * 1000);
+        urlConnection.setReadTimeout(10 * 1000);
+        //对HttpURLConnection对象的一切配置都必须要在connect()函数执行之前完成。
+        return urlConnection;
+    }
 
     /**
      * 从inputStream中获取字节流 数组大小
@@ -185,7 +183,7 @@ public class NetworkDispatcher {
     public byte[] readStream(InputStream inStream) throws Exception {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
-        int len = 0;
+        int len;
         while ((len = inStream.read(buffer)) != -1) {
             outStream.write(buffer, 0, len);
         }
