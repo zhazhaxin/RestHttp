@@ -22,82 +22,69 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/4/26.
  */
-public class NetRequestDispatcher {
+public class RequestImageDispatcher {
 
     private Handler handler;
 
-
-    public NetRequestDispatcher() {
+    public RequestImageDispatcher() {
         handler = new Handler(Looper.getMainLooper());
     }
 
     public void addRequestImg(String url, ImageCallback callback) {
-        loadImg(url, callback);
+        loadImg(url, 1, callback);
     }
 
     public void addRequestImgWithCompress(String url, int inSimpleSize, ImageCallback callback) {
-        loadImgWithCompress(url, inSimpleSize, callback);
+        loadImg(url, inSimpleSize, callback);
     }
 
     public void addRequestImgWithCompress(String url, int reqWidth, int reqHeight, ImageCallback callback) {
         loadImgWithCompress(url, reqWidth, reqHeight, callback);
     }
 
-    public void loadImg(final String url, final ImageCallback callback) {
-        RestHttpLog.i("Get picture from network");
-        ThreadPool.getInstance().addRequestImg(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection urlConnection = getHttpUrlConnection(url);
-                int respondCode;
-                try {
-                    urlConnection.connect();
-                    final InputStream inputStream = urlConnection.getInputStream();
-                    respondCode = urlConnection.getResponseCode();
-                    if (respondCode == HttpURLConnection.HTTP_OK) {
-                        final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.callback(bitmap);
-                                if (bitmap != null) {
-                                    MemoryCache.getInstance().put(Util.getCacheKey(url), bitmap);
-                                    DiskCache.getInstance().put(Util.getCacheKey(url), bitmap);
-                                }
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    public void loadImg(final String url, final int inSampleSize, final ImageCallback callback) {
 
-    /**
-     * 从网络加载并压缩图片
-     *
-     * @param url
-     * @param inSampleSize
-     * @param callBack
-     */
-    public synchronized void loadImgWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
-        RestHttpLog.i("Get compress picture from network");
+        RestHttpLog.i("Get picture from network");
+        DebugUtils.requestImageLog(url);
+
         ThreadPool.getInstance().addRequestImg(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection urlConnection = getHttpUrlConnection(url);
                 int respondCode;
                 try {
+                    HttpURLConnection urlConnection = null;
+                    try {
+                        urlConnection = (HttpURLConnection) new URL(url).openConnection();
+                        urlConnection.setRequestMethod("GET");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                urlConnection.setDoOutput(true);   //为毛请求图片不能添加这句
+                    urlConnection.setDoInput(true);
+                    urlConnection.setConnectTimeout(10 * 1000);
+                    urlConnection.setReadTimeout(10 * 1000);
                     final InputStream inputStream = urlConnection.getInputStream();
                     respondCode = urlConnection.getResponseCode();
                     if (respondCode == HttpURLConnection.HTTP_OK) {
-                        final Bitmap compressBitmap = ImageUtils.getBitmap(inputStream, inSampleSize);
-                        inputStream.close();
+                        final BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+
+                        //如果两次都调用BitmapFactory.decodeStream,由于输入流失有序的输入流，第二次会得到null
+                        byte[] bytes = new byte[0];
+                        try {
+                            bytes = readStream(inputStream);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                        options.inSampleSize = inSampleSize;
+                        options.inJustDecodeBounds = false;
+
+                        final Bitmap compressBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                callBack.callback(compressBitmap);
+                                callback.callback(compressBitmap);
                                 if (compressBitmap != null) {
                                     MemoryCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
                                     DiskCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
@@ -114,10 +101,22 @@ public class NetRequestDispatcher {
 
     public synchronized void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
+        DebugUtils.requestImageLog(url);
+
         ThreadPool.getInstance().addRequestImg(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection urlConnection = getHttpUrlConnection(url);
+                HttpURLConnection urlConnection = null;
+                try {
+                    urlConnection = (HttpURLConnection) new URL(url).openConnection();
+                    urlConnection.setRequestMethod("GET");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                urlConnection.setDoOutput(true);   //为毛请求图片不能添加这句
+                urlConnection.setDoInput(true);
+                urlConnection.setConnectTimeout(10 * 1000);
+                urlConnection.setReadTimeout(10 * 1000);
                 int respondCode;
                 try {
                     final InputStream inputStream = urlConnection.getInputStream();
@@ -154,23 +153,6 @@ public class NetRequestDispatcher {
                 }
             }
         });
-    }
-
-    public HttpURLConnection getHttpUrlConnection(String url) {
-        DebugUtils.requestImageLog(url);
-        HttpURLConnection urlConnection = null;
-        try {
-            urlConnection = (HttpURLConnection) new URL(url).openConnection();
-            urlConnection.setRequestMethod("GET");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//                urlConnection.setDoOutput(true);   //沃日，为毛请求图片不能添加这句
-        urlConnection.setDoInput(true);
-        urlConnection.setConnectTimeout(10 * 1000);
-        urlConnection.setReadTimeout(10 * 1000);
-        //对HttpURLConnection对象的一切配置都必须要在connect()函数执行之前完成。
-        return urlConnection;
     }
 
     /**

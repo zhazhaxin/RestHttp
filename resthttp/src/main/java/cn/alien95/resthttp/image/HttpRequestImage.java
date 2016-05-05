@@ -15,13 +15,13 @@ import cn.alien95.resthttp.util.Util;
 public class HttpRequestImage {
 
     private CacheDispatcher cacheDispatcher;
-    private NetRequestDispatcher netRequestDispatcher;
+    private RequestImageDispatcher requestImageDispatcher;
     private static HttpRequestImage instance;
     private Handler handler;
 
     private HttpRequestImage() {
         cacheDispatcher = new CacheDispatcher();
-        netRequestDispatcher = new NetRequestDispatcher();
+        requestImageDispatcher = new RequestImageDispatcher();
         handler = new Handler();
     }
 
@@ -53,7 +53,7 @@ public class HttpRequestImage {
         } else if (DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
             cacheDispatcher.addCacheQueue(url, callBack);
         } else {
-            netRequestDispatcher.addRequestImg(url, callBack);
+            requestImageDispatcher.addRequestImg(url, callBack);
         }
     }
 
@@ -73,14 +73,14 @@ public class HttpRequestImage {
             if (MemoryCache.getInstance().isExist(Util.getCacheKey(url)) || DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
                 cacheDispatcher.addCacheQueue(url, callBack);
             } else {
-                netRequestDispatcher.addRequestImg(url, callBack);
+                requestImageDispatcher.addRequestImg(url, callBack);
             }
         } else if (inSampleSize > 1) {
             if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize)) ||
                     DiskCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize))) {
                 cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
             } else {
-                netRequestDispatcher.addRequestImgWithCompress(url, inSampleSize, callBack);
+                requestImageDispatcher.addRequestImgWithCompress(url, inSampleSize, callBack);
             }
         }
     }
@@ -98,7 +98,7 @@ public class HttpRequestImage {
                 DiskCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight))) {
             cacheDispatcher.addCacheQueue(url, reqWidth, reqHeight, callBack);
         } else {
-            netRequestDispatcher.addRequestImgWithCompress(url, reqWidth, reqHeight, callBack);
+            requestImageDispatcher.addRequestImgWithCompress(url, reqWidth, reqHeight, callBack);
         }
     }
 

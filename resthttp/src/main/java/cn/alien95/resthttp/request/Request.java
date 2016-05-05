@@ -8,13 +8,13 @@ import cn.alien95.resthttp.request.rest.callback.RestCallback;
 /**
  * Created by linlongxin on 2016/4/27.
  */
-public class Request {
+public class Request<T> {
 
     public int method;
     public String httpUrl;
     public Map<String,String> params;
     public HttpCallback callback;
-    public RestCallback<Object> restCallback;
+    public RestCallback<T> restCallback;
     public Class resultType;
 
     public Request(String httpUrl,int method, Map<String,String> params, HttpCallback callback){
@@ -31,7 +31,7 @@ public class Request {
      * @param params
      * @param restCallback
      */
-    public Request(String httpUrl, int method, Map<String,String> params, Class resultType,RestCallback<Object> restCallback){
+    public Request(String httpUrl, int method, Map<String,String> params, Class resultType,RestCallback<T> restCallback){
         this.httpUrl = httpUrl;
         this.method = method;
         this.params = params;

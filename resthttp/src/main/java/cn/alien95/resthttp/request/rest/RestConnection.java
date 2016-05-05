@@ -29,19 +29,19 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/3/24.
  */
-public class RestHttpConnection {
+public class RestConnection {
 
     private Map<String, String> header;
 
-    private RestHttpConnection() {
+    private RestConnection() {
     }
 
-    public static RestHttpConnection getInstance() {
+    public static RestConnection getInstance() {
         return SingletonInstance.instance;
     }
 
     private static class SingletonInstance {
-        private static final RestHttpConnection instance = new RestHttpConnection();
+        private static final RestConnection instance = new RestConnection();
     }
 
     /**

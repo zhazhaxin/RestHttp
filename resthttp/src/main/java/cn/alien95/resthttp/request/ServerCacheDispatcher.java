@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.rest.RestConnection;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
@@ -48,7 +48,7 @@ public class ServerCacheDispatcher {
         }
     }
 
-    public void addAsynRestCacheRequest(String url, int method, Map<String, String> params, Class resultType, RestCallback<Object> restCallback) {
+    public void addAsynRestCache(String url, int method, Map<String, String> params, Class resultType, RestCallback<Object> restCallback) {
         restCacheQueue.add(new Request(url, method, params, resultType, restCallback));
         if (isRestEmptyQueue) {
             start();
@@ -70,7 +70,7 @@ public class ServerCacheDispatcher {
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                 RestHttpLog.i("缓存过期");
-                return RestHttpConnection.getInstance().quest(url,
+                return RestConnection.getInstance().quest(url,
                         method, params, tClass);
             } else {
                 return getRestCacheSync(entry, tClass);
@@ -85,7 +85,7 @@ public class ServerCacheDispatcher {
         Cache.Entry entry;
 
         /**
-         * 普通请求方式，都是异步
+         * 普通请求方式，只有异步
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
@@ -115,20 +115,8 @@ public class ServerCacheDispatcher {
                     /**
                      * 这里只有异步
                      */
-                    ThreadPool.getInstance().addRestRequest(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Object result = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,
-                                    finalRequest.method, finalRequest.params, finalRequest.resultType);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finalRequest.restCallback.callback(result);
-                                }
-                            });
-                        }
-                    });
-
+                    ThreadPool.getInstance().addRequest(request.httpUrl, request.method, request.params,
+                            request.resultType, request.restCallback);
                 } else {
                     Class returnType = request.restCallback.getActualClass();
                     if (returnType != null && returnType != void.class) {
