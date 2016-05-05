@@ -1,8 +1,5 @@
 package cn.alien95.resthttp.request;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.google.gson.Gson;
 
 import java.util.Map;
@@ -25,13 +22,11 @@ public class ServerCacheDispatcher {
     private boolean isRestEmptyQueue = true;
     private LinkedBlockingDeque<Request> cacheQueue;
     private LinkedBlockingDeque<Request> restCacheQueue;
-    private Handler handler;
     private static ServerCacheDispatcher instance;
 
     private ServerCacheDispatcher() {
         cacheQueue = new LinkedBlockingDeque<>();
         restCacheQueue = new LinkedBlockingDeque<>();
-        handler = new Handler(Looper.getMainLooper());
     }
 
     public static ServerCacheDispatcher getInstance() {
@@ -111,7 +106,6 @@ public class ServerCacheDispatcher {
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpLog.i("缓存过期");
-                    final Request finalRequest = request;
                     /**
                      * 这里只有异步
                      */

@@ -23,7 +23,6 @@ public class ThreadPool {
 
     private boolean isEmptyRequestQueue = true;
     private boolean isEmptyRequestImgQueue = true;
-    private boolean isEmptyRestQueue = true;
     private LinkedBlockingDeque<Request> requestQueue;
     private LinkedBlockingDeque<Runnable> imgRequestQueue;
     private ExecutorService threadPool; //线程池
@@ -102,7 +101,8 @@ public class ThreadPool {
                 threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        final Object reuslt = RestConnection.getInstance().quest(request.httpUrl, request.method, request.params, request.resultType);
+                        final Object reuslt = RestConnection.getInstance().quest(request.httpUrl, request.method,
+                                request.params, request.resultType);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
