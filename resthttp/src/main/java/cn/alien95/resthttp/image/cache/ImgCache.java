@@ -13,4 +13,8 @@ public interface ImgCache {
     Bitmap get(String key);
 
     boolean isExist(String key);
+
+    void remove(String key);
+
+    void clear();
 }

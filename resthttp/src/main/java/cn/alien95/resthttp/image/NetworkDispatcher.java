@@ -34,12 +34,12 @@ public class NetworkDispatcher {
         networkImage(url, callback);
     }
 
-    public void addNetworkWithCompress(String url, int inSimpleSize, ImageCallback callback) {
-        networkImageWithCompress(url, inSimpleSize, callback);
+    public void addRequestImgWithCompress(String url, int inSimpleSize, ImageCallback callback) {
+        loadImgWithCompress(url, inSimpleSize, callback);
     }
 
-    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        networkImageWithCompress(url, reqWidth, reqHeight, callback);
+    public void addRequestImgWithCompress(String url, int reqWidth, int reqHeight, ImageCallback callback) {
+        loadImgWithCompress(url, reqWidth, reqHeight, callback);
     }
 
     public void networkImage(final String url, final ImageCallback callback) {
@@ -58,7 +58,7 @@ public class NetworkDispatcher {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                callback.success(bitmap);
+                                callback.callback(bitmap);
                                 if (bitmap != null) {
                                     MemoryCache.getInstance().put(Util.getCacheKey(url), bitmap);
                                     DiskCache.getInstance().put(Util.getCacheKey(url), bitmap);
@@ -99,7 +99,7 @@ public class NetworkDispatcher {
      * @param inSampleSize
      * @param callBack
      */
-    public synchronized void networkImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
+    public synchronized void loadImgWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
         ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
@@ -115,7 +115,7 @@ public class NetworkDispatcher {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                callBack.success(compressBitmap);
+                                callBack.callback(compressBitmap);
                                 if (compressBitmap != null) {
                                     MemoryCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
                                     DiskCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
@@ -130,7 +130,7 @@ public class NetworkDispatcher {
         });
     }
 
-    public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
+    public synchronized void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
         ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
@@ -159,7 +159,7 @@ public class NetworkDispatcher {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                callBack.success(compressBitmap);
+                                callBack.callback(compressBitmap);
                                 if (compressBitmap != null) {
                                     MemoryCache.getInstance().put(Util.getCacheKey(url + reqWidth + "/" + reqHeight), compressBitmap);
                                     DiskCache.getInstance().put(Util.getCacheKey(url + reqWidth + "/" + reqHeight), compressBitmap);

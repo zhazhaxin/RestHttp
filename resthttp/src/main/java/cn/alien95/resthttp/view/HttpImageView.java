@@ -53,7 +53,7 @@ public class HttpImageView extends ImageView {
         if(inSimpleSize <= 1){
             HttpRequestImage.getInstance().requestImage(url, new ImageCallback() {
                 @Override
-                public void success(Bitmap bitmap) {
+                public void callback(Bitmap bitmap) {
                     setImageBitmap(bitmap);
                 }
 
@@ -66,7 +66,7 @@ public class HttpImageView extends ImageView {
         }else {
             HttpRequestImage.getInstance().requestImageWithCompress(url,inSimpleSize, new ImageCallback() {
                 @Override
-                public void success(Bitmap bitmap) {
+                public void callback(Bitmap bitmap) {
                     setImageBitmap(bitmap);
                 }
 
@@ -95,7 +95,7 @@ public class HttpImageView extends ImageView {
         }
         HttpRequestImage.getInstance().requestImageWithCompress(url, inSimpleSize, new ImageCallback() {
             @Override
-            public void success(Bitmap bitmap) {
+            public void callback(Bitmap bitmap) {
                 setImageBitmap(bitmap);
             }
 
@@ -120,7 +120,7 @@ public class HttpImageView extends ImageView {
         }
         HttpRequestImage.getInstance().requestImageWithCompress(url, reqWidth, reqHeight, new ImageCallback() {
             @Override
-            public void success(Bitmap bitmap) {
+            public void callback(Bitmap bitmap) {
                 setImageBitmap(bitmap);
             }
 

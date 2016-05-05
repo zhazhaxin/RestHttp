@@ -161,7 +161,7 @@ public class RequestConnection {
                  */
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
                 if (entry != null) {  //响应头带有缓存
-                    NetworkCache.getInstance().put(Util.getCacheKey(logUrl), entry);
+                    ServerCache.getInstance().put(Util.getCacheKey(logUrl), entry);
                     RestHttpLog.i(entry.toString());
                 }
 

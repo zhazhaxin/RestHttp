@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.Method;
-import cn.alien95.resthttp.request.NetworkCache;
-import cn.alien95.resthttp.request.NetworkCacheDispatcher;
+import cn.alien95.resthttp.request.ServerCache;
+import cn.alien95.resthttp.request.ServerCacheDispatcher;
 import cn.alien95.resthttp.request.ThreadPool;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
@@ -112,8 +112,8 @@ public class RestHttpRequest {
                         /**
                          * 异步处理任务，判断缓存
                          */
-                        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
+                            ServerCacheDispatcher.getInstance().addAsynRestCacheRequest(urlStr, Method.GET, null, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             ThreadPool.getInstance().addRestRequest(new Runnable() {
@@ -134,8 +134,8 @@ public class RestHttpRequest {
                         /**
                          * 同步处理任务
                          */
-                        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-                            returnObject = NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(urlStr, Method.GET, null, method.getReturnType());
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
+                            returnObject = ServerCacheDispatcher.getInstance().addSyncRestCacheRequest(urlStr, Method.GET, null, method.getReturnType());
                         } else { //无缓存
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             returnObject = RestHttpConnection.getInstance().quest(urlStr,
@@ -179,8 +179,8 @@ public class RestHttpRequest {
                         /**
                          * 判断是否带有缓存,如果有缓存，异步获取缓存
                          */
-                        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //有缓存
-                            NetworkCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //有缓存
+                            ServerCacheDispatcher.getInstance().addAsynRestCacheRequest(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(),(RestCallback) args[finalCallbackPosition]);
                         } else {  //无缓存
                             final String finalUrl = url;
                             ThreadPool.getInstance().addRestRequest(new Runnable() {
@@ -205,8 +205,8 @@ public class RestHttpRequest {
                         /**
                          * 同步请求，判断缓存处理
                          */
-                        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //存在缓存
-                            returnObject = NetworkCacheDispatcher.getInstance().addSyncRestCacheRequest(url, Method.POST, params, method.getReturnType());
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //存在缓存
+                            returnObject = ServerCacheDispatcher.getInstance().addSyncRestCacheRequest(url, Method.POST, params, method.getReturnType());
                         } else { //无缓存
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             returnObject = RestHttpConnection.getInstance().quest(url,

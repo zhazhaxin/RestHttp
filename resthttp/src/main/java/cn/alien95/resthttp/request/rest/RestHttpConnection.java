@@ -19,7 +19,7 @@ import java.util.Set;
 import cn.alien95.resthttp.request.Cache;
 import cn.alien95.resthttp.request.HttpHeaderParser;
 import cn.alien95.resthttp.request.Method;
-import cn.alien95.resthttp.request.NetworkCache;
+import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
@@ -159,7 +159,7 @@ public class RestHttpConnection {
                  */
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
                 if (entry != null) {  //应该存储缓存数据
-                    NetworkCache.getInstance().put(Util.getCacheKey(logUrl), entry);
+                    ServerCache.getInstance().put(Util.getCacheKey(logUrl), entry);
                     RestHttpLog.i(entry.toString());
                 }
 

@@ -3,7 +3,6 @@ package cn.alien95.resthttp.image.cache;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -34,7 +33,6 @@ public class MemoryCache implements ImgCache {
         String cacheKey = getCacheKey(key);
         if (get(cacheKey) == null) {
             if (lruCache.put(cacheKey, bitmap) != null) {
-                RestHttpLog.i("memory cache save success");
             }
         }
     }
@@ -47,6 +45,16 @@ public class MemoryCache implements ImgCache {
     @Override
     public boolean isExist(String key) {
         return lruCache.get(getCacheKey(key)) != null;
+    }
+
+    @Override
+    public void remove(String key) {
+        lruCache.remove(key);
+    }
+
+    @Override
+    public void clear() {
+
     }
 
     /**

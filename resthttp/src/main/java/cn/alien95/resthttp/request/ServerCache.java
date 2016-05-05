@@ -15,25 +15,25 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/4/27.
  */
-public class NetworkCache implements Cache {
+public class ServerCache implements Cache {
 
     /**
      * 缓存的根目录
      */
-    public static final File networkCacheRoot = Util.getDiskCacheDir("NetworkCache");
+    public static final File networkCacheRoot = Util.getDiskCacheDir("ServerCache");
     private List<File> cacheFiles;
-    private static NetworkCache instance;
+    private static ServerCache instance;
 
-    private NetworkCache() {
+    private ServerCache() {
         cacheFiles = new ArrayList<>();
         for (File file : networkCacheRoot.listFiles()) {
             cacheFiles.add(file);
         }
     }
 
-    public static NetworkCache getInstance() {
+    public static ServerCache getInstance() {
         if (instance == null) {
-            instance = new NetworkCache();
+            instance = new ServerCache();
         }
         return instance;
     }

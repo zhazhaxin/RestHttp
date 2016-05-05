@@ -2,9 +2,7 @@ package cn.alien95.resthttp.image;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
@@ -23,51 +21,6 @@ public class ImageUtils {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
         return BitmapFactory.decodeStream(inputStream, null, options);
-    }
-
-    /**
-     * 压缩图片通过要求的宽和高
-     * @param inputStream
-     * @param reqWidth
-     * @param reqHeight
-     * @return
-     */
-    public static Bitmap compressBitmapFromInputStream(InputStream inputStream, int reqWidth,int reqHeight){
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(inputStream, null, options);
-        options.inSampleSize = calculateInSampleSize(options,reqWidth,reqHeight);
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeStream(inputStream,null,options);
-    }
-
-    /**
-     * 压缩Bitmap
-     * @param bitmap
-     * @param size 大小应该时KB为单位
-     * @return
-     */
-    public static Bitmap compressBitmap(Bitmap bitmap, int size) {
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
-        float zoom = (float) Math.sqrt(size * 1024 / (float) out.toByteArray().length);
-
-        Matrix matrix = new Matrix();
-        matrix.setScale(zoom, zoom);
-
-        Bitmap result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-
-        out.reset();
-        result.compress(Bitmap.CompressFormat.JPEG, 85, out);
-        while (out.toByteArray().length > size * 1024) {
-            System.out.println(out.toByteArray().length);
-            matrix.setScale(0.9f, 0.9f);
-            result = Bitmap.createBitmap(result, 0, 0, result.getWidth(), result.getHeight(), matrix, true);
-            out.reset();
-            result.compress(Bitmap.CompressFormat.JPEG, 85, out);
-        }
-        return result;
     }
 
     /**

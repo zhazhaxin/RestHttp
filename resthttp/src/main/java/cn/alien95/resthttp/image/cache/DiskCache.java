@@ -116,4 +116,18 @@ public class DiskCache implements ImgCache {
         }
         return false;
     }
+
+    @Override
+    public void remove(String key) {
+        try {
+            diskLruCache.remove(key);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void clear() {
+        diskLruCache.getDirectory().delete();
+    }
 }

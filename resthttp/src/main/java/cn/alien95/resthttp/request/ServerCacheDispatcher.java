@@ -19,24 +19,24 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/4/27.
  */
-public class NetworkCacheDispatcher {
+public class ServerCacheDispatcher {
 
     private boolean isEmptyQueue = true;
     private boolean isRestEmptyQueue = true;
     private LinkedBlockingDeque<Request> cacheQueue;
     private LinkedBlockingDeque<Request> restCacheQueue;
     private Handler handler;
-    private static NetworkCacheDispatcher instance;
+    private static ServerCacheDispatcher instance;
 
-    private NetworkCacheDispatcher() {
+    private ServerCacheDispatcher() {
         cacheQueue = new LinkedBlockingDeque<>();
         restCacheQueue = new LinkedBlockingDeque<>();
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public static NetworkCacheDispatcher getInstance() {
+    public static ServerCacheDispatcher getInstance() {
         if (instance == null) {
-            instance = new NetworkCacheDispatcher();
+            instance = new ServerCacheDispatcher();
         }
         return instance;
     }
@@ -65,7 +65,7 @@ public class NetworkCacheDispatcher {
      * @return
      */
     public Object addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class tClass) {
-        final Cache.Entry entry = NetworkCache.getInstance().get(Util.getCacheKey(url, params));
+        final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(url, params));
 
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
@@ -159,7 +159,7 @@ public class NetworkCacheDispatcher {
                 @Override
                 public Cache.Entry call() throws Exception {
                     RestHttpLog.i("get network async data from cache");
-                    return NetworkCache.getInstance().get(key);
+                    return ServerCache.getInstance().get(key);
                 }
             }).get();
         } catch (InterruptedException e) {
@@ -185,7 +185,7 @@ public class NetworkCacheDispatcher {
                 @Override
                 public Cache.Entry call() throws Exception {
 
-                    return NetworkCache.getInstance().get(key);
+                    return ServerCache.getInstance().get(key);
                 }
             }).get();
         } catch (InterruptedException e) {

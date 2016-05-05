@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 public interface ImageCallback {
 
-    void success(Bitmap bitmap);
+    void callback(Bitmap bitmap);
     void failure();
-
 }

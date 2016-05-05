@@ -51,8 +51,8 @@ public class HttpRequest extends Http {
         /**
          * 缓存判断
          */
-        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
-            NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
+            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
             ThreadPool.getInstance().addRequest(url, Method.GET, null, callBack);
     }
@@ -69,8 +69,8 @@ public class HttpRequest extends Http {
         /**
          * 缓存判断
          */
-        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
-            NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
+            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
             ThreadPool.getInstance().addRequest(url, Method.POST, params, callBack);
     }
