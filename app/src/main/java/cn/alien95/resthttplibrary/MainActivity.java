@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                                     + userInfo.toString());
                         }
                         if (userInfo1 != null) {
-                            result.setText(result.getText().toString() + "\n GET :       " + userInfo1.toString());
+                            result.setText(result.getText().toString() + "\n GET userInfo1:       " + userInfo1.toString());
                         } else {
                             RestHttpLog.i("userInfo1为空");
                         }
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }).start();
+
 
         /**
          * 异步操作，受线程池控制

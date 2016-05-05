@@ -13,8 +13,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
-import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
+import cn.alien95.resthttp.util.Util;
 
 /**
  * Created by linlongxin on 2016/4/27.
@@ -65,7 +65,7 @@ public class NetworkCacheDispatcher {
      * @return
      */
     public Object addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class tClass) {
-        final Cache.Entry entry = NetworkCache.getInstance().get(CacheKeyUtils.getCacheKey(url, params));
+        final Cache.Entry entry = NetworkCache.getInstance().get(Util.getCacheKey(url, params));
 
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
@@ -89,11 +89,11 @@ public class NetworkCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = getCacheAsyn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
+            entry = getCacheAsyn(Util.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpLog.i("缓存过期");
-                    RequestQueue.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
+                    ThreadPool.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
                 } else {
                     request.callback.success(entry.data);
                 }
@@ -107,7 +107,7 @@ public class NetworkCacheDispatcher {
          */
         while (!restCacheQueue.isEmpty()) {
             request = restCacheQueue.poll();
-            entry = getRestCacheAysn(CacheKeyUtils.getCacheKey(request.httpUrl, request.params));
+            entry = getRestCacheAysn(Util.getCacheKey(request.httpUrl, request.params));
             if (entry != null) {
                 if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                     RestHttpLog.i("缓存过期");
@@ -115,7 +115,7 @@ public class NetworkCacheDispatcher {
                     /**
                      * 这里只有异步
                      */
-                    RequestQueue.getInstance().addRestRequest(new Runnable() {
+                    ThreadPool.getInstance().addRestRequest(new Runnable() {
                         @Override
                         public void run() {
                             final Object result = RestHttpConnection.getInstance().quest(finalRequest.httpUrl,
@@ -155,10 +155,10 @@ public class NetworkCacheDispatcher {
      */
     public Cache.Entry getCacheAsyn(final String key) {
         try {
-            return (Cache.Entry) RequestQueue.getInstance().putThreadPool(new Callable<Cache.Entry>() {
+            return (Cache.Entry) ThreadPool.getInstance().submitCallable(new Callable<Cache.Entry>() {
                 @Override
                 public Cache.Entry call() throws Exception {
-                    RestHttpLog.i("get network data from sync cache");
+                    RestHttpLog.i("get network async data from cache");
                     return NetworkCache.getInstance().get(key);
                 }
             }).get();
@@ -171,7 +171,7 @@ public class NetworkCacheDispatcher {
     }
 
     public <T> T getRestCacheSync(Cache.Entry entry, Class<T> tClass) {
-        RestHttpLog.i("get network data from sync cache");
+        RestHttpLog.i("get network sync data from cache");
         if (tClass != null && tClass != void.class) {
             return new Gson().fromJson(entry.data, tClass);
         }
@@ -179,9 +179,9 @@ public class NetworkCacheDispatcher {
     }
 
     public <T> Cache.Entry getRestCacheAysn(final String key) {
-        RestHttpLog.i("get network data from aysn cache");
+        RestHttpLog.i("get network aysn data from cache");
         try {
-            return (Cache.Entry) RequestQueue.getInstance().putThreadPool(new Callable<Cache.Entry>() {
+            return (Cache.Entry) ThreadPool.getInstance().submitCallable(new Callable<Cache.Entry>() {
                 @Override
                 public Cache.Entry call() throws Exception {
 

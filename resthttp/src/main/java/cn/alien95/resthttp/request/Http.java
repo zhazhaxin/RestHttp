@@ -6,7 +6,7 @@ import java.util.Map;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
-import cn.alien95.resthttp.util.Utils;
+import cn.alien95.resthttp.util.Util;
 
 
 /**
@@ -20,7 +20,7 @@ public abstract class Http {
      * @param context
      */
     public static void initialize(Context context) {
-        Utils.init(context);
+        Util.init(context);
         NetworkCache.checkCacheRoot();
     }
 

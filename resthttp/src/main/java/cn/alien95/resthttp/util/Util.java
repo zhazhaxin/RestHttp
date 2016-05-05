@@ -5,26 +5,24 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * Created by linlongxin on 2016/1/27.
  */
-public class Utils {
+public class Util {
 
     private static Context mContext;
 
     public static void init(Context context) {
         mContext = context;
-    }
-
-    public static void Toast(String content) {
-        Toast.makeText(mContext, content, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -136,5 +134,29 @@ public class Utils {
             return false;
         }
     };
+
+    public static String getCacheKey(String url){
+        return Util.MD5(url);
+    }
+
+    public static String getCacheKey(String url, Map<String, String> params) {
+        /**
+         * 只有POST才会有参数
+         */
+        StringBuilder paramStrBuilder = new StringBuilder();
+        if (params != null) {
+            for (Map.Entry<String, String> map : params.entrySet()) {
+                try {
+                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
+                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            paramStrBuilder.deleteCharAt(0);
+            url = url + "?" + paramStrBuilder;
+        }
+        return Util.MD5(url);
+    }
 
 }

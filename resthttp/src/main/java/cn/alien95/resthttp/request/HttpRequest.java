@@ -3,7 +3,7 @@ package cn.alien95.resthttp.request;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.CacheKeyUtils;
+import cn.alien95.resthttp.util.Util;
 
 
 /**
@@ -51,10 +51,10 @@ public class HttpRequest extends Http {
         /**
          * 缓存判断
          */
-        if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url))) {
+        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
-            RequestQueue.getInstance().addRequest(url, Method.GET, null, callBack);
+            ThreadPool.getInstance().addRequest(url, Method.GET, null, callBack);
     }
 
     /**
@@ -69,10 +69,10 @@ public class HttpRequest extends Http {
         /**
          * 缓存判断
          */
-        if (NetworkCache.getInstance().isExistsCache(CacheKeyUtils.getCacheKey(url, params))) {
+        if (NetworkCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
             NetworkCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
-            RequestQueue.getInstance().addRequest(url, Method.POST, params, callBack);
+            ThreadPool.getInstance().addRequest(url, Method.POST, params, callBack);
     }
 
 }

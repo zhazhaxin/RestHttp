@@ -9,9 +9,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.alien95.resthttp.util.CacheKeyUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
-import cn.alien95.resthttp.util.Utils;
+import cn.alien95.resthttp.util.Util;
 
 /**
  * Created by linlongxin on 2016/4/27.
@@ -21,7 +20,7 @@ public class NetworkCache implements Cache {
     /**
      * 缓存的根目录
      */
-    public static final File networkCacheRoot = Utils.getDiskCacheDir("NetworkCache");
+    public static final File networkCacheRoot = Util.getDiskCacheDir("NetworkCache");
     private List<File> cacheFiles;
     private static NetworkCache instance;
 
@@ -67,7 +66,7 @@ public class NetworkCache implements Cache {
 
     @Override
     public void remove(String key) {
-        String fileName = CacheKeyUtils.getCacheKey(key);
+        String fileName = Util.getCacheKey(key);
         for (File file : cacheFiles) {
             if (file.getName().equals(fileName)) {
                 file.delete();

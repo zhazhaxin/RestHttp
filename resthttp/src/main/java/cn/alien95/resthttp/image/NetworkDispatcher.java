@@ -14,9 +14,10 @@ import java.net.URL;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
-import cn.alien95.resthttp.request.RequestQueue;
+import cn.alien95.resthttp.request.ThreadPool;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
+import cn.alien95.resthttp.util.Util;
 
 /**
  * Created by linlongxin on 2016/4/26.
@@ -30,20 +31,20 @@ public class NetworkDispatcher {
     }
 
     public void addNetwork(String url, ImageCallback callback) {
-        networkImage(url,callback);
+        networkImage(url, callback);
     }
 
     public void addNetworkWithCompress(String url, int inSimpleSize, ImageCallback callback) {
-        networkImageWithCompress(url,inSimpleSize,callback);
+        networkImageWithCompress(url, inSimpleSize, callback);
     }
 
-    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight,ImageCallback callback) {
-        networkImageWithCompress(url,reqWidth,reqHeight,callback);
+    public void addNetworkWithCompress(String url, int reqWidth, int reqHeight, ImageCallback callback) {
+        networkImageWithCompress(url, reqWidth, reqHeight, callback);
     }
 
     public void networkImage(final String url, final ImageCallback callback) {
         RestHttpLog.i("Get picture from network");
-        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -59,8 +60,8 @@ public class NetworkDispatcher {
                             public void run() {
                                 callback.success(bitmap);
                                 if (bitmap != null) {
-                                    MemoryCache.getInstance().putBitmapToCache(url, bitmap);
-                                    DiskCache.getInstance().putBitmapToCache(url, bitmap);
+                                    MemoryCache.getInstance().put(Util.getCacheKey(url), bitmap);
+                                    DiskCache.getInstance().put(Util.getCacheKey(url), bitmap);
                                 }
                             }
                         });
@@ -100,7 +101,7 @@ public class NetworkDispatcher {
      */
     public synchronized void networkImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -116,8 +117,8 @@ public class NetworkDispatcher {
                             public void run() {
                                 callBack.success(compressBitmap);
                                 if (compressBitmap != null) {
-                                    MemoryCache.getInstance().putBitmapToCache(url + inSampleSize, compressBitmap);
-                                    DiskCache.getInstance().putBitmapToCache(url + inSampleSize, compressBitmap);
+                                    MemoryCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
+                                    DiskCache.getInstance().put(Util.getCacheKey(url + inSampleSize), compressBitmap);
                                 }
                             }
                         });
@@ -131,7 +132,7 @@ public class NetworkDispatcher {
 
     public synchronized void networkImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
-        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -160,8 +161,8 @@ public class NetworkDispatcher {
                             public void run() {
                                 callBack.success(compressBitmap);
                                 if (compressBitmap != null) {
-                                    MemoryCache.getInstance().putBitmapToCache(url + reqWidth + "/" + reqHeight, compressBitmap);
-                                    DiskCache.getInstance().putBitmapToCache(url + reqWidth + "/" + reqHeight, compressBitmap);
+                                    MemoryCache.getInstance().put(Util.getCacheKey(url + reqWidth + "/" + reqHeight), compressBitmap);
+                                    DiskCache.getInstance().put(Util.getCacheKey(url + reqWidth + "/" + reqHeight), compressBitmap);
                                 }
                             }
                         });

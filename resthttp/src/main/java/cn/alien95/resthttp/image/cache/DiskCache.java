@@ -11,10 +11,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
-import cn.alien95.resthttp.image.callback.DiskCallback;
-import cn.alien95.resthttp.request.RequestQueue;
-import cn.alien95.resthttp.util.Utils;
+import cn.alien95.resthttp.request.ThreadPool;
+import cn.alien95.resthttp.util.Util;
 
 
 /**
@@ -31,12 +32,12 @@ public class DiskCache implements ImgCache {
     private DiskCache() {
         handler = new Handler(Looper.getMainLooper());
         try {
-            File cacheDir = Utils.getDiskCacheDir(IMAGE_CACHE_PATH);
+            File cacheDir = Util.getDiskCacheDir(IMAGE_CACHE_PATH);
             if (!cacheDir.exists()) {
                 cacheDir.mkdirs();
             }
             //50MB硬盘缓存
-            diskLruCache = DiskLruCache.open(cacheDir, Utils.getAppVersion(), 1, 50 * 1024 * 1024);
+            diskLruCache = DiskLruCache.open(cacheDir, Util.getAppVersion(), 1, 50 * 1024 * 1024);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,96 +53,67 @@ public class DiskCache implements ImgCache {
     /**
      * 把Bitmap写入到缓存中
      *
-     * @param imageUrl
+     * @param key
      * @param resourceBitmap
      */
     @Override
-    public void putBitmapToCache(final String imageUrl, final Bitmap resourceBitmap) {
-
-        getBitmapFromCacheAsync(imageUrl, new DiskCallback() {
-            @Override
-            public void callback(Bitmap bitmap) {
-                if (bitmap != null) {
-                    return;
-                }
-                DiskLruCache.Editor editor;
-                try {
-                    editor = diskLruCache.edit(getCacheKey(imageUrl));
-                    if (editor != null) {
-                        OutputStream outputStream = editor.newOutputStream(0);
-                        boolean success = resourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                        outputStream.close();
-                        if (success) {
-                            editor.commit();
-                        } else {
-                            editor.abort();
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-
-    @Override
-    public Bitmap getBitmapFromCache(String key) {
-        return null;
-    }
-
-    /**
-     * 根据imageUrl从缓存读取Bitmap
-     *
-     * @param imageUrl
-     * @param callback
-     */
-    @Override
-    public void getBitmapFromCacheAsync(final String imageUrl, final DiskCallback callback) {
-
-        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DiskLruCache.Snapshot snapShot = diskLruCache.get(getCacheKey(imageUrl));
-                    if (snapShot != null) {
-                        InputStream is = snapShot.getInputStream(0);
-                        final Bitmap bitmap = BitmapFactory.decodeStream(is);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.callback(bitmap);
-                                MemoryCache.getInstance().putBitmapToCache(imageUrl,bitmap);
-                            }
-                        });
+    public void put(final String key, final Bitmap resourceBitmap) {
+        if (isExist(key)) {
+            return;
+        } else {
+            try {
+                DiskLruCache.Editor editor = diskLruCache.edit(key);
+                if (editor != null) {
+                    OutputStream outputStream = editor.newOutputStream(0);
+                    boolean success = resourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    outputStream.close();
+                    if (success) {
+                        editor.commit();
                     } else {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.callback(null);
-                            }
-                        });
+                        editor.abort();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 
+
     @Override
-    public boolean isCache(String imageUrl) {
+    public Bitmap get(final String key) {
         try {
-            if(diskLruCache.get(getCacheKey(imageUrl)) != null){
-                return true;
+            final DiskLruCache.Snapshot snapShot = diskLruCache.get(key);
+            if (snapShot != null) {
+                try {
+                    return (Bitmap) ThreadPool.getInstance().submitCallable(new Callable<Bitmap>() {
+                        @Override
+                        public Bitmap call() throws Exception {
+                            InputStream is = snapShot.getInputStream(0);
+                            return BitmapFactory.decodeStream(is);
+                        }
+                    }).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    private String getCacheKey(String key) {
-        return Utils.MD5(key);
+    @Override
+    public boolean isExist(String key) {
+        try {
+            DiskLruCache.Snapshot snapShot = diskLruCache.get(key);
+            if (snapShot != null)
+                return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

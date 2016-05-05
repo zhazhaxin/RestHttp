@@ -14,8 +14,9 @@ import cn.alien95.resthttp.image.cache.CacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
-import cn.alien95.resthttp.request.RequestQueue;
+import cn.alien95.resthttp.request.ThreadPool;
 import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.Util;
 
 
 /**
@@ -57,9 +58,9 @@ public class HttpRequestImage {
      * @param callBack 回调接口
      */
     public void requestImage(final String url, final ImageCallback callBack) {
-        if (MemoryCache.getInstance().isCache(url)) {
+        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url))) {
             cacheDispatcher.addCacheQueue(url, callBack);
-        } else if (DiskCache.getInstance().isCache(url)) {
+        } else if (DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
             cacheDispatcher.addCacheQueue(url, callBack);
         } else {
             networkDispatcher.addNetwork(url, callBack);
@@ -78,14 +79,15 @@ public class HttpRequestImage {
         /**
          * 判断是否真的压缩了
          */
-        if(inSampleSize <= 1){
-            if (MemoryCache.getInstance().isCache(url)|| DiskCache.getInstance().isCache(url)) {
+        if (inSampleSize <= 1) {
+            if (MemoryCache.getInstance().isExist(Util.getCacheKey(url)) || DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
                 cacheDispatcher.addCacheQueue(url, callBack);
             } else {
                 networkDispatcher.addNetwork(url, callBack);
             }
-        }else if (inSampleSize > 1){
-            if (MemoryCache.getInstance().isCache(url + inSampleSize) || DiskCache.getInstance().isCache(url + inSampleSize)) {
+        } else if (inSampleSize > 1) {
+            if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize)) ||
+                    DiskCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize))) {
                 cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
             } else {
                 networkDispatcher.addNetworkWithCompress(url, inSampleSize, callBack);
@@ -103,10 +105,11 @@ public class HttpRequestImage {
      * @param callBack
      */
     public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        if(MemoryCache.getInstance().isCache(url + reqWidth + "/" + reqHeight) || DiskCache.getInstance().isCache(url + reqWidth + "/" + reqHeight)){
-            cacheDispatcher.addCacheQueue(url,reqWidth,reqHeight,callBack);
-        }else {
-            networkDispatcher.addNetworkWithCompress(url,reqWidth,reqHeight,callBack);
+        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight)) ||
+                DiskCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight))) {
+            cacheDispatcher.addCacheQueue(url, reqWidth, reqHeight, callBack);
+        } else {
+            networkDispatcher.addNetworkWithCompress(url, reqWidth, reqHeight, callBack);
         }
     }
 
@@ -129,7 +132,7 @@ public class HttpRequestImage {
 
 
     public synchronized void loadImageFromNetWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        RequestQueue.getInstance().addReadImgCacheAsyn(new Runnable() {
+        ThreadPool.getInstance().addReadImgCacheAsyn(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection urlConnection = getHttpUrlConnection(url);
@@ -158,8 +161,8 @@ public class HttpRequestImage {
                             public void run() {
                                 callBack.success(compressBitmap);
                                 if (compressBitmap != null) {
-                                    MemoryCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
-                                    DiskCache.getInstance().putBitmapToCache(url + reqWidth + reqHeight, compressBitmap);
+                                    MemoryCache.getInstance().put(Util.getCacheKey(url + reqWidth + reqHeight), compressBitmap);
+                                    DiskCache.getInstance().put(Util.getCacheKey(url + reqWidth + reqHeight), compressBitmap);
                                 }
                             }
                         });

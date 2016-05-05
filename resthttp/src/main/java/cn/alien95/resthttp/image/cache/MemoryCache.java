@@ -3,9 +3,8 @@ package cn.alien95.resthttp.image.cache;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import cn.alien95.resthttp.image.callback.DiskCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
-import cn.alien95.resthttp.util.Utils;
+import cn.alien95.resthttp.util.Util;
 
 
 /**
@@ -31,9 +30,9 @@ public class MemoryCache implements ImgCache {
     }
 
     @Override
-    public void putBitmapToCache(String key, Bitmap bitmap) {
+    public void put(String key, Bitmap bitmap) {
         String cacheKey = getCacheKey(key);
-        if (getBitmapFromCache(cacheKey) == null) {
+        if (get(cacheKey) == null) {
             if (lruCache.put(cacheKey, bitmap) != null) {
                 RestHttpLog.i("memory cache save success");
             }
@@ -41,17 +40,12 @@ public class MemoryCache implements ImgCache {
     }
 
     @Override
-    public Bitmap getBitmapFromCache(String key) {
+    public Bitmap get(String key) {
         return lruCache.get(getCacheKey(key));
     }
 
     @Override
-    public void getBitmapFromCacheAsync(String imageUrl, DiskCallback callback) {
-
-    }
-
-    @Override
-    public boolean isCache(String key) {
+    public boolean isExist(String key) {
         return lruCache.get(getCacheKey(key)) != null;
     }
 
@@ -62,7 +56,7 @@ public class MemoryCache implements ImgCache {
      * @return
      */
     private String getCacheKey(String key) {
-        return Utils.MD5(key);
+        return Util.MD5(key);
     }
 
 }
