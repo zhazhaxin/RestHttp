@@ -37,7 +37,11 @@ public class HttpRequest extends Http {
      * @param header
      */
     public void setHeader(Map<String, String> header) {
-        RequestConnection.getInstance().setHttpHeader(header);
+        RequestConnection.getInstance().setHeader(header);
+    }
+
+    public void setHeader(String key, String value) {
+        RequestConnection.getInstance().setHeader(key,value);
     }
 
     /**

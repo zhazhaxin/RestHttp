@@ -49,8 +49,15 @@ public class RestConnection {
      *
      * @param header 请求头内容
      */
-    protected void setHttpHeader(Map<String, String> header) {
+    protected void setHeader(Map<String, String> header) {
         this.header = header;
+    }
+
+    protected void setHeader(String key, String value) {
+        if (header == null) {
+            header = new HashMap<>();
+        }
+        header.put(key, value);
     }
 
     /**

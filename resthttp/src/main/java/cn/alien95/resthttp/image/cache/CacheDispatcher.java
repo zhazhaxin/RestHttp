@@ -25,7 +25,7 @@ public class CacheDispatcher {
      * @param callback
      */
     public void addCacheQueue(String url, ImageCallback callback) {
-        cacheQueue.add(new ImgRequest(url, callback));
+        cacheQueue.add(new ImgRequest(url, 1, callback));
         if (isCacheQueueEmpty) {
             start();
         }

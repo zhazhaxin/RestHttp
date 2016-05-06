@@ -11,11 +11,6 @@ public class ImgRequest {
     public String url;
     public ImageCallback callback;
 
-    public ImgRequest(String url, ImageCallback callback) {
-        this.url = url;
-        this.callback = callback;
-    }
-
     public ImgRequest(String url, int inSampleSize, ImageCallback callback) {
         this.url = url;
         this.inSampleSize = inSampleSize;

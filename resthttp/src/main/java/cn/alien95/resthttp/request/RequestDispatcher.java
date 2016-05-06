@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import cn.alien95.resthttp.image.ImageUtils;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.ImgRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
@@ -166,7 +165,7 @@ public class RequestDispatcher {
                             }
                             BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                             if (imgRequest.inSampleSize == 0) {
-                                options.inSampleSize = ImageUtils.calculateInSampleSize(options, imgRequest.reqWidth, imgRequest.reqHeight);
+                                options.inSampleSize = Util.calculateInSampleSize(options, imgRequest.reqWidth, imgRequest.reqHeight);
                             } else {
                                 options.inSampleSize = imgRequest.inSampleSize;
                             }
@@ -178,12 +177,12 @@ public class RequestDispatcher {
                                 public void run() {
                                     imgRequest.callback.callback(bitmap);
                                     if (bitmap != null) {
-                                        if (imgRequest.inSampleSize == 0) {
+                                        if (imgRequest.isControlWidthAndHeight) {
                                             MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
                                                     bitmap);
                                             DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
                                                     bitmap);
-                                        } else if (imgRequest.inSampleSize == 1) {
+                                        } else if (imgRequest.inSampleSize <= 1) {
                                             MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url),
                                                     bitmap);
                                             DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url),

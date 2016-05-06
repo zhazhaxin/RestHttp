@@ -1,7 +1,5 @@
 package cn.alien95.resthttp.request.rest;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import java.lang.annotation.Annotation;
@@ -11,11 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.ServerCacheDispatcher;
-import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
+import cn.alien95.resthttp.request.rest.method.Header;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
@@ -25,8 +24,6 @@ import cn.alien95.resthttp.util.Util;
  * Created by linlongxin on 2016/3/24.
  */
 public class RestHttpRequest {
-
-    private Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * 通过动态代理，实例化接口
@@ -78,8 +75,17 @@ public class RestHttpRequest {
             Object returnObject = null;
 
             for (final Annotation methodAnnotation : annotations) {
+
                 /**
-                 * -----------------------------------GET请求处理-------------------------------------
+                 * 请求头
+                 */
+                if (methodAnnotation instanceof Header) {
+                    String headerStr = ((Header) methodAnnotation).value();
+                    String[] header = headerStr.split(":");
+                    RestConnection.getInstance().setHeader(header[0], header[1]);
+                }
+                /**
+                 * -----------------------------------GET请求处理--------------------------------------------------------
                  */
                 if (methodAnnotation instanceof GET) {
 
@@ -135,7 +141,7 @@ public class RestHttpRequest {
 
                 } else if (methodAnnotation instanceof POST) {
                     /**
-                     * -------------------------------POST请求处理---------------------------------
+                     * -------------------------------POST请求处理------------------------------------------------------------------
                      */
                     final Map<String, String> params = new HashMap<>();
 

@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by linlongxin on 2016/3/23.
+ * Created by linlongxin on 2016/5/6.
  */
+@Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface POST {
+public @interface Header {
 
-    String value() default "";
+    String value();
 }

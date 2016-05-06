@@ -1,7 +1,5 @@
 package cn.alien95.resthttp.image;
 
-import android.os.Handler;
-
 import cn.alien95.resthttp.image.cache.CacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.MemoryCache;
@@ -17,12 +15,10 @@ public class HttpRequestImage {
     private CacheDispatcher cacheDispatcher;
     private ImgRequestDispatcher imgRequestDispatcher;
     private static HttpRequestImage instance;
-    private Handler handler;
 
     private HttpRequestImage() {
         cacheDispatcher = new CacheDispatcher();
         imgRequestDispatcher = new ImgRequestDispatcher();
-        handler = new Handler();
     }
 
     /**
@@ -65,7 +61,7 @@ public class HttpRequestImage {
      * @param inSampleSize
      * @param callBack
      */
-    public synchronized void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
+    public void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
         /**
          * 判断是否真的压缩了
          */
@@ -93,7 +89,7 @@ public class HttpRequestImage {
      * @param reqHeight
      * @param callBack
      */
-    public synchronized void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
+    public void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight)) ||
                 DiskCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight))) {
             cacheDispatcher.addCacheQueue(url, reqWidth, reqHeight, callBack);
