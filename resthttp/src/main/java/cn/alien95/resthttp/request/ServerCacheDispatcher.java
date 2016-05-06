@@ -19,14 +19,11 @@ import cn.alien95.resthttp.util.Util;
 public class ServerCacheDispatcher {
 
     private boolean isEmptyQueue = true;
-    private boolean isRestEmptyQueue = true;
     private LinkedBlockingDeque<Request> cacheQueue;
-    private LinkedBlockingDeque<Request> restCacheQueue;
     private static ServerCacheDispatcher instance;
 
     private ServerCacheDispatcher() {
         cacheQueue = new LinkedBlockingDeque<>();
-        restCacheQueue = new LinkedBlockingDeque<>();
     }
 
     public static ServerCacheDispatcher getInstance() {
@@ -43,9 +40,9 @@ public class ServerCacheDispatcher {
         }
     }
 
-    public void addAsynRestCache(String url, int method, Map<String, String> params, Class resultType, RestCallback<Object> restCallback) {
-        restCacheQueue.add(new Request(url, method, params, resultType, restCallback));
-        if (isRestEmptyQueue) {
+    public void addCacheRequest(String url, int method, Map<String, String> params, Class returnType, RestCallback callback) {
+        cacheQueue.add(new Request(url, method, params, returnType, callback));
+        if (isEmptyQueue) {
             start();
         }
     }
@@ -59,7 +56,7 @@ public class ServerCacheDispatcher {
      * @param tClass
      * @return
      */
-    public Object addSyncRestCacheRequest(String url, int method, Map<String, String> params, Class tClass) {
+    public Object getRestCacheSync(String url, int method, Map<String, String> params, Class tClass) {
         final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(url, params));
 
         if (entry != null) {
@@ -68,7 +65,11 @@ public class ServerCacheDispatcher {
                 return RestConnection.getInstance().quest(url,
                         method, params, tClass);
             } else {
-                return getRestCacheSync(entry, tClass);
+                RestHttpLog.i("get network sync data from cache");
+                if (tClass != null && tClass != void.class) {
+                    return new Gson().fromJson(entry.data, tClass);
+                }
+                return null;
             }
         }
         return null;
@@ -78,54 +79,44 @@ public class ServerCacheDispatcher {
     public Object start() {
         Request request;
         Cache.Entry entry;
-
         /**
          * 普通请求方式，只有异步
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
             entry = getCacheAsyn(Util.getCacheKey(request.httpUrl, request.params));
-            if (entry != null) {
-                if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                    RestHttpLog.i("缓存过期");
-                    ThreadPool.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
-                } else {
-                    request.callback.success(entry.data);
-                }
-            }
+            if (request.restCallback == null) {
+                if (entry != null) {
 
-            isEmptyQueue = false;
-        }
-
-        /**
-         * Restful接口缓存处理,只要异步
-         */
-        while (!restCacheQueue.isEmpty()) {
-            request = restCacheQueue.poll();
-            entry = getRestCacheAysn(Util.getCacheKey(request.httpUrl, request.params));
-            if (entry != null) {
-                if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                    RestHttpLog.i("缓存过期");
-                    /**
-                     * 这里只有异步
-                     */
-                    ThreadPool.getInstance().addRequest(request.httpUrl, request.method, request.params,
-                            request.resultType, request.restCallback);
-                } else {
-                    Class returnType = request.restCallback.getActualClass();
-                    if (returnType != null && returnType != void.class) {
-                        request.restCallback.callback(new Gson().fromJson(entry.data, returnType));
+                    if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                        RestHttpLog.i("缓存过期");
+                        RequestDispatcher.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
                     } else {
-                        request.restCallback.callback(null);
+                        request.callback.success(entry.data);
+                    }
+                }
+            } else {
+                if (entry != null) {
+                    if (entry.isExpired() || entry.refreshNeeded()) { //过期了
+                        RestHttpLog.i("缓存过期");
+                        /**
+                         * 这里只有异步
+                         */
+                        RequestDispatcher.getInstance().addRequest(request.httpUrl, request.method, request.params,
+                                request.resultType, request.restCallback);
+                    } else {
+                        Class returnType = request.restCallback.getActualClass();
+                        if (returnType != null && returnType != void.class) {
+                            request.restCallback.callback(new Gson().fromJson(entry.data, returnType));
+                        } else {
+                            request.restCallback.callback(null);
+                        }
                     }
                 }
             }
-
-            isRestEmptyQueue = false;
+            isEmptyQueue = false;
         }
-
         isEmptyQueue = true;
-        isRestEmptyQueue = true;
         return null;
     }
 
@@ -136,37 +127,11 @@ public class ServerCacheDispatcher {
      * @param key
      */
     public Cache.Entry getCacheAsyn(final String key) {
+        RestHttpLog.i("get network async data from cache");
         try {
-            return (Cache.Entry) ThreadPool.getInstance().submitCallable(new Callable<Cache.Entry>() {
+            return (Cache.Entry) RequestDispatcher.getInstance().submitCallable(new Callable<Cache.Entry>() {
                 @Override
                 public Cache.Entry call() throws Exception {
-                    RestHttpLog.i("get network async data from cache");
-                    return ServerCache.getInstance().get(key);
-                }
-            }).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public <T> T getRestCacheSync(Cache.Entry entry, Class<T> tClass) {
-        RestHttpLog.i("get network sync data from cache");
-        if (tClass != null && tClass != void.class) {
-            return new Gson().fromJson(entry.data, tClass);
-        }
-        return null;
-    }
-
-    public <T> Cache.Entry getRestCacheAysn(final String key) {
-        RestHttpLog.i("get network aysn data from cache");
-        try {
-            return (Cache.Entry) ThreadPool.getInstance().submitCallable(new Callable<Cache.Entry>() {
-                @Override
-                public Cache.Entry call() throws Exception {
-
                     return ServerCache.getInstance().get(key);
                 }
             }).get();

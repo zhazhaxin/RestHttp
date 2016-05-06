@@ -13,7 +13,7 @@ import java.util.Map;
 import cn.alien95.resthttp.request.Method;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.ServerCacheDispatcher;
-import cn.alien95.resthttp.request.ThreadPool;
+import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
@@ -113,11 +113,11 @@ public class RestHttpRequest {
                          * 异步处理任务，判断缓存
                          */
                         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-                            ServerCacheDispatcher.getInstance().addAsynRestCache(urlStr, Method.GET, null,
+                            ServerCacheDispatcher.getInstance().addCacheRequest(urlStr, Method.GET, null,
                                     ((RestCallback) args[finalCallbackPosition]).getActualClass(), (RestCallback) args[finalCallbackPosition]);
                         } else {
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
-                            ThreadPool.getInstance().addRequest(urlStr, Method.GET, null,
+                            RequestDispatcher.getInstance().addRequest(urlStr, Method.GET, null,
                                     ((RestCallback) args[finalCallbackPosition]).getActualClass(), (RestCallback) args[finalCallbackPosition]);
                         }
                     } else {
@@ -125,7 +125,7 @@ public class RestHttpRequest {
                          * 同步处理任务
                          */
                         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-                            returnObject = ServerCacheDispatcher.getInstance().addSyncRestCacheRequest(urlStr, Method.GET, null, method.getReturnType());
+                            returnObject = ServerCacheDispatcher.getInstance().getRestCacheSync(urlStr, Method.GET, null, method.getReturnType());
                         } else { //无缓存
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             returnObject = RestConnection.getInstance().quest(urlStr,
@@ -170,9 +170,9 @@ public class RestHttpRequest {
                          * 判断是否带有缓存,如果有缓存，异步获取缓存
                          */
                         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //有缓存
-                            ServerCacheDispatcher.getInstance().addAsynRestCache(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(), (RestCallback) args[finalCallbackPosition]);
+                            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, ((RestCallback) args[finalCallbackPosition]).getActualClass(), (RestCallback) args[finalCallbackPosition]);
                         } else {  //无缓存
-                            ThreadPool.getInstance().addRequest(url, Method.POST, params,
+                            RequestDispatcher.getInstance().addRequest(url, Method.POST, params,
                                     ((RestCallback) args[finalCallbackPosition]).getActualClass(), (RestCallback) args[finalCallbackPosition]);
                         }
 
@@ -181,7 +181,7 @@ public class RestHttpRequest {
                          * 同步请求，判断缓存处理
                          */
                         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //存在缓存
-                            returnObject = ServerCacheDispatcher.getInstance().addSyncRestCacheRequest(url, Method.POST, params, method.getReturnType());
+                            returnObject = ServerCacheDispatcher.getInstance().getRestCacheSync(url, Method.POST, params, method.getReturnType());
                         } else { //无缓存
                             Log.i("NetWork", "thread-name:" + Thread.currentThread().getName());
                             returnObject = RestConnection.getInstance().quest(url,

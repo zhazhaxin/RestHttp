@@ -1,23 +1,18 @@
 package cn.alien95.resthttp.image;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import cn.alien95.resthttp.image.callback.ImageCallback;
-import cn.alien95.resthttp.request.ThreadPool;
+import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
  * Created by linlongxin on 2016/4/26.
  */
-public class RequestImageDispatcher {
+public class ImgRequestDispatcher {
 
-    private Handler handler;
-
-    public RequestImageDispatcher() {
-        handler = new Handler(Looper.getMainLooper());
-    }
+    /**
+     * 这里没有请求队列是因为使用了ThreadPool里面的请求队列
+     */
 
     public void addRequestImg(String url, ImageCallback callback) {
         loadImg(url, 1, callback);
@@ -36,14 +31,14 @@ public class RequestImageDispatcher {
         RestHttpLog.i("Get picture from network");
         DebugUtils.requestImageLog(url);
 
-        ThreadPool.getInstance().addRequestImg(url, inSampleSize, callback);
+        RequestDispatcher.getInstance().addRequestImg(url, inSampleSize, callback);
     }
 
     public synchronized void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
         RestHttpLog.i("Get compress picture from network");
         DebugUtils.requestImageLog(url);
 
-        ThreadPool.getInstance().addRequestImg(url, reqWidth, reqHeight, callBack);
+        RequestDispatcher.getInstance().addRequestImg(url, reqWidth, reqHeight, callBack);
     }
 
 

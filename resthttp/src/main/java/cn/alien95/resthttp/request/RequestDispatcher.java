@@ -31,7 +31,7 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/27.
  */
-public class ThreadPool {
+public class RequestDispatcher {
 
     private boolean isEmptyRequestQueue = true;
     private boolean isEmptyRequestImgQueue = true;
@@ -40,9 +40,9 @@ public class ThreadPool {
     private ExecutorService threadPool; //线程池
     private Handler handler;
 
-    private static ThreadPool instance;
+    private static RequestDispatcher instance;
 
-    private ThreadPool() {
+    private RequestDispatcher() {
         requestQueue = new LinkedBlockingDeque<>();
         imgRequestQueue = new LinkedBlockingDeque<>();
         if (Util.getNumberOfCPUCores() != 0) {
@@ -52,11 +52,11 @@ public class ThreadPool {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public static ThreadPool getInstance() {
+    public static RequestDispatcher getInstance() {
         if (instance == null) {
-            synchronized (ThreadPool.class) {
+            synchronized (RequestDispatcher.class) {
                 if (instance == null) {
-                    instance = new ThreadPool();
+                    instance = new RequestDispatcher();
                 }
             }
         }

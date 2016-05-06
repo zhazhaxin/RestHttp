@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import cn.alien95.resthttp.request.ThreadPool;
+import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -86,7 +86,7 @@ public class DiskCache implements ImgCache {
             final DiskLruCache.Snapshot snapShot = diskLruCache.get(key);
             if (snapShot != null) {
                 try {
-                    return (Bitmap) ThreadPool.getInstance().submitCallable(new Callable<Bitmap>() {
+                    return (Bitmap) RequestDispatcher.getInstance().submitCallable(new Callable<Bitmap>() {
                         @Override
                         public Bitmap call() throws Exception {
                             InputStream is = snapShot.getInputStream(0);

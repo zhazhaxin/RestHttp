@@ -54,7 +54,7 @@ public class HttpRequest extends Http {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
-            ThreadPool.getInstance().addRequest(url, Method.GET, null, callBack);
+            RequestDispatcher.getInstance().addRequest(url, Method.GET, null, callBack);
     }
 
     /**
@@ -72,7 +72,7 @@ public class HttpRequest extends Http {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
-            ThreadPool.getInstance().addRequest(url, Method.POST, params, callBack);
+            RequestDispatcher.getInstance().addRequest(url, Method.POST, params, callBack);
     }
 
 }
