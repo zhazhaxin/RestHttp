@@ -1,8 +1,15 @@
 package cn.alien95.resthttp.request;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +17,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import cn.alien95.resthttp.image.ImageUtils;
+import cn.alien95.resthttp.image.cache.DiskCache;
+import cn.alien95.resthttp.image.cache.ImgRequest;
+import cn.alien95.resthttp.image.cache.MemoryCache;
+import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestConnection;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
@@ -24,7 +36,7 @@ public class ThreadPool {
     private boolean isEmptyRequestQueue = true;
     private boolean isEmptyRequestImgQueue = true;
     private LinkedBlockingDeque<Request> requestQueue;
-    private LinkedBlockingDeque<Runnable> imgRequestQueue;
+    private LinkedBlockingDeque<ImgRequest> imgRequestQueue;
     private ExecutorService threadPool; //线程池
     private Handler handler;
 
@@ -75,8 +87,15 @@ public class ThreadPool {
         }
     }
 
-    public void addRequestImg(Runnable runnable) {
-        imgRequestQueue.push(runnable);
+    public void addRequestImg(String url, int inSimpleSize, ImageCallback callback) {
+        imgRequestQueue.push(new ImgRequest(url, inSimpleSize, callback));
+        if (isEmptyRequestImgQueue) {
+            startRequestImg();
+        }
+    }
+
+    public void addRequestImg(String url, int reqWidth, int reqHeight, ImageCallback callback) {
+        imgRequestQueue.push(new ImgRequest(url, reqWidth, reqHeight, callback));
         if (isEmptyRequestImgQueue) {
             startRequestImg();
         }
@@ -123,10 +142,91 @@ public class ThreadPool {
      */
     public void startRequestImg() {
         while (!imgRequestQueue.isEmpty()) {
-            threadPool.execute(imgRequestQueue.poll());
+            final ImgRequest imgRequest = imgRequestQueue.poll();
+            threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpURLConnection urlConnection = (HttpURLConnection) new URL(imgRequest.url).openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.setDoInput(true);
+                        urlConnection.setConnectTimeout(10 * 1000);
+                        urlConnection.setReadTimeout(10 * 1000);
+                        final InputStream inputStream = urlConnection.getInputStream();
+                        if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            final BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+
+                            //如果两次都调用BitmapFactory.decodeStream,由于输入流失有序的输入流，第二次会得到null
+                            byte[] bytes = new byte[0];
+                            try {
+                                bytes = readStream(inputStream);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                            if (imgRequest.inSampleSize == 0) {
+                                options.inSampleSize = ImageUtils.calculateInSampleSize(options, imgRequest.reqWidth, imgRequest.reqHeight);
+                            } else {
+                                options.inSampleSize = imgRequest.inSampleSize;
+                            }
+                            options.inJustDecodeBounds = false;
+
+                            final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imgRequest.callback.callback(bitmap);
+                                    if (bitmap != null) {
+                                        if (imgRequest.inSampleSize == 0) {
+                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
+                                                    bitmap);
+                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
+                                                    bitmap);
+                                        } else if (imgRequest.inSampleSize == 1) {
+                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url),
+                                                    bitmap);
+                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url),
+                                                    bitmap);
+                                        } else {
+                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize),
+                                                    bitmap);
+                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize),
+                                                    bitmap);
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             isEmptyRequestImgQueue = false;
         }
         isEmptyRequestImgQueue = true;
+    }
+
+
+    /**
+     * 从inputStream中获取字节流 数组大小
+     *
+     * @param inStream
+     * @return
+     * @throws Exception
+     */
+    public byte[] readStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        outStream.close();
+        inStream.close();
+        return outStream.toByteArray();
     }
 
 }

@@ -4,7 +4,7 @@ import cn.alien95.resthttp.image.callback.ImageCallback;
 
 public class ImgRequest {
 
-    public int inSimpleSize;
+    public int inSampleSize;
     public int reqWidth;
     public int reqHeight;
     public boolean isControlWidthAndHeight = false;
@@ -16,9 +16,9 @@ public class ImgRequest {
         this.callback = callback;
     }
 
-    public ImgRequest(String url, int inSimpleSize, ImageCallback callback) {
+    public ImgRequest(String url, int inSampleSize, ImageCallback callback) {
         this.url = url;
-        this.inSimpleSize = inSimpleSize;
+        this.inSampleSize = inSampleSize;
         this.callback = callback;
     }
 

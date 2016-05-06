@@ -88,7 +88,7 @@ public class HttpImageView extends ImageView {
      */
     public void setImageUrlWithCompress(String url, int inSimpleSize) {
         if (inSimpleSize < 1) {
-            throw new IllegalArgumentException("inSimpleSize must greater than one");
+            throw new IllegalArgumentException("inSampleSize must greater than one");
         }
         if (loadImageId != -1) {
             setImageResource(loadImageId);
