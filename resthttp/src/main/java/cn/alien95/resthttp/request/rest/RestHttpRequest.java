@@ -87,7 +87,7 @@ public class RestHttpRequest {
                 /**
                  * -----------------------------------GET请求处理--------------------------------------------------------
                  */
-                if (methodAnnotation instanceof GET) {
+                else if (methodAnnotation instanceof GET) {
 
                     StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value() + "?");
 
