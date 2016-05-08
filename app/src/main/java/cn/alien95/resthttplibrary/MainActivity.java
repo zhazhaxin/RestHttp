@@ -7,9 +7,8 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
-import cn.alien95.resthttp.request.HttpRequest;
+import cn.alien95.resthttp.request.RestHttpRequest;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.rest.RestHttpRequest;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.view.HttpImageView;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
         bigImage.setImageUrl(IMAGE_BIG_URL);
 
-        final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
+        final cn.alien95.resthttp.request.rest.RestHttpRequest restHttpRequest = new cn.alien95.resthttp.request.rest.RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
                 .build();
 
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+        RestHttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, String> params = new HashMap<>();
         params.put("name", "Lemon95");
         params.put("password", "123456");
-        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
+        RestHttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
             @Override
             public void success(String info) {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);

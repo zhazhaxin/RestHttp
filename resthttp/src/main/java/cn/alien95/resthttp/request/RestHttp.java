@@ -12,7 +12,7 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public abstract class Http {
+public abstract class RestHttp {
 
     /**
      * 初始化Http框架

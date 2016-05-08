@@ -9,11 +9,11 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class HttpRequest extends Http {
+public class RestHttpRequest extends RestHttp {
 
-    private static HttpRequest instance;
+    private static RestHttpRequest instance;
 
-    private HttpRequest() {
+    private RestHttpRequest() {
     }
 
     /**
@@ -21,11 +21,11 @@ public class HttpRequest extends Http {
      *
      * @return HttpRequest一个实例
      */
-    public static HttpRequest getInstance() {
+    public static RestHttpRequest getInstance() {
         if (instance == null) {
-            synchronized (HttpRequest.class) {
+            synchronized (RestHttpRequest.class) {
                 if (instance == null)
-                    instance = new HttpRequest();
+                    instance = new RestHttpRequest();
             }
         }
         return instance;

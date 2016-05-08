@@ -2,7 +2,7 @@ package cn.alien95.resthttplibrary.app;
 
 import android.app.Application;
 
-import cn.alien95.resthttp.request.Http;
+import cn.alien95.resthttp.request.RestHttp;
 import cn.alien95.resthttplibrary.BuildConfig;
 
 
@@ -14,9 +14,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Http.initialize(this);
+        RestHttp.initialize(this);
         if(BuildConfig.DEBUG){
-            Http.setDebug(true,"NetWork");
+            RestHttp.setDebug(true,"NetWork");
         }
     }
 }
