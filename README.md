@@ -20,9 +20,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Http.initialize(this);
+        RestHttp.initialize(this);
         if(BuildConfig.DEBUG){
-            Http.setDebug(true,"NetWork");
+            RestHttp.setDebug(true,"NetWork");
         }
     }
 }
