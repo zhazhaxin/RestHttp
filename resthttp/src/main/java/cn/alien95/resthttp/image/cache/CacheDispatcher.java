@@ -1,5 +1,7 @@
 package cn.alien95.resthttp.image.cache;
 
+import android.graphics.Bitmap;
+
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.callback.ImageCallback;
@@ -47,6 +49,8 @@ public class CacheDispatcher {
 
     public void start() {
         ImgRequest imgRequest;
+        Bitmap bitmap;
+        String key;
         while (!cacheQueue.isEmpty()) {
             imgRequest = cacheQueue.poll();
 
@@ -54,23 +58,29 @@ public class CacheDispatcher {
              * 通过制定图片的宽和高的方式
              */
             if (imgRequest.isControlWidthAndHeight) {
-                if (MemoryCache.getInstance().get(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight) != null) {
+                key = Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight);
+                if (MemoryCache.getInstance().get(key) != null) {
                     RestHttpLog.i("Get compress picture from memoryCache");
-                    imgRequest.callback.callback(MemoryCache.getInstance().get(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight));
+                    imgRequest.callback.callback(MemoryCache.getInstance().get(key));
                 } else {
                     RestHttpLog.i("Get compress picture from diskCache");
-                    imgRequest.callback.callback(DiskCache.getInstance().get(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight)));
+                    bitmap = DiskCache.getInstance().get(key);
+                    imgRequest.callback.callback(bitmap);
+                    MemoryCache.getInstance().put(key, bitmap);
                 }
                 /**
-                 * 不进行图片压缩
+                 * 图片没有压缩
                  */
             } else if (imgRequest.inSampleSize <= 1) {
-                if (MemoryCache.getInstance().get(imgRequest.url) != null) {
+                key = Util.getCacheKey(imgRequest.url);
+                if (MemoryCache.getInstance().get(key) != null) {
                     RestHttpLog.i("Get picture from memoryCache");
-                    imgRequest.callback.callback(MemoryCache.getInstance().get(imgRequest.url));
+                    imgRequest.callback.callback(MemoryCache.getInstance().get(key));
                 } else {
                     RestHttpLog.i("Get picture from diskCache");
-                    imgRequest.callback.callback(DiskCache.getInstance().get(Util.getCacheKey(imgRequest.url)));
+                    bitmap = DiskCache.getInstance().get(key);
+                    imgRequest.callback.callback(bitmap);
+                    MemoryCache.getInstance().put(key, bitmap);
                 }
                 /**
                  * 通过inSimpleSize参数进行图片压缩
@@ -79,12 +89,15 @@ public class CacheDispatcher {
                 /**
                  * 压缩图片缓存读取
                  */
-                if (MemoryCache.getInstance().get(imgRequest.url + imgRequest.inSampleSize) != null) {
+                key = Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize);
+                if (MemoryCache.getInstance().get(key) != null) {
                     RestHttpLog.i("Get compress picture from memoryCache");
-                    imgRequest.callback.callback(MemoryCache.getInstance().get(imgRequest.url + imgRequest.inSampleSize));
+                    imgRequest.callback.callback(MemoryCache.getInstance().get(key));
                 } else {
                     RestHttpLog.i("Get compress picture from diskCache");
-                    imgRequest.callback.callback(DiskCache.getInstance().get(Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize)));
+                    bitmap = DiskCache.getInstance().get(key);
+                    imgRequest.callback.callback(bitmap);
+                    MemoryCache.getInstance().put(key, bitmap);
                 }
             }
 

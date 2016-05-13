@@ -1,8 +1,11 @@
 package cn.alien95.resthttplibrary;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -11,14 +14,13 @@ import cn.alien95.resthttp.request.RestHttpRequest;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
-import cn.alien95.resthttp.view.HttpImageView;
 import cn.alien95.resthttplibrary.bean.UserInfo;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView result;
-    private HttpImageView smallImage, bigImage;
+    private Button test;
     private Handler handler = new Handler();
     private static final String IMAGE_SMALL_URL = "http://a2.att.hudong.com/55/63/300000857388127072631279506.jpg";
     private static final String IMAGE_BIG_URL = "http://media01.money4invest.com/2010/04/funny-dog-pictures.jpg";
@@ -30,11 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         result = (TextView) findViewById(R.id.post);
-        smallImage = (HttpImageView) findViewById(R.id.small_image);
-        bigImage = (HttpImageView) findViewById(R.id.big_image);
-
-        smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
-        bigImage.setImageUrl(IMAGE_BIG_URL);
+        test = (Button) findViewById(R.id.test);
 
         final cn.alien95.resthttp.request.rest.RestHttpRequest restHttpRequest = new cn.alien95.resthttp.request.rest.RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
@@ -109,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void success(String info) {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
+            }
+        });
+
+
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ImageActivity.class));
             }
         });
 

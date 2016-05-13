@@ -44,9 +44,7 @@ public class HttpRequestImage {
      * @param callBack 回调接口
      */
     public void requestImage(final String url, final ImageCallback callBack) {
-        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url))) {
-            cacheDispatcher.addCacheQueue(url, callBack);
-        } else if (DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
+        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url)) || DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
             cacheDispatcher.addCacheQueue(url, callBack);
         } else {
             imgRequestDispatcher.addRequestImg(url, callBack);

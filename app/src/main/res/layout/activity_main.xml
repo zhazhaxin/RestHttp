@@ -2,19 +2,13 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="none"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <!--<TextView-->
-            <!--android:id="@+id/get"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="14sp" />-->
 
         <TextView
             android:id="@+id/post"
@@ -22,19 +16,12 @@
             android:layout_height="wrap_content"
             android:textSize="14sp" />
 
-        <cn.alien95.resthttp.view.HttpImageView
-            android:id="@+id/small_image"
+        <Button
+            android:id="@+id/test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:adjustViewBounds="true" />
-
-        <cn.alien95.resthttp.view.HttpImageView
-            android:id="@+id/big_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:adjustViewBounds="true" />
+            android:layout_margin="16dp"
+            android:text="图片测试" />
 
     </LinearLayout>
 </ScrollView>

@@ -163,7 +163,6 @@ public class RequestDispatcher {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                             if (imgRequest.inSampleSize == 0) {
                                 options.inSampleSize = Util.calculateInSampleSize(options, imgRequest.reqWidth, imgRequest.reqHeight);
                             } else {
@@ -172,29 +171,27 @@ public class RequestDispatcher {
                             options.inJustDecodeBounds = false;
 
                             final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                            String key;
+                            if (bitmap != null) {
+                                if (imgRequest.isControlWidthAndHeight) {
+                                    key = Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight);
+                                    MemoryCache.getInstance().put(key, bitmap);
+                                    DiskCache.getInstance().put(key, bitmap);
+                                } else if (imgRequest.inSampleSize <= 1) {
+                                    key = Util.getCacheKey(imgRequest.url);
+                                    MemoryCache.getInstance().put(key, bitmap);
+                                    DiskCache.getInstance().put(key, bitmap);
+                                } else {
+                                    key = Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize);
+                                    MemoryCache.getInstance().put(key, bitmap);
+                                    DiskCache.getInstance().put(key, bitmap);
+                                }
+
+                            }
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     imgRequest.callback.callback(bitmap);
-                                    if (bitmap != null) {
-                                        if (imgRequest.isControlWidthAndHeight) {
-                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
-                                                    bitmap);
-                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight),
-                                                    bitmap);
-                                        } else if (imgRequest.inSampleSize <= 1) {
-                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url),
-                                                    bitmap);
-                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url),
-                                                    bitmap);
-                                        } else {
-                                            MemoryCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize),
-                                                    bitmap);
-                                            DiskCache.getInstance().put(Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize),
-                                                    bitmap);
-                                        }
-
-                                    }
                                 }
                             });
                         }
