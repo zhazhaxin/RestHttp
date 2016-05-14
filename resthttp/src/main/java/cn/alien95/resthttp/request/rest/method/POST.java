@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 /**
  * Created by linlongxin on 2016/3/23.
  */
+@Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface POST {
 
     String value() default "";

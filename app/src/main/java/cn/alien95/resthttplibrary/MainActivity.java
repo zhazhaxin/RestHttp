@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import cn.alien95.resthttp.request.RestHttpRequest;
 import cn.alien95.resthttp.request.callback.HttpCallback;
+import cn.alien95.resthttp.request.rest.RestRequest;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttplibrary.bean.UserInfo;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         result = (TextView) findViewById(R.id.post);
         test = (Button) findViewById(R.id.test);
 
-        final cn.alien95.resthttp.request.rest.RestHttpRequest restHttpRequest = new cn.alien95.resthttp.request.rest.RestHttpRequest.Builder()
+        final RestRequest restHttpRequest = new RestRequest.Builder()
                 .baseUrl(BASE_URL)
                 .build();
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final UserInfo userInfo = serviceAPI.login("Lemon", "123456");
+                final UserInfo userInfo = serviceAPI.loginPostSync("Lemon", "123456");
                 final UserInfo userInfo1 = serviceAPI.loginGetSync("Alien", "123456");
                 handler.post(new Runnable() {
                     @Override
@@ -109,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
                 result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
             }
         });
-
 
         test.setOnClickListener(new View.OnClickListener() {
             @Override

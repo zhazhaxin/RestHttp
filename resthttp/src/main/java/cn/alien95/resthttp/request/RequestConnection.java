@@ -37,10 +37,10 @@ public class RequestConnection {
     }
 
     protected static RequestConnection getInstance() {
-        return SingtonInstance.instance;
+        return SingletonInstance.instance;
     }
 
-    private static class SingtonInstance {
+    private static class SingletonInstance {
         private static final RequestConnection instance = new RequestConnection();
     }
 

@@ -21,7 +21,7 @@ public interface ServiceAPI {
      */
 
     @POST("/v1/users/login.php")
-    UserInfo login(@Field("name")
+    UserInfo loginPostSync(@Field("name")
                    String name,
                    @Field("password")
                    String password);

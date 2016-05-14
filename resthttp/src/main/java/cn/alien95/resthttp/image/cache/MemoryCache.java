@@ -28,9 +28,9 @@ public class MemoryCache implements ImgCache {
 
     @Override
     public void put(String key, Bitmap bitmap) {
-        if (!isExist(key)) {
-            lruCache.put(key, bitmap);
-        }
+//        if (!isExist(key)) {    //从设计的逻辑可看出不需要判断
+        lruCache.put(key, bitmap);
+//        }
     }
 
     @Override

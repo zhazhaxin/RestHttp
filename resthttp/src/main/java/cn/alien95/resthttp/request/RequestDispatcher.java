@@ -32,9 +32,9 @@ import cn.alien95.resthttp.util.Util;
  */
 public class RequestDispatcher {
 
-    private boolean isEmptyRequestQueue = true;
-    private boolean isEmptyRequestImgQueue = true;
-    private LinkedBlockingDeque<Request> requestQueue;
+    private boolean isEmptyNetRequestQueue = true;
+    private boolean isEmptyImgRequestQueue = true;
+    private LinkedBlockingDeque<Request> netRequestQueue;
     private LinkedBlockingDeque<ImgRequest> imgRequestQueue;
     private ExecutorService threadPool; //线程池
     private Handler handler;
@@ -42,7 +42,7 @@ public class RequestDispatcher {
     private static RequestDispatcher instance;
 
     private RequestDispatcher() {
-        requestQueue = new LinkedBlockingDeque<>();
+        netRequestQueue = new LinkedBlockingDeque<>();
         imgRequestQueue = new LinkedBlockingDeque<>();
         if (Util.getNumberOfCPUCores() != 0) {
             threadPool = Executors.newFixedThreadPool(Util.getNumberOfCPUCores());
@@ -73,29 +73,29 @@ public class RequestDispatcher {
     }
 
     public void addRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
-        requestQueue.push(new Request(httpUrl, method, params, callback));
-        if (isEmptyRequestQueue) {
+        netRequestQueue.push(new Request(httpUrl, method, params, callback));
+        if (isEmptyNetRequestQueue) {
             startRequest();
         }
     }
 
     public void addRequest(String httpUrl, int method, Map<String, String> params, Class returnType, RestCallback callback) {
-        requestQueue.push(new Request(httpUrl, method, params, returnType, callback));
-        if (isEmptyRequestQueue) {
+        netRequestQueue.push(new Request(httpUrl, method, params, returnType, callback));
+        if (isEmptyNetRequestQueue) {
             startRequest();
         }
     }
 
-    public void addRequestImg(String url, int inSimpleSize, ImageCallback callback) {
+    public void addImgRequest(String url, int inSimpleSize, ImageCallback callback) {
         imgRequestQueue.push(new ImgRequest(url, inSimpleSize, callback));
-        if (isEmptyRequestImgQueue) {
+        if (isEmptyImgRequestQueue) {
             startRequestImg();
         }
     }
 
-    public void addRequestImg(String url, int reqWidth, int reqHeight, ImageCallback callback) {
+    public void addImgRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
         imgRequestQueue.push(new ImgRequest(url, reqWidth, reqHeight, callback));
-        if (isEmptyRequestImgQueue) {
+        if (isEmptyImgRequestQueue) {
             startRequestImg();
         }
     }
@@ -105,8 +105,8 @@ public class RequestDispatcher {
      */
     private void startRequest() {
 
-        while (!requestQueue.isEmpty()) {
-            final Request request = requestQueue.poll();
+        while (!netRequestQueue.isEmpty()) {
+            final Request request = netRequestQueue.poll();
             if (request.restCallback == null) {
                 threadPool.execute(new Runnable() {
                     @Override
@@ -119,21 +119,21 @@ public class RequestDispatcher {
                 threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        final Object reuslt = RestConnection.getInstance().quest(request.httpUrl, request.method,
+                        final Object result = RestConnection.getInstance().quest(request.httpUrl, request.method,
                                 request.params, request.resultType);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                request.restCallback.callback(reuslt);
+                                request.restCallback.callback(result);
                             }
                         });
 
                     }
                 });
             }
-            isEmptyRequestQueue = false;
+            isEmptyNetRequestQueue = false;
         }
-        isEmptyRequestQueue = true;
+        isEmptyNetRequestQueue = true;
     }
 
     /**
@@ -175,17 +175,13 @@ public class RequestDispatcher {
                             if (bitmap != null) {
                                 if (imgRequest.isControlWidthAndHeight) {
                                     key = Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight);
-                                    MemoryCache.getInstance().put(key, bitmap);
-                                    DiskCache.getInstance().put(key, bitmap);
                                 } else if (imgRequest.inSampleSize <= 1) {
                                     key = Util.getCacheKey(imgRequest.url);
-                                    MemoryCache.getInstance().put(key, bitmap);
-                                    DiskCache.getInstance().put(key, bitmap);
                                 } else {
                                     key = Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize);
-                                    MemoryCache.getInstance().put(key, bitmap);
-                                    DiskCache.getInstance().put(key, bitmap);
                                 }
+                                MemoryCache.getInstance().put(key, bitmap);
+                                DiskCache.getInstance().put(key, bitmap);
 
                             }
                             handler.post(new Runnable() {
@@ -200,9 +196,9 @@ public class RequestDispatcher {
                     }
                 }
             });
-            isEmptyRequestImgQueue = false;
+            isEmptyImgRequestQueue = false;
         }
-        isEmptyRequestImgQueue = true;
+        isEmptyImgRequestQueue = true;
     }
 
 

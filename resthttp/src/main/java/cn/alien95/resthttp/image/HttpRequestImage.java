@@ -44,10 +44,13 @@ public class HttpRequestImage {
      * @param callBack 回调接口
      */
     public void requestImage(final String url, final ImageCallback callBack) {
-        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url)) || DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
+
+        String key = Util.getCacheKey(url);
+
+        if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
             cacheDispatcher.addCacheQueue(url, callBack);
         } else {
-            imgRequestDispatcher.addRequestImg(url, callBack);
+            imgRequestDispatcher.addImgRequest(url, callBack);
         }
     }
 
@@ -60,21 +63,20 @@ public class HttpRequestImage {
      * @param callBack
      */
     public void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
-        /**
-         * 判断是否真的压缩了
-         */
-        if (inSampleSize <= 1) {
-            if (MemoryCache.getInstance().isExist(Util.getCacheKey(url)) || DiskCache.getInstance().isExist(Util.getCacheKey(url))) {
-                cacheDispatcher.addCacheQueue(url, callBack);
-            } else {
-                imgRequestDispatcher.addRequestImg(url, callBack);
-            }
+
+        String key;
+        if (inSampleSize <= 1) {  //无压缩
+
+            requestImage(url, callBack);
+
         } else if (inSampleSize > 1) {
-            if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize)) ||
-                    DiskCache.getInstance().isExist(Util.getCacheKey(url + inSampleSize))) {
+
+            key = Util.getCacheKey(url + inSampleSize);
+
+            if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
                 cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
             } else {
-                imgRequestDispatcher.addRequestImgWithCompress(url, inSampleSize, callBack);
+                imgRequestDispatcher.addImgRequestWithCompress(url, inSampleSize, callBack);
             }
         }
     }
@@ -88,11 +90,13 @@ public class HttpRequestImage {
      * @param callBack
      */
     public void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
-        if (MemoryCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight)) ||
-                DiskCache.getInstance().isExist(Util.getCacheKey(url + reqWidth + "/" + reqHeight))) {
+
+        String key = Util.getCacheKey(url + reqWidth + "/" + reqHeight);
+
+        if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
             cacheDispatcher.addCacheQueue(url, reqWidth, reqHeight, callBack);
         } else {
-            imgRequestDispatcher.addRequestImgWithCompress(url, reqWidth, reqHeight, callBack);
+            imgRequestDispatcher.addImgRequestWithCompress(url, reqWidth, reqHeight, callBack);
         }
     }
 

@@ -57,6 +57,7 @@ public class ServerCacheDispatcher {
      * @return
      */
     public Object getRestCacheSync(String url, int method, Map<String, String> params, Class tClass) {
+
         final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(url, params));
 
         if (entry != null) {
@@ -65,7 +66,7 @@ public class ServerCacheDispatcher {
                 return RestConnection.getInstance().quest(url,
                         method, params, tClass);
             } else {
-                RestHttpLog.i("get network sync data from cache");
+                RestHttpLog.i("Sync Request data from cache");
                 if (tClass != null && tClass != void.class) {
                     return new Gson().fromJson(entry.data, tClass);
                 }
@@ -127,7 +128,9 @@ public class ServerCacheDispatcher {
      * @param key
      */
     public Cache.Entry getCacheAsyn(final String key) {
-        RestHttpLog.i("get network async data from cache");
+
+        RestHttpLog.i("Asyn Request data from cache");
+
         try {
             return (Cache.Entry) RequestDispatcher.getInstance().submitCallable(new Callable<Cache.Entry>() {
                 @Override

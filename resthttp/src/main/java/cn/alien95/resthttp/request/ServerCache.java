@@ -46,7 +46,7 @@ public class ServerCache implements Cache {
     @Override
     public void put(String key, Entry entry) {
         Entry cacheEntry = get(key);
-        if(cacheEntry == null || cacheEntry.refreshNeeded() || cacheEntry.isExpired()){
+        if (cacheEntry == null || cacheEntry.refreshNeeded() || cacheEntry.isExpired()) {
             File newFile = getCacheFile(key);
             if (writeObjectToFile(entry, newFile)) {
                 cacheFiles.add(newFile);
@@ -66,13 +66,9 @@ public class ServerCache implements Cache {
 
     @Override
     public void remove(String key) {
-        String fileName = Util.getCacheKey(key);
-        for (File file : cacheFiles) {
-            if (file.getName().equals(fileName)) {
-                file.delete();
-            }
-        }
-
+        File removeFile = getCacheFile(key);
+        removeFile.delete();
+        cacheFiles.remove(removeFile);
     }
 
     @Override
@@ -81,7 +77,6 @@ public class ServerCache implements Cache {
             file.delete();
         }
     }
-
 
     /**
      * 检查是否初始化缓存根目录
@@ -150,7 +145,6 @@ public class ServerCache implements Cache {
         return null;
     }
 
-
     /**
      * 判断缓存是否存在
      *
@@ -158,14 +152,7 @@ public class ServerCache implements Cache {
      * @return
      */
     public boolean isExistsCache(String key) {
-
-        for (File file : cacheFiles) {
-            if (file.getName().equals(key)) {
-                return true;
-            }
-        }
-
-        return false;
+        return cacheFiles.contains(getCacheFile(key));
     }
 
     public File getCacheFile(String key) {

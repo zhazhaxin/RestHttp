@@ -21,8 +21,9 @@ public class App extends Application {
         super.onCreate();
 
         RestHttp.initialize(this);
-        if(BuildConfig.DEBUG){
-            RestHttp.setDebug(true,"NetWork");
+        RestHttp.setDiskCacheSize(100 * 1024 * 1024);
+        if (BuildConfig.DEBUG) {
+            RestHttp.setDebug(true, "NetWork");
         }
     }
 }

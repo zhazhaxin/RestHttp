@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 /**
  * Created by linlongxin on 2016/3/24.
  */
+@Documented
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface Query {
 
     String value() default "";
