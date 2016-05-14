@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.Map;
 
+import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.Util;
@@ -22,6 +23,10 @@ public abstract class RestHttp {
     public static void initialize(Context context) {
         Util.init(context);
         ServerCache.checkCacheRoot();
+    }
+
+    public static void setDiskCacheSize(long maxStoreSize) {
+        DiskCache.setMaxStoreSize(maxStoreSize);
     }
 
     /**

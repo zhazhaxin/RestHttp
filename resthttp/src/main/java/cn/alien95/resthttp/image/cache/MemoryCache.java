@@ -3,8 +3,6 @@ package cn.alien95.resthttp.image.cache;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import cn.alien95.resthttp.util.Util;
-
 
 /**
  * Created by linlongxin on 2015/12/29.
@@ -30,21 +28,19 @@ public class MemoryCache implements ImgCache {
 
     @Override
     public void put(String key, Bitmap bitmap) {
-        String cacheKey = getCacheKey(key);
-        if (get(cacheKey) == null) {
-            if (lruCache.put(cacheKey, bitmap) != null) {
-            }
+        if (!isExist(key)) {
+            lruCache.put(key, bitmap);
         }
     }
 
     @Override
     public Bitmap get(String key) {
-        return lruCache.get(getCacheKey(key));
+        return lruCache.get(key);
     }
 
     @Override
     public boolean isExist(String key) {
-        return lruCache.get(getCacheKey(key)) != null;
+        return lruCache.get(key) != null;
     }
 
     @Override
@@ -55,16 +51,6 @@ public class MemoryCache implements ImgCache {
     @Override
     public void clear() {
 
-    }
-
-    /**
-     * 对图片地址进行md5处理得到缓存key
-     *
-     * @param key
-     * @return
-     */
-    private String getCacheKey(String key) {
-        return Util.MD5(key);
     }
 
 }

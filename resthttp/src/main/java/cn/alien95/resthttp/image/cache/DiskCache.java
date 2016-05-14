@@ -2,8 +2,6 @@ package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -27,17 +25,16 @@ public class DiskCache implements ImgCache {
     private final String IMAGE_CACHE_PATH = "ImageCache";
     private static DiskCache instance;
     private DiskLruCache diskLruCache;
-    private Handler handler;
+    private static long maxStoreSize = 50 * 1024 * 1024;
 
     private DiskCache() {
-        handler = new Handler(Looper.getMainLooper());
         try {
             File cacheDir = Util.getDiskCacheDir(IMAGE_CACHE_PATH);
             if (!cacheDir.exists()) {
                 cacheDir.mkdirs();
             }
             //50MB硬盘缓存
-            diskLruCache = DiskLruCache.open(cacheDir, Util.getAppVersion(), 1, 50 * 1024 * 1024);
+            diskLruCache = DiskLruCache.open(cacheDir, Util.getAppVersion(), 1, maxStoreSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,6 +45,10 @@ public class DiskCache implements ImgCache {
             instance = new DiskCache();
         }
         return instance;
+    }
+
+    public static void setMaxStoreSize(long maxStoreSize) {
+        DiskCache.maxStoreSize = maxStoreSize;
     }
 
     /**
