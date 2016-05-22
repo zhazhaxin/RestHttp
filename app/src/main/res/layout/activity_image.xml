@@ -4,4 +4,4 @@
     android:id="@+id/recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.alien95.resthttplibrary.ImageActivity"/>
+    tools:context=".image.ImageActivity"/>

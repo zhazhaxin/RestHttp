@@ -1,9 +1,10 @@
-package cn.alien95.resthttplibrary;
+package cn.alien95.resthttplibrary.image;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 
+import cn.alien95.resthttplibrary.R;
 import cn.alien95.view.RefreshRecyclerView;
 
 public class ImageActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary;
+package cn.alien95.resthttplibrary.data;
 
 
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
@@ -6,7 +6,7 @@ import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
-import cn.alien95.resthttplibrary.bean.UserInfo;
+import cn.alien95.resthttplibrary.data.bean.UserInfo;
 
 /**
  * Created by linlongxin on 2016/3/23.
@@ -51,4 +51,10 @@ public interface ServiceAPI {
                           @Query("password")
                           String password,RestCallback<UserInfo> restCallback);
 
+
+    @GET("/213-4")
+    void getMusicData(@Query("topid") int topId,
+                      @Query("showapi_appid") String showapiAppId,
+                      @Query("showapi_sign") String secretKey,
+                      RestCallback<String> callback);
 }

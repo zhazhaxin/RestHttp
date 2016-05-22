@@ -4,6 +4,7 @@ import android.app.Application;
 
 import cn.alien95.resthttp.request.RestHttp;
 import cn.alien95.resthttplibrary.BuildConfig;
+import cn.alien95.util.Utils;
 
 
 /**
@@ -15,8 +16,10 @@ public class App extends Application {
         super.onCreate();
 
         RestHttp.initialize(this);
+        Utils.initialize(this);
         RestHttp.setDiskCacheSize(100 * 1024 * 1024);
         if (BuildConfig.DEBUG) {
+            Utils.setDebug(true,"Debug");
             RestHttp.setDebug(true, "NetWork");
         }
     }

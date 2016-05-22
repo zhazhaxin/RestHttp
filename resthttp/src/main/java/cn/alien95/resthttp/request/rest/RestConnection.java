@@ -175,6 +175,9 @@ public class RestConnection {
                 }
 
                 if (returnType != null && returnType != void.class) {
+                    if (returnType == String.class) {
+                        return (T) result;
+                    }
                     return new Gson().fromJson(result, returnType);
                 }
             }

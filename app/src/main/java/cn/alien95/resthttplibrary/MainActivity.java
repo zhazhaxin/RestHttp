@@ -15,13 +15,16 @@ import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestRequest;
 import cn.alien95.resthttp.request.rest.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
-import cn.alien95.resthttplibrary.bean.UserInfo;
+import cn.alien95.resthttplibrary.data.bean.UserInfo;
+import cn.alien95.resthttplibrary.data.ServiceAPI;
+import cn.alien95.resthttplibrary.image.ImageActivity;
+import cn.alien95.resthttplibrary.music.MusicListActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView result;
-    private Button test;
+    private Button testImage, testNet;
     private Handler handler = new Handler();
     private static final String IMAGE_SMALL_URL = "http://a2.att.hudong.com/55/63/300000857388127072631279506.jpg";
     private static final String IMAGE_BIG_URL = "http://media01.money4invest.com/2010/04/funny-dog-pictures.jpg";
@@ -33,7 +36,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         result = (TextView) findViewById(R.id.post);
-        test = (Button) findViewById(R.id.test);
+        testImage = (Button) findViewById(R.id.test_image);
+        testNet = (Button) findViewById(R.id.test_net);
+
+        testImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ImageActivity.class));
+            }
+        });
+        testNet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MusicListActivity.class));
+            }
+        });
+
+
+
 
         final RestRequest restHttpRequest = new RestRequest.Builder()
                 .baseUrl(BASE_URL)
@@ -111,12 +131,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, ImageActivity.class));
-            }
-        });
 
     }
 

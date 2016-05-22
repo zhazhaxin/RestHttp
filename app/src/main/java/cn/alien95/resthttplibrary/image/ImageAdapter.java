@@ -1,9 +1,10 @@
-package cn.alien95.resthttplibrary;
+package cn.alien95.resthttplibrary.image;
 
 import android.content.Context;
 import android.view.ViewGroup;
 
 import cn.alien95.resthttp.view.HttpImageView;
+import cn.alien95.resthttplibrary.R;
 import cn.alien95.view.adapter.BaseViewHolder;
 import cn.alien95.view.adapter.RecyclerAdapter;
 
@@ -18,7 +19,7 @@ public class ImageAdapter extends RecyclerAdapter<String> {
 
     @Override
     public BaseViewHolder<String> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        return new ImageViewHolder(parent,R.layout.item_image);
+        return new ImageViewHolder(parent, R.layout.item_image);
     }
 
 
