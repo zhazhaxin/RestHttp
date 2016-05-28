@@ -41,7 +41,7 @@ public class RestHttpRequest extends RestHttp {
     }
 
     public void setHeader(String key, String value) {
-        RequestConnection.getInstance().setHeader(key,value);
+        RequestConnection.getInstance().setHeader(key, value);
     }
 
     /**
@@ -77,6 +77,19 @@ public class RestHttpRequest extends RestHttp {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
             RequestDispatcher.getInstance().addRequest(url, Method.POST, params, callBack);
+    }
+
+    public void cancelAllRequest() {
+        RequestDispatcher.getInstance().cancelAllNetRequest();
+        RequestDispatcher.getInstance().cancelAllImageRequest();
+    }
+
+    public void cancelRequest(String httpUrl, Map<String, String> params) {
+        RequestDispatcher.getInstance().cancelRequest(httpUrl, params);
+    }
+
+    public void cancelRequest(String httpUrl) {
+        RequestDispatcher.getInstance().cancelRequest(httpUrl);
     }
 
 }

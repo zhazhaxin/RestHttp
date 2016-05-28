@@ -28,9 +28,10 @@ ext {
     bintrayRepo = 'maven'  //bintray上的仓库名，一般为maven
     bintrayName = 'rest-http'  //bintray上的项目名
 
+    //依赖字段
     publishedGroupId = 'cn.alien95'  //JCenter的GroupId
     artifact = 'resthttp'  //JCenter的ArtifactId
-    libraryVersion = '1.0.1'  //版本号
+    libraryVersion = '1.0.3'  //版本号
 
     siteUrl = 'https://github.com/llxdaxia/RestHttp'
     gitUrl = 'https://github.com/llxdaxia/RestHttp.git'

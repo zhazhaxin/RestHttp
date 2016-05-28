@@ -7,7 +7,7 @@
 gradle依赖
 
 ```java
-compile 'cn.alien95:resthttp:1.0.1'
+compile 'cn.alien95:resthttp:1.0.3'
 ```
 
 ##使用方法

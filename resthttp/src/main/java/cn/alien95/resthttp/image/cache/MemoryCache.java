@@ -1,6 +1,7 @@
 package cn.alien95.resthttp.image.cache;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 
@@ -16,7 +17,13 @@ public class MemoryCache implements ImgCache {
 
     private MemoryCache() {
         int maxMemory = (int) (Runtime.getRuntime().maxMemory());
-        lruCache = new LruCache<>(maxMemory / 8);
+        lruCache = new LruCache<String, Bitmap>(maxMemory / 8) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount();
+            }
+        };
+        Log.i("RestHttp", "memory cache size : " + maxMemory / 8);
     }
 
     public static MemoryCache getInstance() {

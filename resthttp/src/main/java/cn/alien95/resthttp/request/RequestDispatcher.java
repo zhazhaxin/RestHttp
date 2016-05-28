@@ -221,4 +221,30 @@ public class RequestDispatcher {
         return outStream.toByteArray();
     }
 
+    public void cancelAllNetRequest() {
+        netRequestQueue.clear();
+    }
+
+    public void cancelAllImageRequest() {
+        imgRequestQueue.clear();
+    }
+
+    public void cancelRequest(String url) {
+        for (Request r : netRequestQueue) {
+            if (r.httpUrl.equals(url)) {
+                netRequestQueue.remove(r);
+                return;
+            }
+        }
+    }
+
+    public void cancelRequest(String url, Map<String, String> params) {
+        for (Request r : netRequestQueue) {
+            if (r.httpUrl.equals(url) && params.equals(r.params)) {
+                netRequestQueue.remove(r);
+                return;
+            }
+        }
+    }
+
 }
