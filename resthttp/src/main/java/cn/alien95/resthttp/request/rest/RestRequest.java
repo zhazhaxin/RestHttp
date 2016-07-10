@@ -144,7 +144,7 @@ public class RestRequest {
 
                 } else if (methodAnnotation instanceof POST) {
                     /**
-                     * -------------------------------POST请求处理------------------------------------------------------------------
+                     * -------------------------------POST请求处理----------------------------------------------------
                      */
                     final Map<String, String> params = new HashMap<>();
 

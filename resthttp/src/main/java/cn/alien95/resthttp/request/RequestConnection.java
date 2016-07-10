@@ -146,7 +146,7 @@ public class RequestConnection {
                 });
             } else {
                 /**
-                 * 状态码为200，请求成功。获取相应头，处理缓存
+                 * 状态码为200，请求成功。获取响应头，处理缓存
                  */
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();

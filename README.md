@@ -4,15 +4,15 @@
 > - 封装了HttpURLConnection，简单易用的API设计。
 > - Debug模式下设置日志TAG，所有网络请求日志输出，方便调试。
 
-gradle依赖
+**gradle依赖**
 
 ```java
-compile 'cn.alien95:resthttp:1.0.3'
+    compile 'cn.alien95:resthttp:1.0.4'
 ```
 
 ##使用方法
 
-初始化：设置日志TAG
+ - 初始化：设置日志TAG
 
 ```java
 public class App extends Application {
@@ -29,9 +29,9 @@ public class App extends Application {
 }
 ```
 
-###使用接口的方式请求网络数据：
+###通过接口定义API
 
-API接口类
+ - API接口类
 
 ```java
 public interface ServiceAPI {
@@ -77,7 +77,7 @@ public interface ServiceAPI {
 }
 ```
 
-网络请求java类
+ - 网络请求java类
 
 ```java
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
@@ -156,9 +156,9 @@ public interface ServiceAPI {
         });
 ```
         
-###通常的请求方式
+###普通的网络请求
         
-GET请求
+ - GET请求
 
 ```java
 HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
@@ -169,7 +169,7 @@ HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new Ht
         });
 ```
 
-POST请求
+ - POST请求
 
 ```java
 HashMap<String, String> params = new HashMap<>();
@@ -183,9 +183,24 @@ HashMap<String, String> params = new HashMap<>();
         });
 ```
 
+ - 支持文件上传
+ ```java
+         RestHttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", file, new HttpCallback() {
+             @Override
+             public void success(String info) {
+                 DebugUtils.Log("image upload result : " + info);
+             }
+
+             @Override
+             public void failure(int status, String info) {
+                 super.failure(status, info);
+             }
+         });
+ ```
+
 ###图片加载
 
-xml布局文件
+ - 图片加载控件（HttpImageView）
 
 ```xml
    <cn.alien95.resthttp.view.HttpImageView
@@ -203,7 +218,7 @@ xml布局文件
        android:adjustViewBounds="true" />
 ```
 
-java代码
+ - java代码
 
  - 可以指定压缩比例，固定的宽和高
 
@@ -220,19 +235,18 @@ public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
 
 ###注意事项
         
-依赖的其他库
+ - 依赖的其他库
 
 ```java
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.google.code.gson:gson:2.6.2'      
 ```
-     
+
 ###[Demo](https://github.com/llxdaxia/RestHttp/tree/dev/app)
 
 <img src="request.png" width="320" height="569" alt="POST"/>
 <img src="image.png" width="320" height="569"/>
-    
-日志打印輸出：
+
+ - 日志打印輸出示例图
 
 <img src="log.png" width="1172" height="402"/>
-

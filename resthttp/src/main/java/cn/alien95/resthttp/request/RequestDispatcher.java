@@ -62,6 +62,9 @@ public class RequestDispatcher {
         return instance;
     }
 
+    public void executeRunable(Runnable runnable){
+        threadPool.execute(runnable);
+    }
     /**
      * 异步读取服务器缓存文件
      *
