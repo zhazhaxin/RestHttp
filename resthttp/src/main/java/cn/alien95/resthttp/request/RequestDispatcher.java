@@ -1,7 +1,9 @@
 package cn.alien95.resthttp.request;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -41,6 +43,7 @@ public class RequestDispatcher {
 
     private static RequestDispatcher instance;
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private RequestDispatcher() {
         netRequestQueue = new LinkedBlockingDeque<>();
         imgRequestQueue = new LinkedBlockingDeque<>();
@@ -74,7 +77,7 @@ public class RequestDispatcher {
     public Future submitCallable(Callable callable) {
         return threadPool.submit(callable);
     }
-
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
         netRequestQueue.push(new Request(httpUrl, method, params, callback));
         if (isEmptyNetRequestQueue) {
@@ -82,6 +85,7 @@ public class RequestDispatcher {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addRequest(String httpUrl, int method, Map<String, String> params, Class returnType, RestCallback callback) {
         netRequestQueue.push(new Request(httpUrl, method, params, returnType, callback));
         if (isEmptyNetRequestQueue) {
@@ -89,6 +93,7 @@ public class RequestDispatcher {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addImgRequest(String url, int inSimpleSize, ImageCallback callback) {
         imgRequestQueue.push(new ImgRequest(url, inSimpleSize, callback));
         if (isEmptyImgRequestQueue) {
@@ -96,6 +101,7 @@ public class RequestDispatcher {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addImgRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
         imgRequestQueue.push(new ImgRequest(url, reqWidth, reqHeight, callback));
         if (isEmptyImgRequestQueue) {
@@ -106,6 +112,7 @@ public class RequestDispatcher {
     /**
      * 网络请求轮询
      */
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private void startRequest() {
 
         while (!netRequestQueue.isEmpty()) {
@@ -142,6 +149,7 @@ public class RequestDispatcher {
     /**
      * 网络请求图片轮询
      */
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void startRequestImg() {
         while (!imgRequestQueue.isEmpty()) {
             final ImgRequest imgRequest = imgRequestQueue.poll();
@@ -224,14 +232,15 @@ public class RequestDispatcher {
         return outStream.toByteArray();
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelAllNetRequest() {
         netRequestQueue.clear();
     }
-
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelAllImageRequest() {
         imgRequestQueue.clear();
     }
-
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelRequest(String url) {
         for (Request r : netRequestQueue) {
             if (r.httpUrl.equals(url)) {
@@ -240,7 +249,7 @@ public class RequestDispatcher {
             }
         }
     }
-
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelRequest(String url, Map<String, String> params) {
         for (Request r : netRequestQueue) {
             if (r.httpUrl.equals(url) && params.equals(r.params)) {

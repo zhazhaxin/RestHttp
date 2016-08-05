@@ -69,8 +69,8 @@ public class RestRequest {
 
             final Annotation[] annotations = method.getAnnotations();
 
-            Annotation[][] paramterAnnotations = method.getParameterAnnotations();
-            Class[] paramterTypes = method.getParameterTypes();
+            Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+            Class[] parameterTypes = method.getParameterTypes();
 
             Object returnObject = null;
 
@@ -91,10 +91,10 @@ public class RestRequest {
 
                     StringBuilder url = new StringBuilder(Builder.baseUrl + ((GET) methodAnnotation).value() + "?");
 
-                    for (int i = 0; i < paramterAnnotations.length; i++) {
-                        for (int k = 0; k < paramterAnnotations[i].length; k++) {
-                            if (paramterAnnotations[i][k] instanceof Query) {
-                                url = url.append(((Query) paramterAnnotations[i][k]).value() + "=" + args[i] + "&");
+                    for (int i = 0; i < parameterAnnotations.length; i++) {
+                        for (int k = 0; k < parameterAnnotations[i].length; k++) {
+                            if (parameterAnnotations[i][k] instanceof Query) {
+                                url = url.append(((Query) parameterAnnotations[i][k]).value() + "=" + args[i] + "&");
                             }
                         }
                     }
@@ -148,12 +148,12 @@ public class RestRequest {
                      */
                     final Map<String, String> params = new HashMap<>();
 
-                    for (int i = 0; i < paramterAnnotations.length; i++) {
-                        Class paramterType = paramterTypes[i]; //这里可以看出每个参数对应一个注解数组，想不通。。。
+                    for (int i = 0; i < parameterAnnotations.length; i++) {
+                        Class paramterType = parameterTypes[i]; //这里可以看出每个参数对应一个注解数组，想不通。。。
 
-                        for (int k = 0; k < paramterAnnotations[i].length; k++) {
-                            if (paramterAnnotations[i][k] instanceof Field) {
-                                params.put(((Field) paramterAnnotations[i][k]).value(), args[i].toString());
+                        for (int k = 0; k < parameterAnnotations[i].length; k++) {
+                            if (parameterAnnotations[i][k] instanceof Field) {
+                                params.put(((Field) parameterAnnotations[i][k]).value(), args[i].toString());
                             }
                         }
                     }
