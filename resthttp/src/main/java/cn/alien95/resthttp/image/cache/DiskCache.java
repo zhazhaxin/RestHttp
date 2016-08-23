@@ -20,12 +20,12 @@ import cn.alien95.resthttp.util.Util;
  * Created by linlongxin on 2015/12/29.
  * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
-public class DiskCache implements ImgCache {
+public class DiskCache implements ImageCache {
 
     private final String IMAGE_CACHE_PATH = "ImageCache";
     private static DiskCache instance;
     private DiskLruCache diskLruCache;
-    private static long maxStoreSize = 50 * 1024 * 1024;
+    private static long maxStoreSize = 50 * 1024 * 1024; //50MB
 
     private DiskCache() {
         try {

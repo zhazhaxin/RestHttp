@@ -5,7 +5,7 @@ package cn.alien95.resthttp.request;
  */
 public interface Method {
 
-    int GET = 0;
-    int POST = 1;
+    int GET = 11;
+    int POST = 12;
 
 }

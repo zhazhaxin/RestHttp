@@ -1,1 +1,1 @@
-include ':app', ':resthttp'
+include ':demo', ':resthttp'

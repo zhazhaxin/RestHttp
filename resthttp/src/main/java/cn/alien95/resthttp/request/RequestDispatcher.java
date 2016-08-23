@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.cache.DiskCache;
-import cn.alien95.resthttp.image.cache.ImgRequest;
+import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.callback.HttpCallback;
@@ -37,7 +37,7 @@ public class RequestDispatcher {
     private boolean isEmptyNetRequestQueue = true;
     private boolean isEmptyImgRequestQueue = true;
     private LinkedBlockingDeque<Request> netRequestQueue;
-    private LinkedBlockingDeque<ImgRequest> imgRequestQueue;
+    private LinkedBlockingDeque<ImageRequest> imgRequestQueue;
     private ExecutorService threadPool; //线程池
     private Handler handler;
 
@@ -95,7 +95,7 @@ public class RequestDispatcher {
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addImgRequest(String url, int inSimpleSize, ImageCallback callback) {
-        imgRequestQueue.push(new ImgRequest(url, inSimpleSize, callback));
+        imgRequestQueue.push(new ImageRequest(url, inSimpleSize, callback));
         if (isEmptyImgRequestQueue) {
             startRequestImg();
         }
@@ -103,7 +103,7 @@ public class RequestDispatcher {
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void addImgRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        imgRequestQueue.push(new ImgRequest(url, reqWidth, reqHeight, callback));
+        imgRequestQueue.push(new ImageRequest(url, reqWidth, reqHeight, callback));
         if (isEmptyImgRequestQueue) {
             startRequestImg();
         }
@@ -152,7 +152,7 @@ public class RequestDispatcher {
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void startRequestImg() {
         while (!imgRequestQueue.isEmpty()) {
-            final ImgRequest imgRequest = imgRequestQueue.poll();
+            final ImageRequest imgRequest = imgRequestQueue.poll();
             threadPool.execute(new Runnable() {
                 @Override
                 public void run() {

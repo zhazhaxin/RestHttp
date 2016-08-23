@@ -6,7 +6,7 @@
 
 **gradle依赖**
 
-```java
+``
     compile 'cn.alien95:resthttp:1.0.4'
 ``
 
@@ -79,7 +79,7 @@ public interface ServiceAPI {
 
  - 网络请求java类
 
-```java
+```
         final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
                 .baseUrl(BASE_URL)
                 .build();
@@ -160,7 +160,7 @@ public interface ServiceAPI {
         
  - GET请求
 
-```java
+```
 HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
             @Override
             public void success(String info) {
@@ -171,7 +171,7 @@ HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new Ht
 
  - POST请求
 
-```java
+```
 HashMap<String, String> params = new HashMap<>();
         params.put("name", "Lemon95");
         params.put("password", "123456");
@@ -184,7 +184,7 @@ HashMap<String, String> params = new HashMap<>();
 ```
 
  - 支持文件上传
- ```java
+ ```
          RestHttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", file, new HttpCallback() {
              @Override
              public void success(String info) {
@@ -222,14 +222,14 @@ HashMap<String, String> params = new HashMap<>();
 
  - 可以指定压缩比例，固定的宽和高
 
-```java
+```
 smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
 bigImage.setImageUrl(IMAGE_BIG_URL);                                      
 ```
 
  - 也可以通过：
 
-```java
+```
 public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
 ```
 
@@ -237,7 +237,7 @@ public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
         
  - 依赖的其他库
 
-```java
+```
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile 'com.google.code.gson:gson:2.6.2'      
 ```

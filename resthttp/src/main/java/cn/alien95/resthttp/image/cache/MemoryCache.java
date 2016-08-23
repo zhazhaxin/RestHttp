@@ -9,7 +9,7 @@ import android.util.LruCache;
  * Created by linlongxin on 2015/12/29.
  * 这里需要使用单例模式，防止读取缓存的时候出现问题
  */
-public class MemoryCache implements ImgCache {
+public class MemoryCache implements ImageCache {
 
     private static MemoryCache instance;
 
@@ -35,9 +35,7 @@ public class MemoryCache implements ImgCache {
 
     @Override
     public void put(String key, Bitmap bitmap) {
-//        if (!isExist(key)) {    //从设计的逻辑可看出不需要判断
         lruCache.put(key, bitmap);
-//        }
     }
 
     @Override

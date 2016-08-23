@@ -13,7 +13,7 @@ import cn.alien95.resthttp.util.Util;
  */
 public class CacheDispatcher {
 
-    private LinkedBlockingDeque<ImgRequest> cacheQueue;
+    private LinkedBlockingDeque<ImageRequest> cacheQueue;
     private boolean isCacheQueueEmpty = true;
 
     public CacheDispatcher() {
@@ -21,34 +21,34 @@ public class CacheDispatcher {
     }
 
     /**
-     * 缓存过得图片请求加入缓存队列
+     * 缓存过的图片请求加入缓存队列
      *
      * @param url
      * @param callback
      */
     public void addCacheQueue(String url, ImageCallback callback) {
-        cacheQueue.add(new ImgRequest(url, 1, callback));
+        cacheQueue.add(new ImageRequest(url, 1, callback));
         if (isCacheQueueEmpty) {
             start();
         }
     }
 
     public void addCacheQueue(String url, int inSimpleSize, ImageCallback callback) {
-        cacheQueue.add(new ImgRequest(url, inSimpleSize, callback));
+        cacheQueue.add(new ImageRequest(url, inSimpleSize, callback));
         if (isCacheQueueEmpty) {
             start();
         }
     }
 
     public void addCacheQueue(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        cacheQueue.add(new ImgRequest(url, reqWidth, reqHeight, callback));
+        cacheQueue.add(new ImageRequest(url, reqWidth, reqHeight, callback));
         if (isCacheQueueEmpty) {
             start();
         }
     }
 
     public void start() {
-        ImgRequest imgRequest;
+        ImageRequest imgRequest;
         Bitmap bitmap;
         String key = "";
         while (!cacheQueue.isEmpty()) {
