@@ -3,6 +3,7 @@ package cn.alien95.resthttp.request.http;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.RestHttp;
 import cn.alien95.resthttp.request.ServerCache;
@@ -18,14 +19,9 @@ public class RestHttpRequest extends RestHttp {
 
     private static RestHttpRequest instance;
 
-    private RestHttpRequest() {
+    protected RestHttpRequest() {
     }
 
-    /**
-     * 获取HttpRequest实例,这是一个单例模式
-     *
-     * @return HttpRequest一个实例
-     */
     public static RestHttpRequest getInstance() {
         if (instance == null) {
             synchronized (RestHttpRequest.class) {
@@ -39,16 +35,16 @@ public class RestHttpRequest extends RestHttp {
     /**
      * 设置请求头
      */
-    public void setHeader(Map<String, String> header) {
-        HttpConnection.getInstance().setHeader(header);
+    public void addHeader(Map<String, String> header) {
+        HttpConnection.getInstance().addHeader(header);
     }
 
-    public void setHeader(String key, String value) {
-        HttpConnection.getInstance().setHeader(key, value);
+    public void addHeader(String key, String value) {
+        HttpConnection.getInstance().addHeader(key, value);
     }
 
     /**
-     * GET请求
+     * GET
      */
     @Override
     public void get(final String url, final HttpCallback callBack) {
@@ -58,11 +54,11 @@ public class RestHttpRequest extends RestHttp {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
-            RequestDispatcher.getInstance().addNetRequest(url, Method.GET, null, callBack);
+            RequestDispatcher.getInstance().addHttpRequest(new Request(url, Method.GET, null, callBack));
     }
 
     /**
-     * POST请求
+     * POST
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
@@ -72,7 +68,7 @@ public class RestHttpRequest extends RestHttp {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
-            RequestDispatcher.getInstance().addNetRequest(url, Method.POST, params, callBack);
+            RequestDispatcher.getInstance().addHttpRequest(new Request(url, Method.POST, params, callBack));
     }
 
     public void cancelAllRequest() {

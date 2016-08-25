@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary;
+package cn.alien95.resthttplibrary.test;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,7 +18,8 @@ import java.io.File;
 
 import cn.alien95.resthttp.request.callback.RestHttpFile;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttplibrary.R;
 import cn.alien95.resthttplibrary.util.ImageUtil;
 import cn.alien95.util.Utils;
 
@@ -125,7 +126,7 @@ public class UploadFileActivity extends AppCompatActivity {
         RestHttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", file, new HttpCallback() {
             @Override
             public void success(String info) {
-                DebugUtils.Log("image upload result : " + info);
+                DebugLog.Log("image upload result : " + info);
             }
 
             @Override

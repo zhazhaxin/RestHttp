@@ -2,11 +2,13 @@ package cn.alien95.resthttp.util;
 
 import android.util.Log;
 
+import cn.alien95.resthttp.request.Method;
+
 
 /**
  * Created by alien on 2015/8/6.
  */
-public class DebugUtils {
+public class DebugLog {
 
     private static String DEBUG_TAG = "";
 
@@ -25,9 +27,13 @@ public class DebugUtils {
         }
     }
 
-    public static synchronized int requestLog(String info) {
+    public static synchronized int requestLog(int method,String info) {
         if (isDebug) {
-            Log.i(DEBUG_TAG, requestTimes + " times Request:" + info);
+            if(method == Method.GET){
+                Log.i(DEBUG_TAG, requestTimes + " times GET Request:" + info);
+            }else {
+                Log.i(DEBUG_TAG, requestTimes + " times POST Request:" + info);
+            }
         }
         return requestTimes++;
     }

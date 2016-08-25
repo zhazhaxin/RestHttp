@@ -9,7 +9,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
-import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -34,14 +33,15 @@ public class ServerCacheDispatcher {
     }
 
     public void addCacheRequest(String url, int method, Map<String, String> params, HttpCallback callback) {
+
         cacheQueue.add(new Request(url, method, params, callback));
         if (isEmptyQueue) {
             start();
         }
     }
 
-    public void addCacheRequest(String url, int method, Map<String, String> params, Class returnType, RestCallback callback) {
-        cacheQueue.add(new Request(url, method, params, returnType, callback));
+    public void addCacheRequest(Request request) {
+        cacheQueue.add(request);
         if (isEmptyQueue) {
             start();
         }
@@ -84,7 +84,7 @@ public class ServerCacheDispatcher {
 
                     if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                         RestHttpLog.i("缓存过期");
-                        RequestDispatcher.getInstance().addNetRequest(request.url, request.method, request.params, request.callback);
+                        RequestDispatcher.getInstance().addHttpRequest(request);
                     } else {
                         request.callback.success(entry.data);
                     }
@@ -96,8 +96,7 @@ public class ServerCacheDispatcher {
                         /**
                          * 这里只有异步
                          */
-                        RequestDispatcher.getInstance().addNetRequest(request.url, request.method, request.params,
-                                request.resultType, request.restCallback);
+                        RequestDispatcher.getInstance().addRestRequest(request);
                     } else {
                         Class returnType = request.restCallback.getActualClass();
                         if (returnType != null && returnType != void.class) {

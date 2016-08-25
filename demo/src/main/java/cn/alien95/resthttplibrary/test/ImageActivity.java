@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.image;
+package cn.alien95.resthttplibrary.test;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

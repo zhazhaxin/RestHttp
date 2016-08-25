@@ -22,11 +22,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
-import cn.alien95.resthttp.image.callback.ImageCallback;
-import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.http.HttpConnection;
+import cn.alien95.resthttp.request.https.HttpsConnection;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
-import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -78,33 +76,27 @@ public class RequestDispatcher {
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addNetRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
-        addNetRequest(new Request(httpUrl, method, params, callback));
+    public void addHttpRequest(Request request) {
+        addRequest(request);
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addNetRequest(String httpUrl, int method, Map<String, String> params, Class returnType, RestCallback callback) {
-        addNetRequest(new Request(httpUrl, method, params, returnType, callback));
+    public void addRestRequest(Request request) {
+        addRequest(request);
     }
 
-    private void addNetRequest(Request request) {
+    public void addHttpsRequest(Request request){
+        addRequest(request);
+    }
+
+    private void addRequest(Request request) {
         mNetQueue.push(request);
         if (isEmptyNetQueue) {
             startDealNetRequest();
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addImageRequest(String url, int inSimpleSize, ImageCallback callback) {
-        addImageRequest(new ImageRequest(url, inSimpleSize, callback));
-    }
-
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addImageRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        addImageRequest(new ImageRequest(url, reqWidth, reqHeight, callback));
-    }
-
-    private void addImageRequest(ImageRequest request) {
+    public void addImageRequest(ImageRequest request) {
         mImageQueue.push(request);
         if (isEmptyImageQueue) {
             startDealImageRequest();
@@ -119,14 +111,14 @@ public class RequestDispatcher {
 
         while (!mNetQueue.isEmpty()) {
             final Request request = mNetQueue.poll();
-            if (request.restCallback == null) {
+            if (request.callback != null) {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         HttpConnection.getInstance().request(request);
                     }
                 });
-            } else {
+            } else if (request.restCallback != null){
                 //通过接口方式请求
                 mThreadPool.execute(new Runnable() {
                     @Override
@@ -139,6 +131,13 @@ public class RequestDispatcher {
                             }
                         });
 
+                    }
+                });
+            }else if(request.httpsCallback != null){
+                mThreadPool.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        HttpsConnection.getInstance().request(request);
                     }
                 });
             }

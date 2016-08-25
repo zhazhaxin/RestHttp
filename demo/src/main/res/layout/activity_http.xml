@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_http"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:scrollbars="none">
+    tools:context="cn.alien95.resthttplibrary.test.HttpActivity">
 
-    <include layout="@layout/include_toolbar" />
+    <include layout="@layout/include_toolbar"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,55 +20,34 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/http"
+                android:id="@+id/get"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Http"
+                android:text="get"
                 android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/https"
+                android:id="@+id/post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Https"
+                android:text="post"
                 android:textAllCaps="false" />
 
-            <Button
-                android:id="@+id/rest"
+            <TextView
+                android:id="@+id/result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="面向接口Http"
-                android:textAllCaps="false" />
-
-            <Button
-                android:id="@+id/upload_file"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="Http文件上传"
-                android:textAllCaps="false" />
-
-            <Button
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="Http图片加载"
-                android:textAllCaps="false" />
-
+                android:layout_marginTop="16dp" />
         </LinearLayout>
+
     </ScrollView>
+
 </LinearLayout>

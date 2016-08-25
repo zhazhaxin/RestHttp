@@ -13,16 +13,18 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".test.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".image.ImageActivity" />
-        <activity android:name=".music.MusicListActivity" />
-        <activity android:name=".UploadFileActivity"></activity>
+        <activity android:name=".test.ImageActivity" />
+        <activity android:name=".test.MusicListActivity" />
+        <activity android:name=".test.UploadFileActivity" />
+        <activity android:name=".test.HttpsActivity" />
+        <activity android:name=".test.HttpActivity"></activity>
     </application>
 
 </manifest>

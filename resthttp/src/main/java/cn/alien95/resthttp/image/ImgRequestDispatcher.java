@@ -1,8 +1,9 @@
 package cn.alien95.resthttp.image;
 
+import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.RequestDispatcher;
-import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.DebugLog;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
@@ -29,17 +30,17 @@ public class ImgRequestDispatcher {
     public void loadImg(final String url, final int inSampleSize, final ImageCallback callback) {
 
         RestHttpLog.i("Get picture from network");
-        DebugUtils.requestImageLog(url);
+        DebugLog.requestImageLog(url);
 
-        RequestDispatcher.getInstance().addImageRequest(url, inSampleSize, callback);
+        RequestDispatcher.getInstance().addImageRequest(new ImageRequest(url, inSampleSize, callback));
     }
 
     public void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
 
         RestHttpLog.i("Get compress picture from network");
-        DebugUtils.requestImageLog(url);
+        DebugLog.requestImageLog(url);
 
-        RequestDispatcher.getInstance().addImageRequest(url, reqWidth, reqHeight, callBack);
+        RequestDispatcher.getInstance().addImageRequest(new ImageRequest(url, reqWidth, reqHeight, callBack));
     }
 
 

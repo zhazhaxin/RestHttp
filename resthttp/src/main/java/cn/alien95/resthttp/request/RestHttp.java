@@ -6,7 +6,8 @@ import java.util.Map;
 
 import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.request.callback.HttpsCallback;
+import cn.alien95.resthttp.util.DebugLog;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -16,9 +17,7 @@ import cn.alien95.resthttp.util.Util;
 public abstract class RestHttp {
 
     /**
-     * 初始化Http框架
-     *
-     * @param context
+     * 初始化RestHttp框架
      */
     public static void initialize(Context context) {
         Util.init(context);
@@ -30,30 +29,20 @@ public abstract class RestHttp {
     }
 
     /**
-     * GET请求
-     *
-     * @param url
-     * @param callBack
+     * GET
      */
-    public abstract void get(String url, HttpCallback callBack);
-
+    public void get(String url, HttpCallback callBack){}
+    public void get(String url, HttpsCallback callBack){}
     /**
-     * POST请求
-     *
-     * @param url
-     * @param params
-     * @param callBack
+     * POST
      */
-    public abstract void post(String url, Map<String, String> params, HttpCallback callBack);
-
+    public void post(String url, Map<String, String> params, HttpCallback callBack){}
+    public void post(String url, Map<String, String> params, HttpsCallback callBack){}
     /**
-     * 设置开启调试模式，默认是关闭
-     *
-     * @param isDebug
-     * @param tag
+     * 是否开启调试模式，默认是关闭
      */
     public static void setDebug(boolean isDebug, String tag) {
-        DebugUtils.setDebug(isDebug, tag);
+        DebugLog.setDebug(isDebug, tag);
     }
 
 

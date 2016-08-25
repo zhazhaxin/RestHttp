@@ -8,6 +8,7 @@ import android.os.Build;
 import android.widget.RemoteViews;
 
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.test.MusicListActivity;
 
 /**
  * Created by linlongxin on 2016/5/17.

@@ -3,27 +3,22 @@ package cn.alien95.resthttp.request.http;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import cn.alien95.resthttp.request.Cache;
-import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.Connection;
 import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.DebugLog;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -31,14 +26,14 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class HttpConnection {
+public class HttpConnection extends Connection {
 
     public static final int NO_NETWORK = 999;
     private Map<String, String> header;
-    private Handler handler;
+    protected Handler mHandler;
 
-    private HttpConnection() {
-        handler = new Handler(Looper.getMainLooper());
+    protected HttpConnection() {
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     public static HttpConnection getInstance() {
@@ -50,107 +45,48 @@ public class HttpConnection {
     }
 
     /**
-     * 设置请求头header
-     *
-     * @param header 请求头内容
-     */
-    protected void setHeader(Map<String, String> header) {
-        this.header = header;
-    }
-
-    protected void setHeader(String key, String value) {
-        if (header == null) {
-            header = new HashMap<>();
-        }
-        header.put(key, value);
-    }
-
-    /**
      * 网络请求
      */
     public void request(Request request) {
-
         String url = request.url;
-        Map<String,String> params = request.params;
-        final int method = request.method;
-        final HttpCallback callback = request.callback;
-
-        String logUrl = request.url;
-        final int respondCode;
-
-        /**
-         * 只有POST才会有参数
-         */
-        StringBuilder paramStrBuilder = new StringBuilder();
-        if (params != null) {
-            for (Map.Entry<String, String> map : params.entrySet()) {
-                try {
-                    paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
-                            .append(URLEncoder.encode(map.getValue(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-            paramStrBuilder.deleteCharAt(0);
-            logUrl = logUrl + "?" + paramStrBuilder;
+        try {
+            HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
+            requestURLConnection(urlConnection, request);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void requestURLConnection(HttpURLConnection urlConnection, Request request) {
+        String url = request.url;
+
+        final HttpCallback callback;
+        if (request.isHttps) {
+            callback = request.httpsCallback;
+        } else {
+            callback = request.callback;
+        }
+
+        final int respondCode;
+        String logUrl = getPostLog(url, request.params);
 
         /**
          * 打印网络请求日志
          */
-        final int requestTime = DebugUtils.requestLog(logUrl);
+        final int requestTime = DebugLog.requestLog(request.method,logUrl);
         try {
-            HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
-            urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(true);
-            urlConnection.setConnectTimeout(10 * 1000);
-            urlConnection.setReadTimeout(10 * 1000);
-            if(method == Method.GET){
-                urlConnection.setRequestMethod("GET");
-            }else if(method == Method.POST){
-                urlConnection.setRequestMethod("POST");
-            }
-
-            if (header != null) {
-                for (Map.Entry<String, String> entry : header.entrySet()) {
-                    urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
-                }
-            }
-
-            if (method == Method.POST) {
-                OutputStream ops = urlConnection.getOutputStream();
-                ops.write(paramStrBuilder.toString().getBytes());
-                ops.flush();
-                ops.close();
-            }
-
-            /**
-             * 对HttpURLConnection对象的一切配置都必须要在connect()函数执行之前完成。
-             */
-            urlConnection.connect();
-            InputStream in = urlConnection.getInputStream();
+            urlConnection = configURLConnection(urlConnection, request); //配置HttpURLConnection
             respondCode = urlConnection.getResponseCode();
+            InputStream in = urlConnection.getInputStream();
             /**
-             * 请求失败
+             * 重定向
              */
-            if (respondCode != HttpURLConnection.HTTP_OK) {
-                in = urlConnection.getErrorStream();
-                final int finalRespondCode = respondCode;
-                final String info = readInputStream(in);
-                in.close();
-                /**
-                 * 打印错误日志
-                 */
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callback != null) {
-                            callback.failure(finalRespondCode, info);
-                            callback.logNetworkInfo(respondCode, info, requestTime);
-                        }
-                    }
-                });
-            } else {
+            if (respondCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+                String location = urlConnection.getHeaderField("Location");
+                request.url = location;
+                requestURLConnection((HttpURLConnection) new URL(location).openConnection(), request);
+                RestHttpLog.i("重定向url : " + location);
+            } else if (respondCode == HttpURLConnection.HTTP_OK) {
                 /**
                  * 状态码为200，请求成功。获取响应头，处理缓存
                  */
@@ -178,7 +114,7 @@ public class HttpConnection {
                     RestHttpLog.i(entry.toString());
                 }
 
-                handler.post(new Runnable() {
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (callback != null) {
@@ -187,10 +123,32 @@ public class HttpConnection {
                         }
                     }
                 });
+            } else {
+                in = urlConnection.getErrorStream();
+                final String info = readInputStream(in);
+                if (in != null) {
+                    in.close();
+                } else {
+                    RestHttpLog.i("urlConnection.getErrorStream() == null,respondCode : " + respondCode);
+                }
+
+                /**
+                 * 打印错误日志
+                 */
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.failure(respondCode, info);
+                            callback.logNetworkInfo(respondCode, info, requestTime);
+                        }
+                    }
+                });
             }
         } catch (final IOException e1) {
             e1.printStackTrace();
-            handler.post(new Runnable() {
+            RestHttpLog.i("网络异常 : " + e1.getMessage());
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (callback != null) {
@@ -201,26 +159,5 @@ public class HttpConnection {
             });
         }
     }
-
-    /**
-     * 读取输入流信息，转化成String
-     */
-    private String readInputStream(InputStream in) {
-        String result = "";
-        String line;
-        if (in != null) {
-            BufferedReader bin = new BufferedReader(new InputStreamReader(in));
-            try {
-                while ((line = bin.readLine()) != null) {
-                    result += line;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-
 
 }

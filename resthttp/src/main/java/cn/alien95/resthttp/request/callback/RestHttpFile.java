@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.RequestDispatcher;
-import cn.alien95.resthttp.util.DebugUtils;
+import cn.alien95.resthttp.util.DebugLog;
 
 /**
  * Created by linlongxin on 2016/7/10.
@@ -88,7 +88,7 @@ public class RestHttpFile {
             String endInfo = "\r\n--" + BOUNDARY + "--\r\n";
 
             int messageFormLength = messageForm.length();
-            DebugUtils.Log("上传文件消息体\n" + messageForm.toString() + endInfo + "\n");
+            DebugLog.Log("上传文件消息体\n" + messageForm.toString() + endInfo + "\n");
 
             httpURLConnection.setRequestMethod("POST");
             /**
@@ -100,7 +100,7 @@ public class RestHttpFile {
             httpURLConnection.setDoOutput(true);
             OutputStream outToServer = httpURLConnection.getOutputStream();
 
-            DebugUtils.Log("ContentLength : " + contentLength);
+            DebugLog.Log("ContentLength : " + contentLength);
             /**
              * 发送消息体到服务器端
              */
@@ -144,7 +144,7 @@ public class RestHttpFile {
 
         } catch (IOException e) {
             e.printStackTrace();
-            DebugUtils.Log("异常：" + e.getMessage());
+            DebugLog.Log("异常：" + e.getMessage());
         }
 
     }

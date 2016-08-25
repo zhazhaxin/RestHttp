@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.music;
+package cn.alien95.resthttplibrary.test;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +18,7 @@ import cn.alien95.resthttplibrary.R;
 import cn.alien95.resthttplibrary.config.Config;
 import cn.alien95.resthttplibrary.data.ServiceAPI;
 import cn.alien95.resthttplibrary.data.bean.Music;
+import cn.alien95.resthttplibrary.music.MusicAdapter;
 import cn.alien95.util.Utils;
 import cn.lemon.view.RefreshRecyclerView;
 
@@ -108,7 +109,6 @@ public class MusicListActivity extends AppCompatActivity {
                             Utils.Log("没有url");
                         }
                         data.add(music);
-                        Utils.Log(music.toString());
                     }
                     adapter.addAll(data);
                     mRecyclerView.dismissSwipeRefresh();

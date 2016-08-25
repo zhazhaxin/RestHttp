@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.image;
+package cn.alien95.resthttplibrary.test;
 
 import android.content.Context;
 import android.view.ViewGroup;

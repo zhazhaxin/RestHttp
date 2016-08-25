@@ -18,6 +18,7 @@ public class Request<T> {
     public HttpCallback callback;
 
     public HttpsCallback httpsCallback;
+    public boolean isHttps = false;
 
     public RestCallback<T> restCallback;
     public Class resultType;
@@ -32,11 +33,12 @@ public class Request<T> {
     /**
      * Https
      */
-    public Request(int method, String url, Map<String, String> params, HttpsCallback httpsCallback) {
+    public Request(String url, int method, Map<String,String> params, HttpsCallback httpsCallback) {
         this.method = method;
         this.url = url;
         this.params = params;
         this.httpsCallback = httpsCallback;
+        isHttps = true;
     }
 
     /**
