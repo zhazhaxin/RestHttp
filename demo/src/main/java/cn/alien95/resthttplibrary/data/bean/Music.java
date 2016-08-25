@@ -5,21 +5,6 @@ package cn.alien95.resthttplibrary.data.bean;
  */
 public class Music {
 
-
-    /**
-     * albumid : 1347922
-     * albummid : 000mMTtV3BTWQT
-     * albumpic_big : http://i.gtimg.cn/music/photo/mid_album_300/Q/T/000mMTtV3BTWQT.jpg
-     * albumpic_small : http://i.gtimg.cn/music/photo/mid_album_90/Q/T/000mMTtV3BTWQT.jpg
-     * downUrl : http://tsmusic24.tc.qq.com/106097780.mp3
-     * seconds : 245
-     * singerid : 3954
-     * singername : 汪苏泷
-     * songid : 106097780
-     * songname : 还给你一些孤单 ( 《我是杜拉拉》电视剧插曲)
-     * url : http://ws.stream.qqmusic.qq.com/106097780.m4a?fromtag=46
-     */
-
     private String albumpic_big;
     private String albumpic_small;
     private String downUrl;

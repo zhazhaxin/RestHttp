@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package cn.alien95.resthttp.request;
+package cn.alien95.resthttp.request.http;
 
 import java.util.Map;
 
+import cn.alien95.resthttp.request.Cache;
+import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 

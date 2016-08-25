@@ -1,7 +1,12 @@
-package cn.alien95.resthttp.request;
+package cn.alien95.resthttp.request.http;
 
 import java.util.Map;
 
+import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.RequestDispatcher;
+import cn.alien95.resthttp.request.RestHttp;
+import cn.alien95.resthttp.request.ServerCache;
+import cn.alien95.resthttp.request.ServerCacheDispatcher;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.Util;
 
@@ -33,22 +38,17 @@ public class RestHttpRequest extends RestHttp {
 
     /**
      * 设置请求头
-     *
-     * @param header
      */
     public void setHeader(Map<String, String> header) {
-        RequestConnection.getInstance().setHeader(header);
+        HttpConnection.getInstance().setHeader(header);
     }
 
     public void setHeader(String key, String value) {
-        RequestConnection.getInstance().setHeader(key, value);
+        HttpConnection.getInstance().setHeader(key, value);
     }
 
     /**
      * GET请求
-     *
-     * @param url      请求地址
-     * @param callBack 回调接口
      */
     @Override
     public void get(final String url, final HttpCallback callBack) {
@@ -58,15 +58,11 @@ public class RestHttpRequest extends RestHttp {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else
-            RequestDispatcher.getInstance().addRequest(url, Method.GET, null, callBack);
+            RequestDispatcher.getInstance().addNetRequest(url, Method.GET, null, callBack);
     }
 
     /**
      * POST请求
-     *
-     * @param url      请求地址
-     * @param params   请求参数，HashMap的格式
-     * @param callBack 回调接口
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
@@ -76,7 +72,7 @@ public class RestHttpRequest extends RestHttp {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else
-            RequestDispatcher.getInstance().addRequest(url, Method.POST, params, callBack);
+            RequestDispatcher.getInstance().addNetRequest(url, Method.POST, params, callBack);
     }
 
     public void cancelAllRequest() {

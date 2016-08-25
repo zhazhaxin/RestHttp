@@ -31,7 +31,7 @@ public class ImgRequestDispatcher {
         RestHttpLog.i("Get picture from network");
         DebugUtils.requestImageLog(url);
 
-        RequestDispatcher.getInstance().addImgRequest(url, inSampleSize, callback);
+        RequestDispatcher.getInstance().addImageRequest(url, inSampleSize, callback);
     }
 
     public void loadImgWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
@@ -39,7 +39,7 @@ public class ImgRequestDispatcher {
         RestHttpLog.i("Get compress picture from network");
         DebugUtils.requestImageLog(url);
 
-        RequestDispatcher.getInstance().addImgRequest(url, reqWidth, reqHeight, callBack);
+        RequestDispatcher.getInstance().addImageRequest(url, reqWidth, reqHeight, callBack);
     }
 
 

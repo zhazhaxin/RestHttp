@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.request;
+package cn.alien95.resthttp.request.http;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.alien95.resthttp.request.Cache;
+import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.Request;
+import cn.alien95.resthttp.request.Response;
+import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttp.util.RestHttpLog;
@@ -26,22 +31,22 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class RequestConnection {
+public class HttpConnection {
 
     public static final int NO_NETWORK = 999;
     private Map<String, String> header;
     private Handler handler;
 
-    private RequestConnection() {
+    private HttpConnection() {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    protected static RequestConnection getInstance() {
+    public static HttpConnection getInstance() {
         return SingletonInstance.instance;
     }
 
     private static class SingletonInstance {
-        private static final RequestConnection instance = new RequestConnection();
+        private static final HttpConnection instance = new HttpConnection();
     }
 
     /**
@@ -62,22 +67,23 @@ public class RequestConnection {
 
     /**
      * 网络请求
-     *
-     * @param method   请求方式{POST,GET}
-     * @param param    请求的参数，HashMap键值对的形式
-     * @param callback 请求返回的回调
      */
-    protected void quest(String url, int method, Map<String, String> param, final HttpCallback callback) {
+    public void request(Request request) {
 
-        String logUrl = url;
+        String url = request.url;
+        Map<String,String> params = request.params;
+        final int method = request.method;
+        final HttpCallback callback = request.callback;
+
+        String logUrl = request.url;
         final int respondCode;
 
         /**
          * 只有POST才会有参数
          */
         StringBuilder paramStrBuilder = new StringBuilder();
-        if (param != null) {
-            for (Map.Entry<String, String> map : param.entrySet()) {
+        if (params != null) {
+            for (Map.Entry<String, String> map : params.entrySet()) {
                 try {
                     paramStrBuilder = paramStrBuilder.append("&").append(URLEncoder.encode(map.getKey(), "UTF-8")).append("=")
                             .append(URLEncoder.encode(map.getValue(), "UTF-8"));
@@ -198,9 +204,6 @@ public class RequestConnection {
 
     /**
      * 读取输入流信息，转化成String
-     *
-     * @param in
-     * @return
      */
     private String readInputStream(InputStream in) {
         String result = "";

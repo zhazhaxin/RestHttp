@@ -26,7 +26,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:cardview-v7:24.0.0'
     compile 'cn.alien95:util:1.1.1'
-    compile 'cn.alien95:refreshrecyclerview:0.1.6'
-    compile 'com.jakewharton:butterknife:8.0.1'
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    compile 'cn.lemon:RefreshRecyclerView:0.1.3'
 }

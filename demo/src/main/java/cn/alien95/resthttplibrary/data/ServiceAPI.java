@@ -1,7 +1,7 @@
 package cn.alien95.resthttplibrary.data;
 
 
-import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;

@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.request.rest.callback;
+package cn.alien95.resthttp.request.callback;
 
 import java.lang.reflect.ParameterizedType;
 

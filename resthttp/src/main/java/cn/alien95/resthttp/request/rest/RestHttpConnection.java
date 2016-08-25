@@ -17,8 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.alien95.resthttp.request.Cache;
-import cn.alien95.resthttp.request.HttpHeaderParser;
+import cn.alien95.resthttp.request.http.HttpHeaderParser;
 import cn.alien95.resthttp.request.Method;
+import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.util.DebugUtils;
@@ -29,19 +30,19 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/3/24.
  */
-public class RestConnection {
+public class RestHttpConnection {
 
     private Map<String, String> header;
 
-    private RestConnection() {
+    private RestHttpConnection() {
     }
 
-    public static RestConnection getInstance() {
+    public static RestHttpConnection getInstance() {
         return SingletonInstance.instance;
     }
 
     private static class SingletonInstance {
-        private static final RestConnection instance = new RestConnection();
+        private static final RestHttpConnection instance = new RestHttpConnection();
     }
 
     /**
@@ -62,11 +63,14 @@ public class RestConnection {
 
     /**
      * 这里很疑惑到底应该需不需要同步，看了JVM后应该觉得不需要同步处理，通过线程池并发执行
-     *
-     * @param method 请求方式{POST,GET}
-     * @param param  请求的参数，HashMap键值对的形式
      */
-    public <T> T quest(String url, int method, Map<String, String> param, Class<T> returnType) {
+    public <T> T request(Request<T> request) {
+
+        String url = request.url;
+        Map<String,String> param = request.params;
+        int method = request.method;
+        Class<T> returnType = request.resultType;
+
         String logUrl = url;
         final int respondCode;
 

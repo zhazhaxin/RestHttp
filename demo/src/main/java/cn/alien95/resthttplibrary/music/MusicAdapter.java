@@ -7,13 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.alien95.resthttp.view.HttpImageView;
 import cn.alien95.resthttplibrary.R;
 import cn.alien95.resthttplibrary.data.bean.Music;
-import cn.alien95.view.adapter.BaseViewHolder;
-import cn.alien95.view.adapter.RecyclerAdapter;
+import cn.lemon.view.adapter.BaseViewHolder;
+import cn.lemon.view.adapter.RecyclerAdapter;
 
 /**
  * Created by linlongxin on 2016/5/15.
@@ -31,27 +29,27 @@ public class MusicAdapter extends RecyclerAdapter<Music> {
 
     @Override
     public BaseViewHolder<Music> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        return new MusicViewHolder(parent, R.layout.item_music);
-    }
-
-    public int getCurrentPosition() {
-        return currentPosition;
+        return new MusicViewHolder(parent);
     }
 
     class MusicViewHolder extends BaseViewHolder<Music> {
 
-        @BindView(R.id.image)
-        HttpImageView image;
-        @BindView(R.id.song_name)
-        TextView songName;
-        @BindView(R.id.singer_name)
-        TextView singerName;
-        @BindView(R.id.music_switch)
-        ImageView musicSwitch;
+        private HttpImageView image;
+        private TextView songName;
+        private TextView singerName;
+        private ImageView musicSwitch;
 
-        public MusicViewHolder(ViewGroup parent, int layoutId) {
-            super(parent, layoutId);
-            ButterKnife.bind(this, itemView);
+        public MusicViewHolder(ViewGroup parent) {
+            super(parent, R.layout.item_music);
+        }
+
+        @Override
+        public void onInitializeView() {
+            super.onInitializeView();
+            image = findViewById(R.id.image);
+            songName = findViewById(R.id.song_name);
+            singerName = findViewById(R.id.singer_name);
+            musicSwitch = findViewById(R.id.music_switch);
         }
 
         @Override
@@ -74,7 +72,6 @@ public class MusicAdapter extends RecyclerAdapter<Music> {
                     musicSwitch.setImageResource(R.drawable.ic_close);
                 }
             });
-
             musicSwitch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -93,7 +90,11 @@ public class MusicAdapter extends RecyclerAdapter<Music> {
                     currentPosition = getAdapterPosition();
                 }
             });
+        }
 
+        @Override
+        public void onItemViewClick(Music object) {
+            super.onItemViewClick(object);
         }
     }
 }

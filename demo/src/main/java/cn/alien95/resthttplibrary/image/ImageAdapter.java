@@ -5,8 +5,8 @@ import android.view.ViewGroup;
 
 import cn.alien95.resthttp.view.HttpImageView;
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.view.adapter.BaseViewHolder;
-import cn.alien95.view.adapter.RecyclerAdapter;
+import cn.lemon.view.adapter.BaseViewHolder;
+import cn.lemon.view.adapter.RecyclerAdapter;
 
 /**
  * Created by linlongxin on 2016/5/13.
@@ -19,7 +19,7 @@ public class ImageAdapter extends RecyclerAdapter<String> {
 
     @Override
     public BaseViewHolder<String> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        return new ImageViewHolder(parent, R.layout.item_image);
+        return new ImageViewHolder(parent);
     }
 
 
@@ -27,8 +27,13 @@ public class ImageAdapter extends RecyclerAdapter<String> {
 
         private HttpImageView imageView;
 
-        public ImageViewHolder(ViewGroup parent, int layoutId) {
-            super(parent, layoutId);
+        public ImageViewHolder(ViewGroup parent) {
+            super(parent, R.layout.item_image);
+        }
+
+        @Override
+        public void onInitializeView() {
+            super.onInitializeView();
             imageView = (HttpImageView) itemView.findViewById(R.id.image_view);
         }
 

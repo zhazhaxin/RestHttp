@@ -24,8 +24,9 @@ import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.rest.RestConnection;
-import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.request.http.HttpConnection;
+import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -34,24 +35,24 @@ import cn.alien95.resthttp.util.Util;
  */
 public class RequestDispatcher {
 
-    private boolean isEmptyNetRequestQueue = true;
-    private boolean isEmptyImgRequestQueue = true;
-    private LinkedBlockingDeque<Request> netRequestQueue;
-    private LinkedBlockingDeque<ImageRequest> imgRequestQueue;
-    private ExecutorService threadPool; //线程池
-    private Handler handler;
+    private boolean isEmptyNetQueue = true;
+    private boolean isEmptyImageQueue = true;
+    private LinkedBlockingDeque<Request> mNetQueue;
+    private LinkedBlockingDeque<ImageRequest> mImageQueue;
+    private ExecutorService mThreadPool; //线程池
+    private Handler mHandler;
 
     private static RequestDispatcher instance;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private RequestDispatcher() {
-        netRequestQueue = new LinkedBlockingDeque<>();
-        imgRequestQueue = new LinkedBlockingDeque<>();
+        mNetQueue = new LinkedBlockingDeque<>();
+        mImageQueue = new LinkedBlockingDeque<>();
         if (Util.getNumberOfCPUCores() != 0) {
-            threadPool = Executors.newFixedThreadPool(Util.getNumberOfCPUCores());
+            mThreadPool = Executors.newFixedThreadPool(Util.getNumberOfCPUCores());
         } else
-            threadPool = Executors.newFixedThreadPool(4);
-        handler = new Handler(Looper.getMainLooper());
+            mThreadPool = Executors.newFixedThreadPool(4);
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     public static RequestDispatcher getInstance() {
@@ -65,47 +66,48 @@ public class RequestDispatcher {
         return instance;
     }
 
-    public void executeRunable(Runnable runnable){
-        threadPool.execute(runnable);
+    public void executeRunnable(Runnable runnable) {
+        mThreadPool.execute(runnable);
     }
+
     /**
      * 异步读取服务器缓存文件
-     *
-     * @param callable
-     * @return
      */
     public Future submitCallable(Callable callable) {
-        return threadPool.submit(callable);
+        return mThreadPool.submit(callable);
     }
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
-        netRequestQueue.push(new Request(httpUrl, method, params, callback));
-        if (isEmptyNetRequestQueue) {
-            startRequest();
+    public void addNetRequest(String httpUrl, int method, Map<String, String> params, HttpCallback callback) {
+        addNetRequest(new Request(httpUrl, method, params, callback));
+    }
+
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    public void addNetRequest(String httpUrl, int method, Map<String, String> params, Class returnType, RestCallback callback) {
+        addNetRequest(new Request(httpUrl, method, params, returnType, callback));
+    }
+
+    private void addNetRequest(Request request) {
+        mNetQueue.push(request);
+        if (isEmptyNetQueue) {
+            startDealNetRequest();
         }
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addRequest(String httpUrl, int method, Map<String, String> params, Class returnType, RestCallback callback) {
-        netRequestQueue.push(new Request(httpUrl, method, params, returnType, callback));
-        if (isEmptyNetRequestQueue) {
-            startRequest();
-        }
+    public void addImageRequest(String url, int inSimpleSize, ImageCallback callback) {
+        addImageRequest(new ImageRequest(url, inSimpleSize, callback));
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addImgRequest(String url, int inSimpleSize, ImageCallback callback) {
-        imgRequestQueue.push(new ImageRequest(url, inSimpleSize, callback));
-        if (isEmptyImgRequestQueue) {
-            startRequestImg();
-        }
+    public void addImageRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
+        addImageRequest(new ImageRequest(url, reqWidth, reqHeight, callback));
     }
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void addImgRequest(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        imgRequestQueue.push(new ImageRequest(url, reqWidth, reqHeight, callback));
-        if (isEmptyImgRequestQueue) {
-            startRequestImg();
+    private void addImageRequest(ImageRequest request) {
+        mImageQueue.push(request);
+        if (isEmptyImageQueue) {
+            startDealImageRequest();
         }
     }
 
@@ -113,25 +115,24 @@ public class RequestDispatcher {
      * 网络请求轮询
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private void startRequest() {
+    private void startDealNetRequest() {
 
-        while (!netRequestQueue.isEmpty()) {
-            final Request request = netRequestQueue.poll();
+        while (!mNetQueue.isEmpty()) {
+            final Request request = mNetQueue.poll();
             if (request.restCallback == null) {
-                threadPool.execute(new Runnable() {
+                mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        RequestConnection.getInstance().quest(request.httpUrl, request.method
-                                , request.params, request.callback);
+                        HttpConnection.getInstance().request(request);
                     }
                 });
             } else {
-                threadPool.execute(new Runnable() {
+                //通过接口方式请求
+                mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        final Object result = RestConnection.getInstance().quest(request.httpUrl, request.method,
-                                request.params, request.resultType);
-                        handler.post(new Runnable() {
+                        final Object result = RestHttpConnection.getInstance().request(request);
+                        mHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 request.restCallback.callback(result);
@@ -141,19 +142,19 @@ public class RequestDispatcher {
                     }
                 });
             }
-            isEmptyNetRequestQueue = false;
+            isEmptyNetQueue = false;
         }
-        isEmptyNetRequestQueue = true;
+        isEmptyNetQueue = true;
     }
 
     /**
      * 网络请求图片轮询
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void startRequestImg() {
-        while (!imgRequestQueue.isEmpty()) {
-            final ImageRequest imgRequest = imgRequestQueue.poll();
-            threadPool.execute(new Runnable() {
+    public void startDealImageRequest() {
+        while (!mImageQueue.isEmpty()) {
+            final ImageRequest imgRequest = mImageQueue.poll();
+            mThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -195,7 +196,7 @@ public class RequestDispatcher {
                                 DiskCache.getInstance().put(key, bitmap);
 
                             }
-                            handler.post(new Runnable() {
+                            mHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     imgRequest.callback.callback(bitmap);
@@ -207,9 +208,9 @@ public class RequestDispatcher {
                     }
                 }
             });
-            isEmptyImgRequestQueue = false;
+            isEmptyImageQueue = false;
         }
-        isEmptyImgRequestQueue = true;
+        isEmptyImageQueue = true;
     }
 
 
@@ -234,26 +235,29 @@ public class RequestDispatcher {
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelAllNetRequest() {
-        netRequestQueue.clear();
+        mNetQueue.clear();
     }
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelAllImageRequest() {
-        imgRequestQueue.clear();
+        mImageQueue.clear();
     }
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelRequest(String url) {
-        for (Request r : netRequestQueue) {
-            if (r.httpUrl.equals(url)) {
-                netRequestQueue.remove(r);
+        for (Request r : mNetQueue) {
+            if (r.url.equals(url)) {
+                mNetQueue.remove(r);
                 return;
             }
         }
     }
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void cancelRequest(String url, Map<String, String> params) {
-        for (Request r : netRequestQueue) {
-            if (r.httpUrl.equals(url) && params.equals(r.params)) {
-                netRequestQueue.remove(r);
+        for (Request r : mNetQueue) {
+            if (r.url.equals(url) && params.equals(r.params)) {
+                mNetQueue.remove(r);
                 return;
             }
         }

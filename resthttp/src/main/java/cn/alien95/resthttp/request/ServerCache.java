@@ -89,9 +89,6 @@ public class ServerCache implements Cache {
 
     /**
      * 把一个对象写入文件
-     *
-     * @param object
-     * @param cache
      */
     private boolean writeObjectToFile(Object object, File cache) {
         if (!cache.exists()) {
@@ -116,10 +113,6 @@ public class ServerCache implements Cache {
 
     /**
      * 从一个文件中读取对象
-     *
-     * @param cache
-     * @param <T>
-     * @return
      */
     private <T> T readObjectFromFile(File cache) {
         if (!cache.exists()) {
@@ -147,9 +140,6 @@ public class ServerCache implements Cache {
 
     /**
      * 判断缓存是否存在
-     *
-     * @param key
-     * @return
      */
     public boolean isExistsCache(String key) {
         return cacheFiles.contains(getCacheFile(key));

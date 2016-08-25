@@ -9,20 +9,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.alien95.resthttp.request.rest.RestRequest;
-import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.alien95.resthttp.request.rest.RestFactory;
+import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttplibrary.R;
 import cn.alien95.resthttplibrary.config.Config;
 import cn.alien95.resthttplibrary.data.ServiceAPI;
 import cn.alien95.resthttplibrary.data.bean.Music;
 import cn.alien95.util.Utils;
-import cn.alien95.view.RefreshRecyclerView;
+import cn.lemon.view.RefreshRecyclerView;
 
 public class MusicListActivity extends AppCompatActivity {
 
-    private RefreshRecyclerView refreshRecyclerView;
+    private RefreshRecyclerView mRecyclerView;
     private MusicAdapter adapter;
-    private RestRequest restRequest;
+    private RestFactory restRequest;
     private ServiceAPI serviceAPI;
     private Toolbar mToolbar;
 
@@ -33,17 +36,24 @@ public class MusicListActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        restRequest = new RestRequest.Builder()
+        restRequest = new RestFactory.Builder()
                 .baseUrl(Config.MUSIC_BASE_URL)
                 .build();
         serviceAPI = (ServiceAPI) restRequest.create(ServiceAPI.class);
 
-        refreshRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
-        refreshRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        refreshRecyclerView.setAdapter(adapter = new MusicAdapter(this));
+        mRecyclerView.setAdapter(adapter = new MusicAdapter(this));
+        adapter.colseLog();
 
-        getData(5);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mRecyclerView.showSwipeRefresh();
+                getData(5);
+            }
+        });
     }
 
     public void getData(int topId) {
@@ -55,7 +65,7 @@ public class MusicListActivity extends AppCompatActivity {
                     JSONObject body = allData.getJSONObject("showapi_res_body");
                     JSONObject javaBean = body.getJSONObject("pagebean");
                     JSONArray array = javaBean.getJSONArray("songlist");
-                    Utils.Log("music--length : " + array.length());
+                    List<Music> data = new ArrayList<Music>();
                     for (int i = 0; i < array.length(); i++) {
                         Music music = new Music();
                         JSONObject jsonObject = (JSONObject) array.get(i);
@@ -97,9 +107,12 @@ public class MusicListActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             Utils.Log("没有url");
                         }
-                        adapter.add(music);
+                        data.add(music);
                         Utils.Log(music.toString());
                     }
+                    adapter.addAll(data);
+                    mRecyclerView.dismissSwipeRefresh();
+                    adapter.showNoMore();
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Utils.Log("数据解析错误");

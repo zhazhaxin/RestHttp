@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import cn.alien95.resthttp.request.RestHttpFile;
+import cn.alien95.resthttp.request.callback.RestHttpFile;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugUtils;
 import cn.alien95.resthttplibrary.util.ImageUtil;

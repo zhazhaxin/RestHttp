@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.request;
+package cn.alien95.resthttp.request.callback;
 
 import android.os.Handler;
 
@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-import cn.alien95.resthttp.request.callback.HttpCallback;
+import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.util.DebugUtils;
 
 /**
@@ -43,7 +43,7 @@ public class RestHttpFile {
     }
 
     public void uploadFile(final String path, final Map<String, String> params, final String fileParamName, final File file, final HttpCallback callback) {
-        RequestDispatcher.getInstance().executeRunable(new Runnable() {
+        RequestDispatcher.getInstance().executeRunnable(new Runnable() {
             @Override
             public void run() {
                 uploadFileTask(path, params, fileParamName, file, callback);
@@ -151,9 +151,6 @@ public class RestHttpFile {
 
     /**
      * 读取输入流信息，转化成String
-     *
-     * @param in
-     * @return
      */
     private String inputStreamToString(InputStream in) {
         String result = "";

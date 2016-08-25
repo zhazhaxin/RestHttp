@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.view.RefreshRecyclerView;
+import cn.lemon.view.RefreshRecyclerView;
 
 public class ImageActivity extends AppCompatActivity {
 
@@ -27,7 +27,7 @@ public class ImageActivity extends AppCompatActivity {
         refreshRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         refreshRecyclerView.setAdapter(adapter = new ImageAdapter(this));
-
+        adapter.colseLog();
         adapter.addAll(new String[]{
                 "http://i02.pictn.sogoucdn.com/3c28af542f2d49f7-fe9c78d2ff4ac332-fe56d6b51daa9e7d5a5cda4d58ce5b71",
                 "http://img01.sogoucdn.com/app/a/100520093/bddd017c1255d067-585cb7009cdde8e3-db1a7c3b141456ab2e2b64b38ac845cc.jpg",
@@ -42,5 +42,6 @@ public class ImageActivity extends AppCompatActivity {
                 "http://i04.pictn.sogoucdn.com/3c28af542f2d49f7-8437bbc8e07dde51-bf281c07635ca67fd013a5fb041fac99",
                 "http://i03.pictn.sogoucdn.com/2cdca4ec6bbe565f"
         });
+        adapter.showNoMore();
     }
 }

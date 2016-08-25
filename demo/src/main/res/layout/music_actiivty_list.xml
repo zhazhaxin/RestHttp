@@ -8,11 +8,9 @@
 
     <include layout="@layout/include_toolbar" />
 
-    <cn.alien95.view.RefreshRecyclerView
+    <cn.lemon.view.RefreshRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </cn.alien95.view.RefreshRecyclerView>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

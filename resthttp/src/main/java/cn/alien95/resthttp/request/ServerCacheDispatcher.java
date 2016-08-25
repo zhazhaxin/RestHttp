@@ -8,8 +8,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.rest.RestConnection;
-import cn.alien95.resthttp.request.rest.callback.RestCallback;
+import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -49,26 +49,19 @@ public class ServerCacheDispatcher {
 
     /**
      * 同步直接处理
-     *
-     * @param url
-     * @param method
-     * @param params
-     * @param tClass
-     * @return
      */
-    public Object getRestCacheSync(String url, int method, Map<String, String> params, Class tClass) {
+    public Object getRestCacheSync(Request request) {
 
-        final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(url, params));
+        final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(request.url, request.params));
 
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                 RestHttpLog.i("缓存过期");
-                return RestConnection.getInstance().quest(url,
-                        method, params, tClass);
+                return RestHttpConnection.getInstance().request(request);
             } else {
                 RestHttpLog.i("Sync Request data from cache");
-                if (tClass != null && tClass != void.class) {
-                    return new Gson().fromJson(entry.data, tClass);
+                if (request.resultType != null && request.resultType != void.class) {
+                    return new Gson().fromJson(entry.data, request.resultType);
                 }
                 return null;
             }
@@ -85,13 +78,13 @@ public class ServerCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = getCacheAsyn(Util.getCacheKey(request.httpUrl, request.params));
+            entry = getCacheAsyn(Util.getCacheKey(request.url, request.params));
             if (request.restCallback == null) {
                 if (entry != null) {
 
                     if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                         RestHttpLog.i("缓存过期");
-                        RequestDispatcher.getInstance().addRequest(request.httpUrl, request.method, request.params, request.callback);
+                        RequestDispatcher.getInstance().addNetRequest(request.url, request.method, request.params, request.callback);
                     } else {
                         request.callback.success(entry.data);
                     }
@@ -103,7 +96,7 @@ public class ServerCacheDispatcher {
                         /**
                          * 这里只有异步
                          */
-                        RequestDispatcher.getInstance().addRequest(request.httpUrl, request.method, request.params,
+                        RequestDispatcher.getInstance().addNetRequest(request.url, request.method, request.params,
                                 request.resultType, request.restCallback);
                     } else {
                         Class returnType = request.restCallback.getActualClass();
@@ -124,8 +117,6 @@ public class ServerCacheDispatcher {
 
     /**
      * 异步读取文件并转化为对象
-     *
-     * @param key
      */
     public Cache.Entry getCacheAsyn(final String key) {
 
@@ -145,5 +136,6 @@ public class ServerCacheDispatcher {
         }
         return null;
     }
+
 
 }
