@@ -2,12 +2,10 @@ package cn.alien95.resthttp.request;
 
 import com.google.gson.Gson;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
@@ -30,14 +28,6 @@ public class ServerCacheDispatcher {
             instance = new ServerCacheDispatcher();
         }
         return instance;
-    }
-
-    public void addCacheRequest(String url, int method, Map<String, String> params, HttpCallback callback) {
-
-        cacheQueue.add(new Request(url, method, params, callback));
-        if (isEmptyQueue) {
-            start();
-        }
     }
 
     public void addCacheRequest(Request request) {
@@ -70,7 +60,7 @@ public class ServerCacheDispatcher {
     }
 
 
-    public Object start() {
+    public void start() {
         Request request;
         Cache.Entry entry;
         /**
@@ -79,25 +69,24 @@ public class ServerCacheDispatcher {
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
             entry = getCacheAsyn(Util.getCacheKey(request.url, request.params));
-            if (request.restCallback == null) {
-                if (entry != null) {
-
-                    if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                        RestHttpLog.i("缓存过期");
+            if(entry != null){
+                if(entry.isExpired() || entry.refreshNeeded()){
+                    RestHttpLog.i("缓存过期");
+                    //向服务器拉取数据
+                    if(request.isHttps){
+                        RequestDispatcher.getInstance().addHttpsRequest(request);
+                    }else if(request.callback != null){
                         RequestDispatcher.getInstance().addHttpRequest(request);
-                    } else {
-                        request.callback.success(entry.data);
-                    }
-                }
-            } else {
-                if (entry != null) {
-                    if (entry.isExpired() || entry.refreshNeeded()) { //过期了
-                        RestHttpLog.i("缓存过期");
-                        /**
-                         * 这里只有异步
-                         */
+                    }else if(request.restCallback != null){
                         RequestDispatcher.getInstance().addRestRequest(request);
-                    } else {
+                    }
+                }else {
+                    //本地读取缓存
+                    if(request.isHttps){
+                        request.httpsCallback.success(entry.data);
+                    }else if(request.callback != null){
+                        request.callback.success(entry.data);
+                    }else if(request.restCallback != null){
                         Class returnType = request.restCallback.getActualClass();
                         if (returnType != null && returnType != void.class) {
                             request.restCallback.callback(new Gson().fromJson(entry.data, returnType));
@@ -110,7 +99,6 @@ public class ServerCacheDispatcher {
             isEmptyQueue = false;
         }
         isEmptyQueue = true;
-        return null;
     }
 
 

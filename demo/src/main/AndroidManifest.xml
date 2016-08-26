@@ -20,12 +20,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".test.ImageActivity" />
-        <activity android:name=".test.MusicListActivity" />
-        <activity android:name=".test.UploadFileActivity" />
-        <activity android:name=".test.HttpsActivity" />
-        <activity android:name=".test.HttpActivity" />
-        <activity android:name=".test.SelfSignHttpsActivity"></activity>
+        <activity android:name=".test.ImageActivity"
+            android:label="图片"/>
+        <activity android:name=".test.MusicListActivity"
+            android:label="面向接口API"/>
+        <activity android:name=".test.UploadFileActivity"
+            android:label="文件上传"/>
+        <activity android:name=".test.HttpsActivity"
+            android:label="Https"/>
+        <activity android:name=".test.HttpActivity"
+            android:label="Http"/>
+        <activity android:name=".test.SelfSignHttpsActivity"
+            android:label="自签名证书Https"/>
     </application>
 
 </manifest>

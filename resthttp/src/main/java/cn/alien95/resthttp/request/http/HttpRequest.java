@@ -21,9 +21,6 @@ public class HttpRequest extends RestHttp {
         return getInstance(HttpRequest.class);
     }
 
-    /**
-     * 设置请求头
-     */
     public void addHeader(Map<String, String> header) {
         HttpConnection.getInstance().addHeader(header);
     }
@@ -40,10 +37,11 @@ public class HttpRequest extends RestHttp {
         /**
          * 缓存判断
          */
+        Request request = new Request(url, Method.GET, null, callBack);
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
-            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
+            ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else
-            RequestDispatcher.getInstance().addHttpRequest(new Request(url, Method.GET, null, callBack));
+            RequestDispatcher.getInstance().addHttpRequest(request);
     }
 
     /**
@@ -54,10 +52,11 @@ public class HttpRequest extends RestHttp {
         /**
          * 缓存判断
          */
+        Request request = new Request(url, Method.POST, params, callBack);
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
-            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
+            ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else
-            RequestDispatcher.getInstance().addHttpRequest(new Request(url, Method.POST, params, callBack));
+            RequestDispatcher.getInstance().addHttpRequest(request);
     }
 
     public void cancelAllRequest() {

@@ -27,20 +27,22 @@ public class SelfSignHttpsRequest extends HttpsRequest {
 
     @Override
     public void get(String url, HttpsCallback callBack) {
+        Request request = new Request(url, Method.GET, null, true, callBack);
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
-            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
+            ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else {
-            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.GET, null, true, callBack));
+            RequestDispatcher.getInstance().addHttpsRequest(request);
         }
 
     }
 
     @Override
     public void post(String url, Map<String, String> params, HttpsCallback callBack) {
+        Request request = new Request(url, Method.POST, params, true, callBack);
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
-            ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
+            ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else {
-            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.POST, params, true, callBack));
+            RequestDispatcher.getInstance().addHttpsRequest(request);
         }
     }
 }

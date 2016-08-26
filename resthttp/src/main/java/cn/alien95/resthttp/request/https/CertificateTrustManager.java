@@ -25,7 +25,7 @@ class CertificateTrustManager implements X509TrustManager {
     }
 
     @Override
-    //校验服务器端证书和和代码中 hard code 的 CRT 证书相同，windows到处来的是cer格式证书
+    //校验服务器端证书和和代码中 hard code 的 CRT 证书相同，windows导出的是cer格式证书,bug
     public void checkServerTrusted(X509Certificate[] chain, String authType)
             throws CertificateException {
         // 确认服务器端证书

@@ -23,7 +23,7 @@ public class SelfSignHttpsActivity extends AppCompatActivity {
 
         mResult = (TextView) findViewById(R.id.result);
         try {
-            SelfSignHttpsRequest.getInstance().setCertificate(getAssets().open("12306.cer"));
+            SelfSignHttpsRequest.getInstance().setCertificate(getAssets().open("12306.crt"));
         } catch (IOException e) {
             e.printStackTrace();
         }

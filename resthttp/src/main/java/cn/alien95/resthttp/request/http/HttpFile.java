@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.request.callback;
+package cn.alien95.resthttp.request.http;
 
 import android.os.Handler;
 
@@ -14,30 +14,31 @@ import java.net.URL;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.RequestDispatcher;
+import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.util.DebugLog;
 
 /**
  * Created by linlongxin on 2016/7/10.
  */
 
-public class RestHttpFile {
+public class HttpFile {
 
     /**
      * 消息体中的分隔符
      */
     private final String BOUNDARY = "----WebKitFormBoundaryT1HoybnYeFOGFlBR";
 
-    private static RestHttpFile instance;
+    private static HttpFile instance;
 
     private Handler handler;
 
-    private RestHttpFile() {
+    private HttpFile() {
         handler = new Handler();
     }
 
-    public static RestHttpFile getInstance() {
+    public static HttpFile getInstance() {
         if (instance == null) {
-            instance = new RestHttpFile();
+            instance = new HttpFile();
         }
         return instance;
     }

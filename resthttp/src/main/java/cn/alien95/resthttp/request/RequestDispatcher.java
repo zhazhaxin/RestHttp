@@ -1,17 +1,10 @@
 package cn.alien95.resthttp.request;
 
 import android.annotation.TargetApi;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -19,9 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import cn.alien95.resthttp.image.cache.DiskCache;
+import cn.alien95.resthttp.image.ImageConnection;
 import cn.alien95.resthttp.image.cache.ImageRequest;
-import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.request.http.HttpConnection;
 import cn.alien95.resthttp.request.https.HttpsConnection;
 import cn.alien95.resthttp.request.https.SelfSignHttpsConnection;
@@ -86,7 +78,7 @@ public class RequestDispatcher {
         addRequest(request);
     }
 
-    public void addHttpsRequest(Request request){
+    public void addHttpsRequest(Request request) {
         addRequest(request);
     }
 
@@ -119,7 +111,7 @@ public class RequestDispatcher {
                         HttpConnection.getInstance().request(request);
                     }
                 });
-            } else if (request.restCallback != null){
+            } else if (request.restCallback != null) {
                 //面向接口
                 mThreadPool.execute(new Runnable() {
                     @Override
@@ -134,7 +126,7 @@ public class RequestDispatcher {
 
                     }
                 });
-            }else if(request.isSelfSign){
+            } else if (request.isSelfSign) {
                 //自签名Https证书
                 mThreadPool.execute(new Runnable() {
                     @Override
@@ -142,7 +134,7 @@ public class RequestDispatcher {
                         SelfSignHttpsConnection.getInstance().request(request);
                     }
                 });
-            }else if(request.httpsCallback != null){
+            } else if (request.httpsCallback != null) {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -161,84 +153,16 @@ public class RequestDispatcher {
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void startDealImageRequest() {
         while (!mImageQueue.isEmpty()) {
-            final ImageRequest imgRequest = mImageQueue.poll();
+            final ImageRequest request = mImageQueue.poll();
             mThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        HttpURLConnection urlConnection = (HttpURLConnection) new URL(imgRequest.url).openConnection();
-                        urlConnection.setRequestMethod("GET");
-                        urlConnection.setDoInput(true);
-                        urlConnection.setConnectTimeout(10 * 1000);
-                        urlConnection.setReadTimeout(10 * 1000);
-                        final InputStream inputStream = urlConnection.getInputStream();
-                        if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            final BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-
-                            //如果两次都调用BitmapFactory.decodeStream,由于输入流失有序的输入流，第二次会得到null
-                            byte[] bytes = new byte[0];
-                            try {
-                                bytes = readStream(inputStream);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (imgRequest.inSampleSize == 0) {
-                                options.inSampleSize = Util.calculateInSampleSize(options, imgRequest.reqWidth, imgRequest.reqHeight);
-                            } else {
-                                options.inSampleSize = imgRequest.inSampleSize;
-                            }
-                            options.inJustDecodeBounds = false;
-
-                            final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-                            String key;
-                            if (bitmap != null) {
-                                if (imgRequest.isControlWidthAndHeight) {
-                                    key = Util.getCacheKey(imgRequest.url + imgRequest.reqWidth + "/" + imgRequest.reqHeight);
-                                } else if (imgRequest.inSampleSize <= 1) {
-                                    key = Util.getCacheKey(imgRequest.url);
-                                } else {
-                                    key = Util.getCacheKey(imgRequest.url + imgRequest.inSampleSize);
-                                }
-                                MemoryCache.getInstance().put(key, bitmap);
-                                DiskCache.getInstance().put(key, bitmap);
-
-                            }
-                            mHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    imgRequest.callback.callback(bitmap);
-                                }
-                            });
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    ImageConnection.getInstance().request(request);
                 }
             });
             isEmptyImageQueue = false;
         }
         isEmptyImageQueue = true;
-    }
-
-
-    /**
-     * 从inputStream中获取字节流 数组大小
-     *
-     * @param inStream
-     * @return
-     * @throws Exception
-     */
-    public byte[] readStream(InputStream inStream) throws Exception {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = inStream.read(buffer)) != -1) {
-            outStream.write(buffer, 0, len);
-        }
-        outStream.close();
-        inStream.close();
-        return outStream.toByteArray();
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)

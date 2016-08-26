@@ -15,7 +15,7 @@ import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.ServerCacheDispatcher;
 import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttp.request.rest.method.GET;
-import cn.alien95.resthttp.request.rest.method.Header;
+import cn.alien95.resthttp.request.rest.param.Header;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;

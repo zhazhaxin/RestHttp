@@ -15,7 +15,6 @@ import java.util.List;
 import cn.alien95.resthttp.request.rest.RestFactory;
 import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.config.Config;
 import cn.alien95.resthttplibrary.data.ServiceAPI;
 import cn.alien95.resthttplibrary.data.bean.Music;
 import cn.alien95.resthttplibrary.music.MusicAdapter;
@@ -24,6 +23,7 @@ import cn.lemon.view.RefreshRecyclerView;
 
 public class MusicListActivity extends AppCompatActivity {
 
+    public static final String MUSIC_BASE_URL = "http://route.showapi.com";
     private RefreshRecyclerView mRecyclerView;
     private MusicAdapter adapter;
     private RestFactory restRequest;
@@ -38,7 +38,7 @@ public class MusicListActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         restRequest = new RestFactory.Builder()
-                .baseUrl(Config.MUSIC_BASE_URL)
+                .baseUrl(MUSIC_BASE_URL)
                 .build();
         serviceAPI = (ServiceAPI) restRequest.create(ServiceAPI.class);
 

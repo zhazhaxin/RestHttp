@@ -2,6 +2,7 @@ package cn.alien95.resthttp.image;
 
 import cn.alien95.resthttp.image.cache.CacheDispatcher;
 import cn.alien95.resthttp.image.cache.DiskCache;
+import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.util.Util;
@@ -13,12 +14,12 @@ import cn.alien95.resthttp.util.Util;
 public class HttpRequestImage {
 
     private CacheDispatcher cacheDispatcher;
-    private ImgRequestDispatcher imgRequestDispatcher;
+    private ImageRequestDispatcher imgRequestDispatcher;
     private static HttpRequestImage instance;
 
     private HttpRequestImage() {
         cacheDispatcher = new CacheDispatcher();
-        imgRequestDispatcher = new ImgRequestDispatcher();
+        imgRequestDispatcher = new ImageRequestDispatcher();
     }
 
     /**
@@ -39,28 +40,21 @@ public class HttpRequestImage {
 
     /**
      * 从网络请求图片
-     *
-     * @param url      图片的网络地址
-     * @param callBack 回调接口
      */
     public void requestImage(final String url, final ImageCallback callBack) {
 
         String key = Util.getCacheKey(url);
-
+        ImageRequest request = new ImageRequest(url,1, callBack);
         if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
-            cacheDispatcher.addCacheQueue(url, callBack);
+            cacheDispatcher.addCacheQueue(request);
         } else {
-            imgRequestDispatcher.addImgRequest(url, callBack);
+            imgRequestDispatcher.addImageRequest(request);
         }
     }
 
     /**
      * 图片网络请求压缩处理
      * 图片压缩处理的时候内存缓存和硬盘缓存的key是通过url+inSampleSize 通过MD5加密的
-     *
-     * @param url
-     * @param inSampleSize
-     * @param callBack
      */
     public void requestImageWithCompress(final String url, final int inSampleSize, final ImageCallback callBack) {
 
@@ -72,31 +66,26 @@ public class HttpRequestImage {
         } else if (inSampleSize > 1) {
 
             key = Util.getCacheKey(url + inSampleSize);
-
+            ImageRequest request = new ImageRequest(url, inSampleSize, callBack);
             if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
-                cacheDispatcher.addCacheQueue(url, inSampleSize, callBack);
+                cacheDispatcher.addCacheQueue(request);
             } else {
-                imgRequestDispatcher.addImgRequestWithCompress(url, inSampleSize, callBack);
+                imgRequestDispatcher.addImageRequest(request);
             }
         }
     }
 
     /**
-     * 压缩加载图片
-     *
-     * @param url
-     * @param reqWidth
-     * @param reqHeight
-     * @param callBack
+     * 压缩加载图片 -- 根据指定的width,height
      */
     public void requestImageWithCompress(final String url, final int reqWidth, final int reqHeight, final ImageCallback callBack) {
 
         String key = Util.getCacheKey(url + reqWidth + "/" + reqHeight);
-
+        ImageRequest request = new ImageRequest(url, reqWidth, reqHeight, callBack);
         if (MemoryCache.getInstance().isExist(key) || DiskCache.getInstance().isExist(key)) {
-            cacheDispatcher.addCacheQueue(url, reqWidth, reqHeight, callBack);
+            cacheDispatcher.addCacheQueue(request);
         } else {
-            imgRequestDispatcher.addImgRequestWithCompress(url, reqWidth, reqHeight, callBack);
+            imgRequestDispatcher.addImageRequest(request);
         }
     }
 

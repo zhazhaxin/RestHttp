@@ -20,7 +20,7 @@ public class App extends Application {
         RestHttp.setDiskCacheSize(100 * 1024 * 1024);
         if (BuildConfig.DEBUG) {
             Utils.setDebug(true,"Debug");
-            RestHttp.setDebug(true, "NetWork");
+            RestHttp.setDebug(true, "network");
         }
     }
 }

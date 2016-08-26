@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import java.util.concurrent.LinkedBlockingDeque;
 
-import cn.alien95.resthttp.image.callback.ImageCallback;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -22,26 +21,9 @@ public class CacheDispatcher {
 
     /**
      * 缓存过的图片请求加入缓存队列
-     *
-     * @param url
-     * @param callback
      */
-    public void addCacheQueue(String url, ImageCallback callback) {
-        cacheQueue.add(new ImageRequest(url, 1, callback));
-        if (isCacheQueueEmpty) {
-            start();
-        }
-    }
-
-    public void addCacheQueue(String url, int inSimpleSize, ImageCallback callback) {
-        cacheQueue.add(new ImageRequest(url, inSimpleSize, callback));
-        if (isCacheQueueEmpty) {
-            start();
-        }
-    }
-
-    public void addCacheQueue(String url, int reqWidth, int reqHeight, ImageCallback callback) {
-        cacheQueue.add(new ImageRequest(url, reqWidth, reqHeight, callback));
+    public void addCacheQueue(ImageRequest request) {
+        cacheQueue.add(request);
         if (isCacheQueueEmpty) {
             start();
         }

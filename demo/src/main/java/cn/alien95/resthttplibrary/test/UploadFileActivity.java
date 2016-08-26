@@ -2,6 +2,7 @@ package cn.alien95.resthttplibrary.test;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -11,41 +12,40 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import cn.alien95.resthttp.request.callback.RestHttpFile;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.request.http.HttpFile;
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.util.ImageUtil;
+import cn.alien95.util.ImageUtil;
 import cn.alien95.util.Utils;
 
-public class UploadFileActivity extends AppCompatActivity {
+public class UploadFileActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Toolbar mToolbar;
+    private ImageView mImage;
     private Button upload;
     private AlertDialog alertDialog;
-    private String imagePath = null;
+    private File mImageFile;
     private final String UPLOAD_URL = "http://115.29.107.20/v1/pictures/uploadFile.php";
+    private File dir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_file);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         upload = (Button) findViewById(R.id.upload);
-
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSelectDialog();
-            }
-        });
+        mImage = (ImageView) findViewById(R.id.image);
+        upload.setOnClickListener(this);
+        mImage.setOnClickListener(this);
     }
 
     private void showSelectDialog() {
@@ -116,23 +116,69 @@ public class UploadFileActivity extends AppCompatActivity {
                 return;
             }
         } else {
-            file = new File(uri.getPath());
+            ImageUtil.getBitmapFromUri(uri, new ImageUtil.Callback() {
+                @Override
+                public void callback(Bitmap bitmap) {
+                    dir = getCacheDir();
+                    mImageFile = new File(dir,"test_upload.jpg");
+                    ImageUtil.saveImage(bitmap,mImageFile);
+                    mImage.setImageBitmap(decodeFile(mImageFile));
+                }
+            });
+
         }
-
-        imagePath = file.getAbsolutePath();
-
         dismissDialog();
+    }
 
-        RestHttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", file, new HttpCallback() {
-            @Override
-            public void success(String info) {
-                DebugLog.Log("image upload result : " + info);
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.image:
+                showSelectDialog();
+                break;
+            case R.id.upload:
+                if(mImageFile == null){
+                    Utils.Toast("请先选择文件");
+                    return;
+                }
+                HttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", mImageFile, new HttpCallback() {
+                    @Override
+                    public void success(String info) {
+                        Utils.Toast(info + " : http://115.29.107.20/image/test_upload.jpg");
+                    }
+
+                    @Override
+                    public void failure(int status, String info) {
+                        super.failure(status, info);
+                    }
+                });
+                break;
+        }
+    }
+    private static Bitmap decodeFile(File f) {
+        Bitmap b = null;
+        try {
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+
+            FileInputStream fis = new FileInputStream(f);
+            BitmapFactory.decodeStream(fis, null, o);
+            fis.close();
+
+            int scale = 1;
+            if (o.outHeight > 200 && o.outWidth > 200) {
+                scale = (int) Math.pow(2, (int) Math.round(Math.log(200 / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
             }
 
-            @Override
-            public void failure(int status, String info) {
-                super.failure(status, info);
-            }
-        });
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            fis = new FileInputStream(f);
+            b = BitmapFactory.decodeStream(fis, null, o2);
+            fis.close();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return b;
     }
 }

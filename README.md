@@ -7,7 +7,7 @@
 **gradle依赖**
 
 ``
-    compile 'cn.alien95:resthttp:1.0.4'
+    compile 'cn.alien95:resthttp:1.0.5'
 ``
 
 ##使用方法
@@ -21,9 +21,11 @@ public class App extends Application {
         super.onCreate();
 
         RestHttp.initialize(this);
+        Utils.initialize(this);
         RestHttp.setDiskCacheSize(100 * 1024 * 1024);
         if (BuildConfig.DEBUG) {
-            RestHttp.setDebug(true, "NetWork");
+            Utils.setDebug(true,"Debug");
+            RestHttp.setDebug(true, "network");
         }
     }
 }
@@ -36,201 +38,107 @@ public class App extends Application {
 ```java
 public interface ServiceAPI {
 
-    /**
-     * 同步请求方式：不能包含Callback参数
-     * @param name
-     * @param password
-     * @return 返回一个经过Gson解析后的对象
-     */
-
+    //同步请求方式：不能包含Callback参数
     @POST("/v1/users/login.php")
-    UserInfo login(@Field("name")
+    UserInfo loginPostSync(@Field("name")
                    String name,
                    @Field("password")
                    String password);
 
-    /**
-     * 异步请求：必须有一个Callback参数作为回调
-     * @param name
-     * @param password
-     * @param restCallback  回调泛型类
-     */
-
+    //异步请求：必须有一个Callback参数作为回调
     @POST("/v1/users/login.php")
     void loginAsyn(@Field("name")
                 String name,
                    @Field("password")
                 String password, RestCallback<UserInfo> restCallback);
 
+    //GET请求同步
     @GET("/v1/users/login_get.php")
     UserInfo loginGetSync(@Query("name")
                           String name,
                           @Query("password")
                           String password);
 
-    @GET("/v1/users/login_get.php")
-    void loginGetAsyn(@Query("name")
-                          String name,
-                          @Query("password")
-                          String password,RestCallback<UserInfo> restCallback);
-
+    //GET请求异步
+    @GET("/213-4")
+    void getMusicData(@Query("topid") int topId,
+                      @Query("showapi_appid") String showapiAppId,
+                      @Query("showapi_sign") String secretKey,
+                      RestCallback<String> callback);
 }
 ```
 
- - 网络请求java类
+###Java类方式请求数据
+
+ - Http --- GET,POST
 
 ```
-        final RestHttpRequest restHttpRequest = new RestHttpRequest.Builder()
-                .baseUrl(BASE_URL)
-                .build();
-
-        final ServiceAPI serviceAPI = (ServiceAPI) restHttpRequest.create(ServiceAPI.class);
-
-        /**
-         * 同步操作,不受线程池控制，自己处理线程问题
-         */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final UserInfo userInfo = serviceAPI.login("Lemon", "123456");
-                final UserInfo userInfo1 = serviceAPI.loginGetSync("Alien", "123456");
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (userInfo != null) {
-                            result.setText(result.getText().toString() + "\n POST :       "
-                                    + userInfo.toString());
-                        }
-                        if (userInfo1 != null) {
-                            result.setText(result.getText().toString() + "\n GET :       " + userInfo1.toString());
-                        } else {
-                            RestHttpLog.i("userInfo1为空");
-                        }
-                    }
-                });
-            }
-        }).start();
-
-        /**
-         * 异步操作，受线程池控制
-         */
-        serviceAPI.loginAsyn("Fuck", "12345", new RestCallback<UserInfo>() {
-            @Override
-            public void callback(UserInfo result) {
-                if (result != null) {
-                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n POST :       "
-                            + result.toString());
-                }
-
-            }
-        });
-
-        serviceAPI.loginGetAsyn("Fucker", "123456", new RestCallback<UserInfo>() {
-            @Override
-            public void callback(UserInfo result) {
-                if (result != null) {
-                    MainActivity.this.result.setText(MainActivity.this.result.getText().toString() + "\n GET :        "
-                            + result.toString());
-                } else {
-                    RestHttpLog.i("result为空");
-                }
-
-            }
-        });
-
-        HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
+    public void get(){
+        mResult.setText("");
+        HttpRequest.getInstance().get(GET_URL, new HttpCallback() {
             @Override
             public void success(String info) {
-                result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
+                mResult.setText(new Gson().toJson(info));
             }
         });
+    }
 
-        HashMap<String, String> params = new HashMap<>();
-        params.put("name", "Lemon95");
-        params.put("password", "123456");
-        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
+    public void post(){
+        mResult.setText("");
+        Map<String,String> params = new HashMap<>();
+        params.put("page","1");
+        HttpRequest.getInstance().addHeader("UID","1");
+        HttpRequest.getInstance().addHeader("token","9ba712a6210728364ea7c2d7457cde");
+        HttpRequest.getInstance().post(POST_URL, params,new HttpCallback() {
             @Override
             public void success(String info) {
-                result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
+                mResult.setText(new Gson().toJson(info));
             }
         });
-```
-        
-###普通的网络请求
-        
- - GET请求
-
-```
-HttpRequest.getInstance().get("http://alien95.cn/v1/users/login_get.php", new HttpCallback() {
-            @Override
-            public void success(String info) {
-                result.setText(result.getText().toString() + "\n 通常请求方式...........GET：     " + info);
-            }
-        });
+    }
 ```
 
- - POST请求
-
-```
-HashMap<String, String> params = new HashMap<>();
-        params.put("name", "Lemon95");
-        params.put("password", "123456");
-        HttpRequest.getInstance().post("http://alien95.cn/v1/users/login.php", params, new HttpCallback() {
-            @Override
-            public void success(String info) {
-                result.setText(result.getText().toString() + "\n 通常请求方式...........POST：     " + info);
-            }
-        });
-```
-
- - 支持文件上传
+ - Http文件上传
  ```
-         RestHttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", file, new HttpCallback() {
-             @Override
-             public void success(String info) {
-                 DebugUtils.Log("image upload result : " + info);
-             }
-
-             @Override
-             public void failure(int status, String info) {
-                 super.failure(status, info);
-             }
-         });
+ HttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", mImageFile, new HttpCallback() {
+      @Override
+      public void success(String info) {
+          Utils.Toast(info + " : http://115.29.107.20/image/test_upload.jpg");
+      }
+ }
  ```
 
-###图片加载
+  - Https
+ ```
+   HttpsRequest.getInstance().get("https://baidu.com/", new HttpsCallback() {
+      @Override
+      public void success(String info) {
+           mResult.setText(info);
+      }
+   });
+ ```
 
- - 图片加载控件（HttpImageView）
+###图片加载 --- 支持大图压缩
+
+ - HttpImageView
 
 ```xml
-   <cn.alien95.resthttp.view.HttpImageView
-       android:id="@+id/small_image"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="16dp"
-       android:adjustViewBounds="true" />
-
-   <cn.alien95.resthttp.view.HttpImageView
-       android:id="@+id/big_image"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="16dp"
-       android:adjustViewBounds="true" />
+ <cn.alien95.resthttp.view.HttpImageView
+     android:id="@+id/image"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginTop="16dp"
+     android:adjustViewBounds="true" />
+```
+```
+ imageView.setImageUrl(imageUrl);
 ```
 
- - java代码
-
- - 可以指定压缩比例，固定的宽和高
+ - 可以指定压缩比例或固定的宽和高
 
 ```
-smallImage.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
-bigImage.setImageUrl(IMAGE_BIG_URL);                                      
-```
-
- - 也可以通过：
-
-```
-public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
+image.setInSimpleSize(inSimpleSize);
+image.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
 ```
 
 ###注意事项
@@ -242,10 +150,13 @@ public void setInSimpleSize(int inSimpleSize);  来设置压缩比例
     compile 'com.google.code.gson:gson:2.6.2'      
 ```
 
-###[Demo](https://github.com/llxdaxia/RestHttp/tree/dev/app)
+###[Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
 
-<img src="request.png" width="320" height="569" alt="POST"/>
-<img src="image.png" width="320" height="569"/>
+<img src="http.png" width="260" height="462"/>
+<img src="https.png" width="260" height="462"/>
+<img src="api_http.png" width="260" height="462"/>
+<img src="upload_file.png" width="260" height="462"/>
+<img src="image.png" width="260" height="462"/>
 
  - 日志打印輸出示例图
 

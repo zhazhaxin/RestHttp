@@ -1,4 +1,4 @@
-package cn.alien95.resthttp.request.rest.method;
+package cn.alien95.resthttp.request.rest.param;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
