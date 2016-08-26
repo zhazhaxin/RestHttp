@@ -15,21 +15,10 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class RestHttpRequest extends RestHttp {
+public class HttpRequest extends RestHttp {
 
-    private static RestHttpRequest instance;
-
-    protected RestHttpRequest() {
-    }
-
-    public static RestHttpRequest getInstance() {
-        if (instance == null) {
-            synchronized (RestHttpRequest.class) {
-                if (instance == null)
-                    instance = new RestHttpRequest();
-            }
-        }
-        return instance;
+    public static HttpRequest getInstance(){
+        return getInstance(HttpRequest.class);
     }
 
     /**

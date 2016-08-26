@@ -24,7 +24,8 @@
         <activity android:name=".test.MusicListActivity" />
         <activity android:name=".test.UploadFileActivity" />
         <activity android:name=".test.HttpsActivity" />
-        <activity android:name=".test.HttpActivity"></activity>
+        <activity android:name=".test.HttpActivity" />
+        <activity android:name=".test.SelfSignHttpsActivity"></activity>
     </application>
 
 </manifest>

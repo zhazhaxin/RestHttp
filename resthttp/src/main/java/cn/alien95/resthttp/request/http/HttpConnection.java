@@ -29,19 +29,14 @@ import cn.alien95.resthttp.util.Util;
 public class HttpConnection extends Connection {
 
     public static final int NO_NETWORK = 999;
-    private Map<String, String> header;
     protected Handler mHandler;
 
-    protected HttpConnection() {
+    public HttpConnection() {
         mHandler = new Handler(Looper.getMainLooper());
     }
 
     public static HttpConnection getInstance() {
-        return SingletonInstance.instance;
-    }
-
-    private static class SingletonInstance {
-        private static final HttpConnection instance = new HttpConnection();
+        return getInstance(HttpConnection.class);
     }
 
     /**

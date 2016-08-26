@@ -19,10 +19,14 @@ public class Request<T> {
 
     public HttpsCallback httpsCallback;
     public boolean isHttps = false;
+    public boolean isSelfSign = false; //是否是自签名证书
 
     public RestCallback<T> restCallback;
     public Class resultType;
 
+    /**
+     * Http
+     */
     public Request(String url, int method, Map<String,String> params, HttpCallback callback){
         this.url = url;
         this.method = method;
@@ -37,6 +41,18 @@ public class Request<T> {
         this.method = method;
         this.url = url;
         this.params = params;
+        this.httpsCallback = httpsCallback;
+        isHttps = true;
+    }
+
+    /**
+     * Https自签名证书
+     */
+    public Request(String url, int method, Map<String,String> params,boolean isSelfSign, HttpsCallback httpsCallback) {
+        this.method = method;
+        this.url = url;
+        this.params = params;
+        this.isSelfSign = isSelfSign;
         this.httpsCallback = httpsCallback;
         isHttps = true;
     }

@@ -14,21 +14,8 @@ import cn.alien95.resthttp.request.http.HttpConnection;
 
 public class HttpsConnection extends HttpConnection {
 
-    private static HttpsConnection mInstance;
-
-    private HttpsConnection() {
-        super();
-    }
-
     public static HttpsConnection getInstance() {
-        if (mInstance == null) {
-            synchronized (HttpsConnection.class) {
-                if (mInstance == null) {
-                    mInstance = new HttpsConnection();
-                }
-            }
-        }
-        return mInstance;
+        return getInstance(HttpsConnection.class);
     }
 
     public void request(Request request) {

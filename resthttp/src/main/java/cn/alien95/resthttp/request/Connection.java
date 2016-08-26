@@ -12,13 +12,39 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.alien95.resthttp.util.RestHttpLog;
+
 /**
  * Created by linlongxin on 2016/8/25.
  */
 
 public abstract class Connection {
 
-    protected Map<String, String> mHeader;
+    //全局静态Headers共用
+    public static Map<String, String> mHeader;
+    private static Map<String, Connection> mInstanceMap = new HashMap<>();
+
+    //这样去写单例模式虽然可以省去很多代码，不过因为newInstance方法有限制：构造函数必须public,必须有一个构造函数没有参数
+    public static <T extends Connection> T getInstance(Class<T> conn) {
+        if (!mInstanceMap.containsKey(conn)) {
+            synchronized (conn) {
+                if (!mInstanceMap.containsKey(conn)) {
+                    try {
+                        T instance = conn.newInstance();
+                        mInstanceMap.put(conn.getSimpleName(), instance);
+                        return instance;
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                        return null;
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+            }
+        }
+        return (T) mInstanceMap.get(conn.getSimpleName());
+    }
 
     public void addHeader(Map<String, String> header) {
         this.mHeader = header;
@@ -29,6 +55,10 @@ public abstract class Connection {
             mHeader = new HashMap<>();
         }
         mHeader.put(key, value);
+    }
+
+    public void clearHeaders() {
+        mHeader = null;
     }
 
     public String getPostLog(String baseUrl, Map<String, String> params) {
@@ -76,6 +106,7 @@ public abstract class Connection {
             if (mHeader != null) {
                 for (Map.Entry<String, String> entry : mHeader.entrySet()) {
                     urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                    RestHttpLog.i("header : " + entry.getKey() + "  " + entry.getValue());
                 }
             }
 

@@ -38,6 +38,16 @@
                 android:textAllCaps="false" />
 
             <Button
+                android:id="@+id/self_sign_https"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:text="自签名证书Https"
+                android:textAllCaps="false" />
+
+            <Button
                 android:id="@+id/rest"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

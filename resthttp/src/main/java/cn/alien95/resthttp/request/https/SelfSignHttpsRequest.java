@@ -1,5 +1,6 @@
 package cn.alien95.resthttp.request.https;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.Method;
@@ -8,38 +9,20 @@ import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.ServerCacheDispatcher;
 import cn.alien95.resthttp.request.callback.HttpsCallback;
-import cn.alien95.resthttp.request.http.RestHttpRequest;
 import cn.alien95.resthttp.util.Util;
 
 /**
- * Created by linlongxin on 2016/8/24.
+ * Created by linlongxin on 2016/8/25.
  */
 
-public class RestHttpsRequest extends RestHttpRequest {
+public class SelfSignHttpsRequest extends HttpsRequest {
 
-    private static RestHttpsRequest mInstance;
-
-    private RestHttpsRequest() {
-        super();
+    public static SelfSignHttpsRequest getInstance() {
+        return getInstance(SelfSignHttpsRequest.class);
     }
 
-    public static RestHttpsRequest getInstance() {
-        if (mInstance == null) {
-            synchronized (RestHttpsRequest.class) {
-                if (mInstance == null) {
-                    mInstance = new RestHttpsRequest();
-                }
-            }
-        }
-        return mInstance;
-    }
-
-    public void addHeader(Map<String, String> header) {
-        HttpsConnection.getInstance().addHeader(header);
-    }
-
-    public void addHeader(String key, String value) {
-        HttpsConnection.getInstance().addHeader(key, value);
+    public void setCertificate(InputStream certificate) {
+        SelfSignHttpsConnection.getInstance().setCertificate(certificate);
     }
 
     @Override
@@ -47,7 +30,7 @@ public class RestHttpsRequest extends RestHttpRequest {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.GET, null, callBack);
         } else {
-            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.GET, null, callBack));
+            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.GET, null, true, callBack));
         }
 
     }
@@ -57,8 +40,7 @@ public class RestHttpsRequest extends RestHttpRequest {
         if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(url, Method.POST, params, callBack);
         } else {
-            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.POST, params, callBack));
+            RequestDispatcher.getInstance().addHttpsRequest(new Request(url, Method.POST, params, true, callBack));
         }
-
     }
 }

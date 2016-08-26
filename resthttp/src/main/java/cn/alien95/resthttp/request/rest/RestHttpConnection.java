@@ -27,15 +27,8 @@ import cn.alien95.resthttp.util.Util;
  */
 public class RestHttpConnection extends Connection{
 
-    private RestHttpConnection() {
-    }
-
-    public static RestHttpConnection getInstance() {
-        return SingletonInstance.instance;
-    }
-
-    private static class SingletonInstance {
-        private static final RestHttpConnection instance = new RestHttpConnection();
+    public static synchronized RestHttpConnection getInstance() {
+        return getInstance(RestHttpConnection.class);
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.request.http.RestHttpRequest;
+import cn.alien95.resthttp.request.http.HttpRequest;
 import cn.alien95.resthttplibrary.R;
 
 public class HttpActivity extends AppCompatActivity implements View.OnClickListener{
@@ -29,7 +29,6 @@ public class HttpActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_http);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mGet = (Button) findViewById(R.id.get);
         mPost = (Button) findViewById(R.id.post);
@@ -40,7 +39,7 @@ public class HttpActivity extends AppCompatActivity implements View.OnClickListe
 
     public void get(){
         mResult.setText("");
-        RestHttpRequest.getInstance().get(GET_URL, new HttpCallback() {
+        HttpRequest.getInstance().get(GET_URL, new HttpCallback() {
             @Override
             public void success(String info) {
                 mResult.setText(new Gson().toJson(info));
@@ -52,9 +51,9 @@ public class HttpActivity extends AppCompatActivity implements View.OnClickListe
         mResult.setText("");
         Map<String,String> params = new HashMap<>();
         params.put("page","1");
-        RestHttpRequest.getInstance().addHeader("UID","1");
-        RestHttpRequest.getInstance().addHeader("token","9ba712a6210728364ea7c2d7457cde");
-        RestHttpRequest.getInstance().post(POST_URL, params,new HttpCallback() {
+        HttpRequest.getInstance().addHeader("UID","1");
+        HttpRequest.getInstance().addHeader("token","9ba712a6210728364ea7c2d7457cde");
+        HttpRequest.getInstance().post(POST_URL, params,new HttpCallback() {
             @Override
             public void success(String info) {
                 mResult.setText(new Gson().toJson(info));

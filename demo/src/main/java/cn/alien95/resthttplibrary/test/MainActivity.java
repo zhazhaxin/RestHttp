@@ -13,7 +13,7 @@ import cn.alien95.resthttplibrary.R;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Toolbar mToolbar;
-    private Button mHttp, mHttps,mRestHttp, mUploadFile,mImage;
+    private Button mHttp, mHttps,mSelfSignHttps,mRestHttp, mUploadFile,mImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +25,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mHttp = (Button) findViewById(R.id.http);
         mHttps = (Button) findViewById(R.id.https);
+        mSelfSignHttps = (Button) findViewById(R.id.self_sign_https);
         mRestHttp = (Button) findViewById(R.id.rest);
         mUploadFile = (Button) findViewById(R.id.upload_file);
         mImage = (Button) findViewById(R.id.image);
         mHttp.setOnClickListener(this);
         mHttps.setOnClickListener(this);
+        mSelfSignHttps.setOnClickListener(this);
         mRestHttp.setOnClickListener(this);
         mUploadFile.setOnClickListener(this);
         mImage.setOnClickListener(this);
@@ -47,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.https:
                 startActivity(HttpsActivity.class);
+                break;
+            case R.id.self_sign_https:
+                startActivity(SelfSignHttpsActivity.class);
                 break;
             case R.id.rest:
                 startActivity(MusicListActivity.class);

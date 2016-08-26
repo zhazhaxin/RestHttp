@@ -24,6 +24,7 @@ import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.image.cache.MemoryCache;
 import cn.alien95.resthttp.request.http.HttpConnection;
 import cn.alien95.resthttp.request.https.HttpsConnection;
+import cn.alien95.resthttp.request.https.SelfSignHttpsConnection;
 import cn.alien95.resthttp.request.rest.RestHttpConnection;
 import cn.alien95.resthttp.util.Util;
 
@@ -119,7 +120,7 @@ public class RequestDispatcher {
                     }
                 });
             } else if (request.restCallback != null){
-                //通过接口方式请求
+                //面向接口
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -131,6 +132,14 @@ public class RequestDispatcher {
                             }
                         });
 
+                    }
+                });
+            }else if(request.isSelfSign){
+                //自签名Https证书
+                mThreadPool.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        SelfSignHttpsConnection.getInstance().request(request);
                     }
                 });
             }else if(request.httpsCallback != null){
