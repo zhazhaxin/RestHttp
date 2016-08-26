@@ -99,6 +99,7 @@ public interface ServiceAPI {
 ```
 
  - Http文件上传
+
  ```
  HttpFile.getInstance().uploadFile(UPLOAD_URL, null, "picture", mImageFile, new HttpCallback() {
       @Override
@@ -108,7 +109,8 @@ public interface ServiceAPI {
  }
  ```
 
-  - Https
+ - Https
+
  ```
    HttpsRequest.getInstance().get("https://baidu.com/", new HttpsCallback() {
       @Override
