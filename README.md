@@ -152,7 +152,7 @@ image.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
     compile 'com.google.code.gson:gson:2.6.2'      
 ```
 
-###[Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
+###[详细用法请看Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
 
 <img src="http.png" width="260" height="462"/>
 <img src="https.png" width="260" height="462"/>
