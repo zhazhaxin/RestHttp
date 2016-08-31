@@ -34,9 +34,6 @@ public class HttpRequest extends RestHttp {
      */
     @Override
     public void get(final String url, final HttpCallback callBack) {
-        /**
-         * 缓存判断
-         */
         Request request = new Request(url, Method.GET, null, callBack);
         httpRequest(request);
     }
@@ -46,9 +43,6 @@ public class HttpRequest extends RestHttp {
      */
     @Override
     public void post(final String url, final Map<String, String> params, final HttpCallback callBack) {
-        /**
-         * 缓存判断
-         */
         Request request = new Request(url, Method.POST, params, callBack);
         httpRequest(request);
     }
