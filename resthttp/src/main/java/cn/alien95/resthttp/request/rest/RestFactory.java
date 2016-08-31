@@ -70,7 +70,7 @@ public class RestFactory {
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
             Class[] parameterTypes = method.getParameterTypes();
 
-            Object returnObject = null;
+            Object resultObject = null;
 
             for (final Annotation methodAnnotation : annotations) {
 
@@ -119,24 +119,13 @@ public class RestFactory {
                         Request request = new Request(urlStr, Method.GET, null,
                                 ((RestCallback) args[finalCallbackPosition]).getActualClass(),
                                 (RestCallback) args[finalCallbackPosition]);
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-                            ServerCacheDispatcher.getInstance().addCacheRequest(request);
-                        } else {
-                            Log.i("Network", "thread-name:" + Thread.currentThread().getName());
-                            RequestDispatcher.getInstance().addRestRequest(request);
-                        }
+                        asyncRestRequest(request);
                     } else {
                         /**
                          * 同步处理任务
                          */
                         Request request = new Request(urlStr, Method.GET, null, method.getReturnType());
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(urlStr))) {  //存在缓存
-
-                            returnObject = ServerCacheDispatcher.getInstance().getRestCacheSync(request);
-                        } else { //无缓存
-                            Log.i("Network", "thread-name:" + Thread.currentThread().getName());
-                            returnObject = RestHttpConnection.getInstance().request(request);
-                        }
+                        resultObject = syncRestRequest(request);
                     }
 
                 } else if (methodAnnotation instanceof POST) {
@@ -172,30 +161,13 @@ public class RestFactory {
                      */
                     if (isAsync) {
                         final int finalCallbackPosition = callbackPosition;
-                        /**
-                         * 判断是否带有缓存,如果有缓存，异步获取缓存
-                         */
                         Request request = new Request(url, Method.POST, params,
                                 ((RestCallback) args[finalCallbackPosition]).getActualClass(),
                                 (RestCallback) args[finalCallbackPosition]);
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {  //存在缓存
-                            ServerCacheDispatcher.getInstance().addCacheRequest(request);
-                        } else {  //无缓存
-                            RequestDispatcher.getInstance().addRestRequest(request);
-                        }
-
+                        asyncRestRequest(request);
                     } else {
-                        /**
-                         * 同步请求，判断缓存处理
-                         */
                         Request request = new Request(url, Method.POST, params, method.getReturnType());
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {  //存在缓存
-
-                            returnObject = ServerCacheDispatcher.getInstance().getRestCacheSync(request);
-                        } else {  //无缓存
-                            Log.i("Network", "thread-name:" + Thread.currentThread().getName());
-                            returnObject = RestHttpConnection.getInstance().request(request);
-                        }
+                        resultObject = syncRestRequest(request);
                     }
 
                 }
@@ -203,9 +175,28 @@ public class RestFactory {
             /**
              * 执行的方法的返回值，如果方法是void，则返回null（默认）
              */
-            return returnObject;
+            return resultObject;
         }
 
+    }
+
+    //同步
+    private Object syncRestRequest(Request request) {
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(request.url))) {  //存在缓存
+            return ServerCacheDispatcher.getInstance().getRestCacheSync(request);
+        } else {  //无缓存
+            Log.i("Network", "thread-name:" + Thread.currentThread().getName());
+            return RestHttpConnection.getInstance().request(request);
+        }
+    }
+
+    //异步
+    private void asyncRestRequest(Request request) {
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(request.url))) {  //存在缓存
+            ServerCacheDispatcher.getInstance().addCacheRequest(request);
+        } else {  //无缓存
+            RequestDispatcher.getInstance().addRestRequest(request);
+        }
     }
 
 }

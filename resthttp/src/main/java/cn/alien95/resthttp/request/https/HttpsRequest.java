@@ -32,18 +32,17 @@ public class HttpsRequest extends HttpRequest {
     @Override
     public void get(String url, HttpsCallback callBack) {
         Request request = new Request(url, Method.GET, null, callBack);
-        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
-            ServerCacheDispatcher.getInstance().addCacheRequest(request);
-        } else {
-            RequestDispatcher.getInstance().addHttpsRequest(request);
-        }
-
+        httpsRequest(request);
     }
 
     @Override
     public void post(String url, Map<String, String> params, HttpsCallback callBack) {
         Request request = new Request(url, Method.POST, params, callBack);
-        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
+        httpsRequest(request);
+    }
+
+    private void httpsRequest(Request request){
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(request.url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else {
             RequestDispatcher.getInstance().addHttpsRequest(request);
