@@ -21,7 +21,7 @@ import cn.alien95.resthttp.util.RestHttpLog;
 public abstract class Connection {
 
     //全局静态Headers共用
-    public static Map<String, String> mHeader;
+    public static Map<String, String> mHeaders;
     private static Map<String, Connection> mInstanceMap = new HashMap<>();
 
     //这样去写单例模式虽然可以省去很多代码，不过因为newInstance方法有限制：构造函数必须public,必须有一个构造函数没有参数
@@ -47,18 +47,18 @@ public abstract class Connection {
     }
 
     public void addHeader(Map<String, String> header) {
-        this.mHeader = header;
+        this.mHeaders = header;
     }
 
     public void addHeader(String key, String value) {
-        if (mHeader == null) {
-            mHeader = new HashMap<>();
+        if (mHeaders == null) {
+            mHeaders = new HashMap<>();
         }
-        mHeader.put(key, value);
+        mHeaders.put(key, value);
     }
 
     public void clearHeaders() {
-        mHeader = null;
+        mHeaders = null;
     }
 
     public String getPostLog(String baseUrl, Map<String, String> params) {
@@ -103,8 +103,8 @@ public abstract class Connection {
                 urlConnection.setRequestMethod("POST");
             }
 
-            if (mHeader != null) {
-                for (Map.Entry<String, String> entry : mHeader.entrySet()) {
+            if (mHeaders != null) {
+                for (Map.Entry<String, String> entry : mHeaders.entrySet()) {
                     urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
                     RestHttpLog.i("header : " + entry.getKey() + "  " + entry.getValue());
                 }

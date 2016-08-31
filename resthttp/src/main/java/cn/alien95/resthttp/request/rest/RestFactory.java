@@ -178,7 +178,7 @@ public class RestFactory {
                         Request request = new Request(url, Method.POST, params,
                                 ((RestCallback) args[finalCallbackPosition]).getActualClass(),
                                 (RestCallback) args[finalCallbackPosition]);
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //存在缓存
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {  //存在缓存
                             ServerCacheDispatcher.getInstance().addCacheRequest(request);
                         } else {  //无缓存
                             RequestDispatcher.getInstance().addRestRequest(request);
@@ -189,7 +189,7 @@ public class RestFactory {
                          * 同步请求，判断缓存处理
                          */
                         Request request = new Request(url, Method.POST, params, method.getReturnType());
-                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {  //存在缓存
+                        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {  //存在缓存
 
                             returnObject = ServerCacheDispatcher.getInstance().getRestCacheSync(request);
                         } else {  //无缓存

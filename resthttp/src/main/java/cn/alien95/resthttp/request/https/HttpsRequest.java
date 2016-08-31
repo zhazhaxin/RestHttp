@@ -43,7 +43,7 @@ public class HttpsRequest extends HttpRequest {
     @Override
     public void post(String url, Map<String, String> params, HttpsCallback callBack) {
         Request request = new Request(url, Method.POST, params, callBack);
-        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else {
             RequestDispatcher.getInstance().addHttpsRequest(request);

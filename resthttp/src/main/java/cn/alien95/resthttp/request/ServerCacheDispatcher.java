@@ -42,7 +42,7 @@ public class ServerCacheDispatcher {
      */
     public Object getRestCacheSync(Request request) {
 
-        final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(request.url, request.params));
+        final Cache.Entry entry = ServerCache.getInstance().get(Util.getCacheKey(request.url));
 
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
@@ -68,7 +68,7 @@ public class ServerCacheDispatcher {
          */
         while (!cacheQueue.isEmpty()) {
             request = cacheQueue.poll();
-            entry = getCacheAsyn(Util.getCacheKey(request.url, request.params));
+            entry = getCacheAsyn(Util.getCacheKey(request.url));
             if(entry != null){
                 if(entry.isExpired() || entry.refreshNeeded()){
                     RestHttpLog.i("缓存过期");

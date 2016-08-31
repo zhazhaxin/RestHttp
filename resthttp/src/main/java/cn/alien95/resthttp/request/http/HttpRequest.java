@@ -53,7 +53,7 @@ public class HttpRequest extends RestHttp {
          * 缓存判断
          */
         Request request = new Request(url, Method.POST, params, callBack);
-        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url, params))) {
+        if (ServerCache.getInstance().isExistsCache(Util.getCacheKey(url))) {
             ServerCacheDispatcher.getInstance().addCacheRequest(request);
         } else
             RequestDispatcher.getInstance().addHttpRequest(request);
