@@ -1,5 +1,4 @@
-package cn.alien95.resthttplibrary.test;
-
+package cn.alien95.resthttplibrary.main;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,7 +32,7 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
     private Button upload;
     private AlertDialog alertDialog;
     private File mImageFile;
-    private final String UPLOAD_URL = "http://115.29.107.20/v1/pictures/uploadFile.php";
+    private final String UPLOAD_URL = "http://123.207.114.32/pick_picture/v1/pictures/uploadFile.php";
     private File dir;
 
     @Override

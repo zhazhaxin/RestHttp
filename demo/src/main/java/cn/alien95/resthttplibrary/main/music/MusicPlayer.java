@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.music;
+package cn.alien95.resthttplibrary.main.music;
 
 import android.content.Context;
 import android.media.MediaPlayer;

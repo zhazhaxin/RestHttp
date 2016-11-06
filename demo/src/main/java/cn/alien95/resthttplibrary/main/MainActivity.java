@@ -1,5 +1,4 @@
-package cn.alien95.resthttplibrary.test;
-
+package cn.alien95.resthttplibrary.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +7,12 @@ import android.view.View;
 import android.widget.Button;
 
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.main.HttpActivity;
+import cn.alien95.resthttplibrary.main.HttpsActivity;
+import cn.alien95.resthttplibrary.main.ImageActivity;
+import cn.alien95.resthttplibrary.main.MusicListActivity;
+import cn.alien95.resthttplibrary.main.SelfSignHttpsActivity;
+import cn.alien95.resthttplibrary.main.UploadFileActivity;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{

@@ -16,24 +16,24 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".test.MainActivity">
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".test.ImageActivity"
+        <activity android:name=".main.ImageActivity"
             android:label="图片"/>
-        <activity android:name=".test.MusicListActivity"
+        <activity android:name=".main.MusicListActivity"
             android:label="面向接口API"/>
-        <activity android:name=".test.UploadFileActivity"
+        <activity android:name=".main.UploadFileActivity"
             android:label="文件上传"/>
-        <activity android:name=".test.HttpsActivity"
+        <activity android:name=".main.HttpsActivity"
             android:label="Https"/>
-        <activity android:name=".test.HttpActivity"
+        <activity android:name=".main.HttpActivity"
             android:label="Http"/>
-        <activity android:name=".test.SelfSignHttpsActivity"
+        <activity android:name=".main.SelfSignHttpsActivity"
             android:label="自签名证书Https"/>
     </application>
 

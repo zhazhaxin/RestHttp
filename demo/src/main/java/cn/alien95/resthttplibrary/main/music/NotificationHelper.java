@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.music;
+package cn.alien95.resthttplibrary.main.music;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -8,7 +8,7 @@ import android.os.Build;
 import android.widget.RemoteViews;
 
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.test.MusicListActivity;
+import cn.alien95.resthttplibrary.main.MusicListActivity;
 
 /**
  * Created by linlongxin on 2016/5/17.

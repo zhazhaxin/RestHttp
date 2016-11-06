@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.alien95.resthttplibrary.test.SelfSignHttpsActivity">
+    tools:context="cn.alien95.resthttplibrary.main.SelfSignHttpsActivity">
 
     <include layout="@layout/include_toolbar"/>
 

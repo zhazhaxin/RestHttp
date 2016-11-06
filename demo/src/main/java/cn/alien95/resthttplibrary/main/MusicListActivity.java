@@ -1,5 +1,4 @@
-package cn.alien95.resthttplibrary.test;
-
+package cn.alien95.resthttplibrary.main;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +16,7 @@ import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttplibrary.R;
 import cn.alien95.resthttplibrary.data.ServiceAPI;
 import cn.alien95.resthttplibrary.data.bean.Music;
-import cn.alien95.resthttplibrary.music.MusicAdapter;
+import cn.alien95.resthttplibrary.main.music.MusicAdapter;
 import cn.alien95.util.Utils;
 import cn.lemon.view.RefreshRecyclerView;
 

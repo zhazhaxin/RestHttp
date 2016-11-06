@@ -1,5 +1,4 @@
-package cn.alien95.resthttplibrary.test;
-
+package cn.alien95.resthttplibrary.main;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,8 +20,8 @@ public class HttpActivity extends AppCompatActivity implements View.OnClickListe
     private Button mGet,mPost;
     private TextView mResult;
 
-    private final String GET_URL = "http://115.29.107.20/course/v1/accounts/banner.php";
-    private final String POST_URL = "http://115.29.107.20/course/v1/courses/starJCourseList.php";
+    private final String GET_URL = "http://123.207.114.32/course/v1/accounts/banner.php";
+    private final String POST_URL = "http://123.207.114.32/course/v1/courses/starJCourseList.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +49,7 @@ public class HttpActivity extends AppCompatActivity implements View.OnClickListe
     public void post(){
         mResult.setText("");
         Map<String,String> params = new HashMap<>();
-        params.put("page","1");
+        params.put("page","0");
         HttpRequest.getInstance().addHeader("UID","1");
         HttpRequest.getInstance().addHeader("token","9ba712a6210728364ea7c2d7457cde");
         HttpRequest.getInstance().post(POST_URL, params,new HttpCallback() {
