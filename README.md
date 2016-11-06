@@ -4,13 +4,13 @@
 > - 封装了HttpURLConnection，简单易用的API设计。
 > - Debug模式下设置日志TAG，所有网络请求日志输出，方便调试。
 
-**gradle依赖**
+##gradle依赖
 
 ``
     compile 'cn.alien95:resthttp:1.0.5'
 ``
 
-##使用方法
+##使用
 
  - 初始化：设置日志TAG
 
@@ -154,12 +154,12 @@ image.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
 
 ###[详细用法请看Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
 
-<img src="http.png" width="260" height="462"/>
-<img src="https.png" width="260" height="462"/>
-<img src="api_http.png" width="260" height="462"/>
-<img src="upload_file.png" width="260" height="462"/>
-<img src="image.png" width="260" height="462"/>
+<img src="screenshot/http.png" width="260" height="462"/>
+<img src="screenshot/https.png" width="260" height="462"/>
+<img src="screenshot/api_http.png" width="260" height="462"/>
+<img src="screenshot/upload_file.png" width="260" height="462"/>
+<img src="screenshot/image.png" width="260" height="462"/>
 
  - 日志打印輸出示例图
 
-<img src="log.png" width="1172" height="402"/>
+<img src="screenshot/log.png" width="1172" height="402"/>
