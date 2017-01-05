@@ -52,7 +52,7 @@ public class RestFactory {
         }
     }
 
-    class ServiceAPIHandler implements InvocationHandler {
+    private class ServiceAPIHandler implements InvocationHandler {
 
         @Override
         public Object invoke(Object proxy, java.lang.reflect.Method method, final Object[] args) throws Throwable {
