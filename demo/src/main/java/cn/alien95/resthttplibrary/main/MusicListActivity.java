@@ -1,4 +1,5 @@
 package cn.alien95.resthttplibrary.main;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import java.util.List;
 import cn.alien95.resthttp.request.rest.RestFactory;
 import cn.alien95.resthttp.request.callback.RestCallback;
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.data.Config;
 import cn.alien95.resthttplibrary.data.ServiceAPI;
 import cn.alien95.resthttplibrary.data.bean.Music;
 import cn.alien95.resthttplibrary.main.music.MusicAdapter;
@@ -22,22 +24,19 @@ import cn.lemon.view.RefreshRecyclerView;
 
 public class MusicListActivity extends AppCompatActivity {
 
-    public static final String MUSIC_BASE_URL = "http://route.showapi.com";
     private RefreshRecyclerView mRecyclerView;
     private MusicAdapter adapter;
-    private RestFactory restRequest;
     private ServiceAPI serviceAPI;
-    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_actiivty_list);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        restRequest = new RestFactory.Builder()
-                .baseUrl(MUSIC_BASE_URL)
+        RestFactory restRequest = new RestFactory.Builder()
+                .baseUrl(Config.MUSIC_HOST)
                 .build();
         serviceAPI = (ServiceAPI) restRequest.create(ServiceAPI.class);
 

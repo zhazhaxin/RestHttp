@@ -14,14 +14,15 @@ import java.util.Map;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.http.HttpRequest;
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.data.Config;
 
 public class HttpActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Button mGet,mPost;
     private TextView mResult;
 
-    private final String GET_URL = "http://123.207.114.32/course/v1/accounts/banner.php";
-    private final String POST_URL = "http://123.207.114.32/course/v1/courses/starJCourseList.php";
+    private final String GET_URL = Config.HOST + "course/v1/accounts/banner.php";
+    private final String POST_URL = Config.HOST + "course/v1/courses/starJCourseList.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

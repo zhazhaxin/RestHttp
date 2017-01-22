@@ -22,7 +22,7 @@ public class ImageAdapter extends RecyclerAdapter<String> {
     }
 
 
-    class ImageViewHolder extends BaseViewHolder<String>{
+    private class ImageViewHolder extends BaseViewHolder<String>{
 
         private HttpImageView imageView;
 

@@ -66,9 +66,10 @@ public class ServerCache implements Cache {
 
     @Override
     public void remove(String key) {
-        File removeFile = getCacheFile(key);
-        removeFile.delete();
-        cacheFiles.remove(removeFile);
+        File file = getCacheFile(key);
+        if(file.delete()){
+            cacheFiles.remove(file);
+        }
     }
 
     @Override
@@ -126,12 +127,11 @@ public class ServerCache implements Cache {
             e.printStackTrace();
         }
         try {
+            assert is != null;
             T temp = (T) is.readObject();
             is.close();
             return temp;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
 
@@ -145,7 +145,7 @@ public class ServerCache implements Cache {
         return cacheFiles.contains(getCacheFile(key));
     }
 
-    public File getCacheFile(String key) {
+    private File getCacheFile(String key) {
         return new File(networkCacheRoot, key);
     }
 

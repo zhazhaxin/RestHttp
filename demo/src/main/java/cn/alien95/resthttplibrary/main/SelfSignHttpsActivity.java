@@ -9,6 +9,7 @@ import java.io.IOException;
 import cn.alien95.resthttp.request.callback.HttpsCallback;
 import cn.alien95.resthttp.request.https.SelfSignHttpsRequest;
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.data.Config;
 
 public class SelfSignHttpsActivity extends AppCompatActivity {
 
@@ -22,12 +23,12 @@ public class SelfSignHttpsActivity extends AppCompatActivity {
 
         mResult = (TextView) findViewById(R.id.result);
         try {
-            SelfSignHttpsRequest.getInstance().setCertificate(getAssets().open("12306.crt"));
+            SelfSignHttpsRequest.getInstance().setCertificate(getAssets().open("12306.cer"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        SelfSignHttpsRequest.getInstance().get("https://kyfw.12306.cn/otn/", new HttpsCallback() {
+        SelfSignHttpsRequest.getInstance().get(Config.HTTPS_URL, new HttpsCallback() {
             @Override
             public void success(String info) {
                 mResult.setText(info);

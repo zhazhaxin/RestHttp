@@ -32,7 +32,7 @@ public class RestHttpConnection extends Connection{
     }
 
     /**
-     * 这里很疑惑到底应该需不需要同步，看了JVM后应该觉得不需要同步处理，通过线程池并发执行
+     * 这里很疑惑到底应该需不需要同步，看了JVM后觉得应该不需要同步处理，通过线程池并发执行
      */
     public <T> T request(Request<T> request) {
 

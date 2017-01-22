@@ -26,12 +26,13 @@ public abstract class Connection {
 
     //这样去写单例模式虽然可以省去很多代码，不过因为newInstance方法有限制：构造函数必须public,必须有一个构造函数没有参数
     public static <T extends Connection> T getInstance(Class<T> conn) {
-        if (!mInstanceMap.containsKey(conn)) {
-            synchronized (conn) {
-                if (!mInstanceMap.containsKey(conn)) {
+        String key = conn.getSimpleName();
+        if (!mInstanceMap.containsKey(key)) {
+            synchronized (Connection.class) {
+                if (!mInstanceMap.containsKey(key)) {
                     try {
                         T instance = conn.newInstance();
-                        mInstanceMap.put(conn.getSimpleName(), instance);
+                        mInstanceMap.put(key, instance);
                         return instance;
                     } catch (InstantiationException e) {
                         e.printStackTrace();
@@ -43,7 +44,7 @@ public abstract class Connection {
                 }
             }
         }
-        return (T) mInstanceMap.get(conn.getSimpleName());
+        return (T) mInstanceMap.get(key);
     }
 
     public void addHeader(Map<String, String> header) {

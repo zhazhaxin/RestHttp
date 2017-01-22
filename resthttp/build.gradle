@@ -31,7 +31,7 @@ ext {
     //依赖字段
     publishedGroupId = 'cn.alien95'  //JCenter的GroupId
     artifact = 'resthttp'  //JCenter的ArtifactId
-    libraryVersion = '1.0.5'  //版本号
+    libraryVersion = '1.0.6'  //版本号
 
     siteUrl = 'https://github.com/llxdaxia/RestHttp'
     gitUrl = 'https://github.com/llxdaxia/RestHttp.git'

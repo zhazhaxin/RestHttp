@@ -23,6 +23,7 @@ import java.io.IOException;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.http.HttpFile;
 import cn.alien95.resthttplibrary.R;
+import cn.alien95.resthttplibrary.data.Config;
 import cn.alien95.util.ImageUtil;
 import cn.alien95.util.Utils;
 
@@ -32,7 +33,7 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
     private Button upload;
     private AlertDialog alertDialog;
     private File mImageFile;
-    private final String UPLOAD_URL = "http://123.207.114.32/pick_picture/v1/pictures/uploadFile.php";
+    private final String UPLOAD_URL = Config.HOST + "pick_picture/v1/pictures/uploadFile.php";
     private File dir;
 
     @Override

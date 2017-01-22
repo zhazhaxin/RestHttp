@@ -5,27 +5,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 
 import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.main.ImageAdapter;
 import cn.lemon.view.RefreshRecyclerView;
 
 public class ImageActivity extends AppCompatActivity {
-
-    private Toolbar mToolbar;
-    private RefreshRecyclerView refreshRecyclerView;
-    private ImageAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-        refreshRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
-
+        RefreshRecyclerView refreshRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         refreshRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        ImageAdapter adapter;
         refreshRecyclerView.setAdapter(adapter = new ImageAdapter(this));
         adapter.colseLog();
         adapter.addAll(new String[]{
