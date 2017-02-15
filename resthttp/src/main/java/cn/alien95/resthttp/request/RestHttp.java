@@ -9,7 +9,7 @@ import cn.alien95.resthttp.image.cache.DiskCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.callback.HttpsCallback;
 import cn.alien95.resthttp.request.http.HttpRequest;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -68,7 +68,7 @@ public abstract class RestHttp {
      * 是否开启调试模式，默认是关闭
      */
     public static void setDebug(boolean isDebug, String tag) {
-        DebugLog.setDebug(isDebug, tag);
+        HttpLog.setDebug(isDebug, tag);
     }
 
 

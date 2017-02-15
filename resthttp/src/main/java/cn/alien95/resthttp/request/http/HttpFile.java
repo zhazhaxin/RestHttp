@@ -15,7 +15,7 @@ import java.util.Map;
 
 import cn.alien95.resthttp.request.RequestDispatcher;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 
 /**
  * Created by linlongxin on 2016/7/10.
@@ -89,7 +89,7 @@ public class HttpFile {
             String endInfo = "\r\n--" + BOUNDARY + "--\r\n";
 
             int messageFormLength = messageForm.length();
-            DebugLog.Log("上传文件消息体\n" + messageForm.toString() + endInfo + "\n");
+            HttpLog.Log("上传文件消息体\n" + messageForm.toString() + endInfo + "\n");
 
             httpURLConnection.setRequestMethod("POST");
             /**
@@ -101,7 +101,7 @@ public class HttpFile {
             httpURLConnection.setDoOutput(true);
             OutputStream outToServer = httpURLConnection.getOutputStream();
 
-            DebugLog.Log("ContentLength : " + contentLength);
+            HttpLog.Log("ContentLength : " + contentLength);
             /**
              * 发送消息体到服务器端
              */
@@ -145,7 +145,7 @@ public class HttpFile {
 
         } catch (IOException e) {
             e.printStackTrace();
-            DebugLog.Log("异常：" + e.getMessage());
+            HttpLog.Log("异常：" + e.getMessage());
         }
 
     }

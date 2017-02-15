@@ -2,7 +2,7 @@ package cn.alien95.resthttp.image;
 
 import cn.alien95.resthttp.image.cache.ImageRequest;
 import cn.alien95.resthttp.request.RequestDispatcher;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 import cn.alien95.resthttp.util.RestHttpLog;
 
 /**
@@ -15,7 +15,7 @@ public class ImageRequestDispatcher {
      */
     public void addImageRequest(ImageRequest request) {
         RestHttpLog.i("Get picture from network");
-        DebugLog.requestImageLog(request.url);
+        HttpLog.requestImageLog(request.url);
 
         RequestDispatcher.getInstance().addImageRequest(request);
     }

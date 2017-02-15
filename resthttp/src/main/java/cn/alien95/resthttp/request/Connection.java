@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ import cn.alien95.resthttp.util.RestHttpLog;
 public abstract class Connection {
 
     //全局静态Headers共用
-    public static Map<String, String> mHeaders;
+    private static Map<String, String> mHeaders;
     private static Map<String, Connection> mInstanceMap = new HashMap<>();
 
     //这样去写单例模式虽然可以省去很多代码，不过因为newInstance方法有限制：构造函数必须public,必须有一个构造函数没有参数
@@ -48,7 +47,7 @@ public abstract class Connection {
     }
 
     public void addHeader(Map<String, String> header) {
-        this.mHeaders = header;
+        mHeaders = header;
     }
 
     public void addHeader(String key, String value) {
@@ -70,7 +69,7 @@ public abstract class Connection {
             return baseUrl + "?" + paramsStr;
     }
 
-    public String getPostParamBody(Map<String, String> params) {
+    private String getPostParamBody(Map<String, String> params) {
 
         if (params != null) {
             StringBuilder paramStrBuilder = new StringBuilder();
@@ -97,7 +96,7 @@ public abstract class Connection {
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
-            urlConnection.setInstanceFollowRedirects(true);
+            urlConnection.setInstanceFollowRedirects(true);  //重定向默认是true
             if (request.method == Method.GET) {
                 urlConnection.setRequestMethod("GET");
             } else if (request.method == Method.POST) {
@@ -118,10 +117,11 @@ public abstract class Connection {
                 ops.close();
             }
             urlConnection.connect();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            if (RestHttpLog.isDebug()) {
+                e.printStackTrace();
+            }
+            return null;
         }
         return urlConnection;
     }

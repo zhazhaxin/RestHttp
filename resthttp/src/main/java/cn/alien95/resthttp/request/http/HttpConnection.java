@@ -18,7 +18,7 @@ import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.callback.HttpCallback;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -68,7 +68,7 @@ public class HttpConnection extends Connection {
         /**
          * 打印网络请求日志
          */
-        final int requestTime = DebugLog.requestLog(request.method,logUrl);
+        final int requestTime = HttpLog.requestLog(request.method, logUrl);
         try {
             urlConnection = configURLConnection(urlConnection, request); //配置HttpURLConnection
             respondCode = urlConnection.getResponseCode();
@@ -79,8 +79,8 @@ public class HttpConnection extends Connection {
             if (respondCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                 String location = urlConnection.getHeaderField("Location");
                 request.url = location;
+                HttpLog.Log("302重定向Location : " + location);
                 requestURLConnection((HttpURLConnection) new URL(location).openConnection(), request);
-                RestHttpLog.i("重定向url : " + location);
             } else if (respondCode == HttpURLConnection.HTTP_OK) {
                 /**
                  * 状态码为200，请求成功。获取响应头，处理缓存
@@ -140,15 +140,17 @@ public class HttpConnection extends Connection {
                     }
                 });
             }
-        } catch (final IOException e1) {
-            e1.printStackTrace();
-            RestHttpLog.i("网络异常 : " + e1.getMessage());
+        } catch (final IOException e) {
+            if (RestHttpLog.isDebug()) {
+                RestHttpLog.i("网络异常 : " + url);
+                e.printStackTrace();
+            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (callback != null) {
                         callback.failure(NO_NETWORK, "抛出异常,没有连接网络");
-                        callback.logNetworkInfo("抛出异常：" + e1.getMessage(), requestTime);
+                        callback.logNetworkInfo("抛出异常：" + e.getMessage(), requestTime);
                     }
                 }
             });

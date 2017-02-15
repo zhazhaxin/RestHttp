@@ -17,7 +17,7 @@ import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.request.ServerCache;
 import cn.alien95.resthttp.request.http.HttpHeaderParser;
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -46,7 +46,7 @@ public class RestHttpConnection extends Connection{
         /**
          * 打印网络请求日志日志
          */
-        int requestTime = DebugLog.requestLog(request.method,logUrl);
+        int requestTime = HttpLog.requestLog(request.method,logUrl);
 
         try {
             HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
@@ -63,8 +63,8 @@ public class RestHttpConnection extends Connection{
                 /**
                  * 错误日志打印
                  */
-                if (DebugLog.isDebug) {
-                    DebugLog.responseLog(respondCode + info, requestTime);
+                if (HttpLog.isDebug) {
+                    HttpLog.responseLog(respondCode + info, requestTime);
                 }
 
                 return null;
@@ -98,8 +98,8 @@ public class RestHttpConnection extends Connection{
                     RestHttpLog.i(entry.toString());
                 }
 
-                if (DebugLog.isDebug) {
-                    DebugLog.responseLog(respondCode + "\n" + result, requestTime);
+                if (HttpLog.isDebug) {
+                    HttpLog.responseLog(respondCode + "\n" + result, requestTime);
                 }
 
                 if (returnType != null && returnType != void.class) {
@@ -112,7 +112,7 @@ public class RestHttpConnection extends Connection{
 
         } catch (final IOException e1) {
             e1.printStackTrace();
-            DebugLog.responseLog("NETWORK_ERROR" + " 抛出异常：" + e1.getMessage(), requestTime);
+            HttpLog.responseLog("NETWORK_ERROR" + " 抛出异常：" + e1.getMessage(), requestTime);
         }
         return null;
     }

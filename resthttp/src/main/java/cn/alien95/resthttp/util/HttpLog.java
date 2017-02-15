@@ -8,7 +8,7 @@ import cn.alien95.resthttp.request.Method;
 /**
  * Created by alien on 2015/8/6.
  */
-public class DebugLog {
+public class HttpLog {
 
     private static String DEBUG_TAG = "";
 

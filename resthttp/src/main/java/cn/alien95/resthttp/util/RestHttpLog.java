@@ -10,18 +10,19 @@ import java.util.Arrays;
 public class RestHttpLog {
 
     private static final String TAG = "RestHttp";
-    private static boolean isOpen = true;
+    private static boolean isDebug = true;
 
-    public static void closeLog(){
-        isOpen = false;
+    public static void closeLog() {
+        isDebug = false;
     }
+
     public static void i(String... log) {
-        if (isOpen)
+        if (isDebug)
             Log.i(TAG, Arrays.toString(log));
     }
 
     public static void e(String... log) {
-        if (isOpen)
+        if (isDebug)
             Log.e(TAG, Arrays.toString(log));
     }
 
@@ -31,5 +32,9 @@ public class RestHttpLog {
 
     public static void v(String... log) {
         Log.v(TAG, Arrays.toString(log));
+    }
+
+    public static boolean isDebug() {
+        return isDebug;
     }
 }

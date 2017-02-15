@@ -1,6 +1,6 @@
 package cn.alien95.resthttp.request.callback;
 
-import cn.alien95.resthttp.util.DebugLog;
+import cn.alien95.resthttp.util.HttpLog;
 
 /**
  * Created by linlongxin on 2015/12/26.
@@ -15,12 +15,12 @@ public abstract class HttpCallback {
     }
 
     public void logNetworkInfo(int responseCode, String info, int requestNum) {
-        if (DebugLog.isDebug)
-            DebugLog.responseLog(responseCode + "\n" + info, requestNum);
+        if (HttpLog.isDebug)
+            HttpLog.responseLog(responseCode + "\n" + info, requestNum);
     }
 
     public void logNetworkInfo(String info, int requestNum) {
-        if (DebugLog.isDebug)
-            DebugLog.responseLog(info, requestNum);
+        if (HttpLog.isDebug)
+            HttpLog.responseLog(info, requestNum);
     }
 }

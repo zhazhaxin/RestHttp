@@ -77,6 +77,26 @@
                 android:text="Http图片加载"
                 android:textAllCaps="false" />
 
+            <Button
+                android:id="@+id/connect_gt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:text="连接GT"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/disconnect_gt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:text="断开GT"
+                android:textAllCaps="false" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
