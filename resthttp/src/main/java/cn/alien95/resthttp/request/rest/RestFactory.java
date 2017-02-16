@@ -80,7 +80,7 @@ public class RestFactory {
                 if (methodAnnotation instanceof Header) {
                     String headerStr = ((Header) methodAnnotation).value();
                     String[] header = headerStr.split(":");
-                    RestHttpConnection.getInstance().addHeader(header[0], header[1]);
+                    RestRequestClient.getInstance().addHeader(header[0], header[1]);
                 }
                 /**
                  * -----------------------------------GET请求处理--------------------------------------------------------
@@ -186,7 +186,7 @@ public class RestFactory {
             return ServerCacheDispatcher.getInstance().getRestCacheSync(request);
         } else {  //无缓存
             Log.i("Network", "thread-name:" + Thread.currentThread().getName());
-            return RestHttpConnection.getInstance().request(request);
+            return RestRequestClient.getInstance().request(request);
         }
     }
 

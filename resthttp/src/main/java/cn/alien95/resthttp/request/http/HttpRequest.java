@@ -22,11 +22,11 @@ public class HttpRequest extends RestHttp {
     }
 
     public void addHeader(Map<String, String> header) {
-        HttpConnection.getInstance().addHeader(header);
+        HttpRequestClient.getInstance().addHeader(header);
     }
 
     public void addHeader(String key, String value) {
-        HttpConnection.getInstance().addHeader(key, value);
+        HttpRequestClient.getInstance().addHeader(key, value);
     }
 
     /**

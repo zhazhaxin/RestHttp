@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.alien95.resthttp.request.Cache;
-import cn.alien95.resthttp.request.Connection;
+import cn.alien95.resthttp.request.ConfigClient;
 import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.request.ServerCache;
@@ -26,17 +26,17 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2015/12/26.
  */
-public class HttpConnection extends Connection {
+public class HttpRequestClient extends ConfigClient {
 
     public static final int NO_NETWORK = 999;
     protected Handler mHandler;
 
-    public HttpConnection() {
+    public HttpRequestClient() {
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    public static HttpConnection getInstance() {
-        return getInstance(HttpConnection.class);
+    public static HttpRequestClient getInstance() {
+        return getInstance(HttpRequestClient.class);
     }
 
     /**
@@ -114,12 +114,11 @@ public class HttpConnection extends Connection {
                     public void run() {
                         if (callback != null) {
                             callback.success(result);
-                            callback.logNetworkInfo(respondCode, result, requestTime);
+                            HttpLog.responseLog(respondCode + "\n" + result, requestTime);
                         }
                     }
                 });
             } else {
-                in = urlConnection.getErrorStream();
                 final String info = readInputStream(in);
                 if (in != null) {
                     in.close();
@@ -135,7 +134,7 @@ public class HttpConnection extends Connection {
                     public void run() {
                         if (callback != null) {
                             callback.failure(respondCode, info);
-                            callback.logNetworkInfo(respondCode, info, requestTime);
+                            HttpLog.responseLog(respondCode + "\n" + info, requestTime);
                         }
                     }
                 });
@@ -150,7 +149,7 @@ public class HttpConnection extends Connection {
                 public void run() {
                     if (callback != null) {
                         callback.failure(NO_NETWORK, "抛出异常,没有连接网络");
-                        callback.logNetworkInfo("抛出异常：" + e.getMessage(), requestTime);
+                        HttpLog.responseLog("抛出异常：" + e.getMessage(), requestTime);
                     }
                 }
             });

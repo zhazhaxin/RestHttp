@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.alien95.resthttp.request.Cache;
-import cn.alien95.resthttp.request.Connection;
+import cn.alien95.resthttp.request.ConfigClient;
 import cn.alien95.resthttp.request.Request;
 import cn.alien95.resthttp.request.Response;
 import cn.alien95.resthttp.request.ServerCache;
@@ -25,10 +25,10 @@ import cn.alien95.resthttp.util.Util;
 /**
  * Created by linlongxin on 2016/3/24.
  */
-public class RestHttpConnection extends Connection{
+public class RestRequestClient extends ConfigClient {
 
-    public static synchronized RestHttpConnection getInstance() {
-        return getInstance(RestHttpConnection.class);
+    public static synchronized RestRequestClient getInstance() {
+        return getInstance(RestRequestClient.class);
     }
 
     /**
@@ -63,9 +63,7 @@ public class RestHttpConnection extends Connection{
                 /**
                  * 错误日志打印
                  */
-                if (HttpLog.isDebug) {
-                    HttpLog.responseLog(respondCode + info, requestTime);
-                }
+                HttpLog.responseLog(respondCode + info, requestTime);
 
                 return null;
             } else {
@@ -98,9 +96,7 @@ public class RestHttpConnection extends Connection{
                     RestHttpLog.i(entry.toString());
                 }
 
-                if (HttpLog.isDebug) {
-                    HttpLog.responseLog(respondCode + "\n" + result, requestTime);
-                }
+                HttpLog.responseLog(respondCode + "\n" + result, requestTime);
 
                 if (returnType != null && returnType != void.class) {
                     if (returnType == String.class) {

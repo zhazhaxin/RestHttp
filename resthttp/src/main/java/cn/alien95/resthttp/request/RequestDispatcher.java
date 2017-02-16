@@ -14,10 +14,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cn.alien95.resthttp.image.ImageConnection;
 import cn.alien95.resthttp.image.cache.ImageRequest;
-import cn.alien95.resthttp.request.http.HttpConnection;
-import cn.alien95.resthttp.request.https.HttpsConnection;
-import cn.alien95.resthttp.request.https.SelfSignHttpsConnection;
-import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.http.HttpRequestClient;
+import cn.alien95.resthttp.request.https.HttpsRequestClient;
+import cn.alien95.resthttp.request.https.SelfSignRequestClient;
+import cn.alien95.resthttp.request.rest.RestRequestClient;
 import cn.alien95.resthttp.util.Util;
 
 
@@ -108,7 +108,7 @@ public class RequestDispatcher {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        HttpConnection.getInstance().request(request);
+                        HttpRequestClient.getInstance().request(request);
                     }
                 });
             } else if (request.restCallback != null) {
@@ -116,7 +116,7 @@ public class RequestDispatcher {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        final Object result = RestHttpConnection.getInstance().request(request);
+                        final Object result = RestRequestClient.getInstance().request(request);
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -131,14 +131,14 @@ public class RequestDispatcher {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        SelfSignHttpsConnection.getInstance().request(request);
+                        SelfSignRequestClient.getInstance().request(request);
                     }
                 });
             } else if (request.httpsCallback != null) {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        HttpsConnection.getInstance().request(request);
+                        HttpsRequestClient.getInstance().request(request);
                     }
                 });
             }

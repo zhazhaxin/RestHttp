@@ -6,16 +6,16 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import cn.alien95.resthttp.request.Request;
-import cn.alien95.resthttp.request.http.HttpConnection;
+import cn.alien95.resthttp.request.http.HttpRequestClient;
 
 /**
  * Created by linlongxin on 2016/8/25.
  */
 
-public class HttpsConnection extends HttpConnection {
+public class HttpsRequestClient extends HttpRequestClient {
 
-    public static HttpsConnection getInstance() {
-        return getInstance(HttpsConnection.class);
+    public static HttpsRequestClient getInstance() {
+        return getInstance(HttpsRequestClient.class);
     }
 
     public void request(Request request) {

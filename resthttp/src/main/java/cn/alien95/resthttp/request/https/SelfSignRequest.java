@@ -15,14 +15,14 @@ import cn.alien95.resthttp.util.Util;
  * Created by linlongxin on 2016/8/25.
  */
 
-public class SelfSignHttpsRequest extends HttpsRequest {
+public class SelfSignRequest extends HttpsRequest {
 
-    public static SelfSignHttpsRequest getInstance() {
-        return getInstance(SelfSignHttpsRequest.class);
+    public static SelfSignRequest getInstance() {
+        return getInstance(SelfSignRequest.class);
     }
 
     public void setCertificate(InputStream certificate) {
-        SelfSignHttpsConnection.getInstance().setCertificate(certificate);
+        SelfSignRequestClient.getInstance().setCertificate(certificate);
     }
 
     @Override

@@ -18,13 +18,13 @@ import cn.alien95.resthttp.request.Request;
  * Created by linlongxin on 2016/8/25.
  */
 
-public class SelfSignHttpsConnection extends HttpsConnection {
+public class SelfSignRequestClient extends HttpsRequestClient {
 
     //天坑。。。，这里必须是static，因为setCertificate()一般调用在主线程，而getSSLContext则会调用在子线程
     private static InputStream mCertificateInputStream;
 
-    public static SelfSignHttpsConnection getInstance() {
-        return getInstance(SelfSignHttpsConnection.class);
+    public static SelfSignRequestClient getInstance() {
+        return getInstance(SelfSignRequestClient.class);
     }
 
     public void request(Request request) {

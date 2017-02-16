@@ -11,10 +11,8 @@ import cn.alien95.resthttp.request.Method;
 public class HttpLog {
 
     private static String DEBUG_TAG = "";
-
-    public static int requestTimes = 0;
-
-    public static boolean isDebug = false;  //是否开启debug模式，默认关闭
+    private static int requestTimes = 0;
+    private static boolean isDebug = false;  //是否开启debug模式，默认关闭
 
     public static void setDebug(boolean debug, String tag) {
         isDebug = debug;
@@ -27,11 +25,11 @@ public class HttpLog {
         }
     }
 
-    public static synchronized int requestLog(int method,String info) {
+    public static synchronized int requestLog(int method, String info) {
         if (isDebug) {
-            if(method == Method.GET){
+            if (method == Method.GET) {
                 Log.i(DEBUG_TAG, requestTimes + " times GET Request:" + info);
-            }else {
+            } else {
                 Log.i(DEBUG_TAG, requestTimes + " times POST Request:" + info);
             }
         }

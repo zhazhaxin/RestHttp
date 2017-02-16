@@ -17,17 +17,17 @@ import cn.alien95.resthttp.util.RestHttpLog;
  * Created by linlongxin on 2016/8/25.
  */
 
-public abstract class Connection {
+public abstract class ConfigClient {
 
     //全局静态Headers共用
     private static Map<String, String> mHeaders;
-    private static Map<String, Connection> mInstanceMap = new HashMap<>();
+    private static Map<String, ConfigClient> mInstanceMap = new HashMap<>();
 
     //这样去写单例模式虽然可以省去很多代码，不过因为newInstance方法有限制：构造函数必须public,必须有一个构造函数没有参数
-    public static <T extends Connection> T getInstance(Class<T> conn) {
+    public static <T extends ConfigClient> T getInstance(Class<T> conn) {
         String key = conn.getSimpleName();
         if (!mInstanceMap.containsKey(key)) {
-            synchronized (Connection.class) {
+            synchronized (ConfigClient.class) {
                 if (!mInstanceMap.containsKey(key)) {
                     try {
                         T instance = conn.newInstance();

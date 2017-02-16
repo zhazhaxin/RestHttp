@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import cn.alien95.resthttp.request.rest.RestHttpConnection;
+import cn.alien95.resthttp.request.rest.RestRequestClient;
 import cn.alien95.resthttp.util.RestHttpLog;
 import cn.alien95.resthttp.util.Util;
 
@@ -47,7 +47,7 @@ public class ServerCacheDispatcher {
         if (entry != null) {
             if (entry.isExpired() || entry.refreshNeeded()) { //过期了
                 RestHttpLog.i("缓存过期");
-                return RestHttpConnection.getInstance().request(request);
+                return RestRequestClient.getInstance().request(request);
             } else {
                 RestHttpLog.i("Sync Request data from cache");
                 if (request.resultType != null && request.resultType != void.class) {
