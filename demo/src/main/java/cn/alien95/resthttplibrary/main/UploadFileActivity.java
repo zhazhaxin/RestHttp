@@ -1,9 +1,16 @@
 package cn.alien95.resthttplibrary.main;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,14 +34,14 @@ import cn.alien95.resthttplibrary.data.Config;
 import cn.alien95.util.ImageUtil;
 import cn.alien95.util.Utils;
 
-public class UploadFileActivity extends AppCompatActivity implements View.OnClickListener{
+public class UploadFileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView mImage;
-    private Button upload;
     private AlertDialog alertDialog;
     private File mImageFile;
     private final String UPLOAD_URL = Config.HOST + "pick_picture/v1/pictures/uploadFile.php";
     private File dir;
+    private final int REQUEST_CODE_ASK_CAMERA = 453;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +49,7 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_upload_file);
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        upload = (Button) findViewById(R.id.upload);
+        Button upload = (Button) findViewById(R.id.upload);
         mImage = (ImageView) findViewById(R.id.image);
         upload.setOnClickListener(this);
         mImage.setOnClickListener(this);
@@ -87,13 +94,31 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageUtil.getImageFromCamera(UploadFileActivity.this);
+                if (Build.VERSION.SDK_INT >= 23) {
+                    int checkCallPhonePermission = ContextCompat.checkSelfPermission(UploadFileActivity.this, Manifest.permission.CAMERA);
+                    if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(UploadFileActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_ASK_CAMERA);
+                    } else {
+                        ImageUtil.getImageFromCamera(UploadFileActivity.this);
+                    }
+                } else {
+                    ImageUtil.getImageFromCamera(UploadFileActivity.this);
+                }
             }
         });
     }
 
     public void dismissDialog() {
         alertDialog.dismiss();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_ASK_CAMERA && permissions[0].equals(Manifest.permission.CAMERA)
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            ImageUtil.getImageFromCamera(UploadFileActivity.this);
+        }
     }
 
     @Override
@@ -120,8 +145,8 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void callback(Bitmap bitmap) {
                     dir = getCacheDir();
-                    mImageFile = new File(dir,"test_upload.jpg");
-                    ImageUtil.saveImage(bitmap,mImageFile);
+                    mImageFile = new File(dir, "test_upload.jpg");
+                    ImageUtil.saveImage(bitmap, mImageFile);
                     mImage.setImageBitmap(decodeFile(mImageFile));
                 }
             });
@@ -132,12 +157,12 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.image:
                 showSelectDialog();
                 break;
             case R.id.upload:
-                if(mImageFile == null){
+                if (mImageFile == null) {
                     Utils.Toast("请先选择文件");
                     return;
                 }
@@ -155,6 +180,7 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
                 break;
         }
     }
+
     private static Bitmap decodeFile(File f) {
         Bitmap b = null;
         try {
