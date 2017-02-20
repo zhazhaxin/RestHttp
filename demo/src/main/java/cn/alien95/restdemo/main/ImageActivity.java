@@ -1,10 +1,11 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 
-import cn.alien95.resthttplibrary.R;
+import cn.alien95.restdemo.R;
 import cn.lemon.view.RefreshRecyclerView;
 
 public class ImageActivity extends AppCompatActivity {

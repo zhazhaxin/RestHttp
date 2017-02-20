@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,10 +27,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.http.HttpFile;
-import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.data.Config;
+import cn.alien95.restdemo.data.Config;
 import cn.alien95.util.ImageUtil;
 import cn.alien95.util.Utils;
 

@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import com.tencent.wstt.gt.client.GT;
 import com.tencent.wstt.gt.client.InParaManager;
 import com.tencent.wstt.gt.client.OutParaManager;
 
-import cn.alien95.resthttplibrary.R;
+import cn.alien95.restdemo.R;
 import cn.alien95.util.Utils;
 
 
@@ -53,22 +53,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.http:
-                startActivity(HttpActivity.class);
+                startActivity(cn.alien95.restdemo.main.HttpActivity.class);
                 break;
             case R.id.https:
-                startActivity(HttpsActivity.class);
+                startActivity(cn.alien95.restdemo.main.HttpsActivity.class);
                 break;
             case R.id.self_sign_https:
-                startActivity(SelfSignHttpsActivity.class);
+                startActivity(cn.alien95.restdemo.main.SelfSignHttpsActivity.class);
                 break;
             case R.id.rest:
-                startActivity(MusicListActivity.class);
+                startActivity(cn.alien95.restdemo.main.MusicListActivity.class);
                 break;
             case R.id.upload_file:
-                startActivity(UploadFileActivity.class);
+                startActivity(cn.alien95.restdemo.main.UploadFileActivity.class);
                 break;
             case R.id.image:
-                startActivity(ImageActivity.class);
+                startActivity(cn.alien95.restdemo.main.ImageActivity.class);
                 break;
             case R.id.connect_gt:
                 connectGT();

@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.data;
+package cn.alien95.restdemo.data;
 
 
 import cn.alien95.resthttp.request.callback.RestCallback;
@@ -6,7 +6,7 @@ import cn.alien95.resthttp.request.rest.method.GET;
 import cn.alien95.resthttp.request.rest.method.POST;
 import cn.alien95.resthttp.request.rest.param.Field;
 import cn.alien95.resthttp.request.rest.param.Query;
-import cn.alien95.resthttplibrary.data.bean.UserInfo;
+import cn.alien95.restdemo.data.bean.UserInfo;
 
 /**
  * Created by linlongxin on 2016/3/23.

@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +12,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.alien95.resthttp.request.rest.RestFactory;
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.request.callback.RestCallback;
-import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.data.Config;
-import cn.alien95.resthttplibrary.data.ServiceAPI;
-import cn.alien95.resthttplibrary.data.bean.Music;
-import cn.alien95.resthttplibrary.main.music.MusicAdapter;
+import cn.alien95.resthttp.request.rest.RestFactory;
+import cn.alien95.restdemo.data.Config;
+import cn.alien95.restdemo.data.ServiceAPI;
+import cn.alien95.restdemo.data.bean.Music;
+import cn.alien95.restdemo.main.music.MusicAdapter;
 import cn.alien95.util.Utils;
 import cn.lemon.view.RefreshRecyclerView;
 

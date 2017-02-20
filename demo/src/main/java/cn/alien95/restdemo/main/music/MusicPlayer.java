@@ -1,10 +1,11 @@
-package cn.alien95.resthttplibrary.main.music;
+package cn.alien95.restdemo.main.music;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 
 import java.io.IOException;
 
+import cn.alien95.restdemo.main.music.NotificationHelper;
 import cn.alien95.util.Utils;
 
 /**

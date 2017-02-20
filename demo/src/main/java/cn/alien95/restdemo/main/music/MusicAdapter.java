@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.main.music;
+package cn.alien95.restdemo.main.music;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.view.HttpImageView;
-import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.data.bean.Music;
+import cn.alien95.restdemo.data.bean.Music;
 import cn.lemon.view.adapter.BaseViewHolder;
 import cn.lemon.view.adapter.RecyclerAdapter;
 
@@ -18,13 +18,13 @@ import cn.lemon.view.adapter.RecyclerAdapter;
  */
 public class MusicAdapter extends RecyclerAdapter<Music> {
 
-    private MusicPlayer musicPlayer;
+    private cn.alien95.restdemo.main.music.MusicPlayer musicPlayer;
     private int currentPosition;
 
     public MusicAdapter(Context context) {
         super(context);
 
-        musicPlayer = new MusicPlayer(context);
+        musicPlayer = new cn.alien95.restdemo.main.music.MusicPlayer(context);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.data.bean;
+package cn.alien95.restdemo.data.bean;
 
 /**
  * Created by linlongxin on 2016/5/15.

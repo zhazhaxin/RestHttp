@@ -1,4 +1,5 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,10 +12,10 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.request.callback.HttpCallback;
 import cn.alien95.resthttp.request.http.HttpRequest;
-import cn.alien95.resthttplibrary.R;
-import cn.alien95.resthttplibrary.data.Config;
+import cn.alien95.restdemo.data.Config;
 
 public class HttpActivity extends AppCompatActivity implements View.OnClickListener{
 

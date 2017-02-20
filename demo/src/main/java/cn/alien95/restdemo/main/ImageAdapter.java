@@ -1,9 +1,10 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
+
 import android.content.Context;
 import android.view.ViewGroup;
 
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.view.HttpImageView;
-import cn.alien95.resthttplibrary.R;
 import cn.lemon.view.adapter.BaseViewHolder;
 import cn.lemon.view.adapter.RecyclerAdapter;
 

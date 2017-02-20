@@ -1,13 +1,13 @@
-package cn.alien95.resthttplibrary.main;
+package cn.alien95.restdemo.main;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import cn.alien95.restdemo.R;
 import cn.alien95.resthttp.request.callback.HttpsCallback;
 import cn.alien95.resthttp.request.https.HttpsRequest;
-import cn.alien95.resthttplibrary.R;
 
 public class HttpsActivity extends AppCompatActivity {
 

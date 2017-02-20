@@ -1,9 +1,9 @@
-package cn.alien95.resthttplibrary.app;
+package cn.alien95.restdemo.app;
 
 import android.app.Application;
 
+import cn.alien95.restdemo.BuildConfig;
 import cn.alien95.resthttp.request.RestHttp;
-import cn.alien95.resthttplibrary.BuildConfig;
 import cn.alien95.util.Utils;
 
 

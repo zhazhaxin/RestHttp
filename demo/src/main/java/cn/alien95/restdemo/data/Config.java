@@ -1,4 +1,4 @@
-package cn.alien95.resthttplibrary.data;
+package cn.alien95.restdemo.data;
 
 /**
  * Created by linlongxin on 2017.1.22.

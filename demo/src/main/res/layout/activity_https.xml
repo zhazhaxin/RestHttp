@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="cn.alien95.resthttplibrary.main.HttpsActivity">
+    tools:context="cn.alien95.restdemo.main.HttpsActivity">
 
     <include layout="@layout/include_toolbar" />
 
