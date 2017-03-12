@@ -5,7 +5,6 @@ import android.media.MediaPlayer;
 
 import java.io.IOException;
 
-import cn.alien95.restdemo.main.music.NotificationHelper;
 import cn.alien95.util.Utils;
 
 /**
@@ -14,20 +13,10 @@ import cn.alien95.util.Utils;
 public class MusicPlayer {
 
     private MediaPlayer player;
-    private NotificationHelper notificationHelper;
     private boolean isPrepared = false;
-    private int progress;
-    private boolean isEnd = false;
-
 
     public MusicPlayer(Context context) {
         player = new MediaPlayer();
-        notificationHelper = new NotificationHelper();
-        notificationHelper.create(context);
-    }
-
-    public void setDataSource(String url) {
-
     }
 
     public void start(String url) {
@@ -49,19 +38,6 @@ public class MusicPlayer {
                 player.start();
             }
         });
-
-        player.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                notificationHelper.setProgress(percent);
-                Utils.Log("progress : " + percent);
-            }
-        });
-
-    }
-
-    public int getProgress() {
-        return player.getCurrentPosition();
     }
 
     public boolean isPlaying() {
@@ -77,8 +53,5 @@ public class MusicPlayer {
             player.stop();
         }
         player.release();
-
     }
-
-
 }

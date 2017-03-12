@@ -23,7 +23,6 @@ public class MusicAdapter extends RecyclerAdapter<Music> {
 
     public MusicAdapter(Context context) {
         super(context);
-
         musicPlayer = new cn.alien95.restdemo.main.music.MusicPlayer(context);
     }
 

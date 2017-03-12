@@ -5,7 +5,7 @@ package cn.alien95.restdemo.data;
  */
 
 public class Config {
-    public static final String HOST = "http://lemon95.cn/";
+    public static final String HOST = "http://jcourse.lemon95.cn/";
     public static final String MUSIC_HOST = "http://route.showapi.com";
     public static final String HTTPS_URL = "https://kyfw.12306.cn/otn/";
 }

@@ -62,7 +62,7 @@ public class HttpRequestClient extends ConfigClient {
             callback = request.callback;
         }
 
-        final int respondCode;
+        int respondCode = -1;
         String logUrl = getPostLog(url, request.params);
 
         /**
@@ -73,18 +73,15 @@ public class HttpRequestClient extends ConfigClient {
             urlConnection = configURLConnection(urlConnection, request); //配置HttpURLConnection
             respondCode = urlConnection.getResponseCode();
             InputStream in = urlConnection.getInputStream();
-            /**
-             * 重定向
-             */
+
+            // 重定向
             if (respondCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                 String location = urlConnection.getHeaderField("Location");
                 request.url = location;
                 HttpLog.Log("302重定向Location : " + location);
                 requestURLConnection((HttpURLConnection) new URL(location).openConnection(), request);
             } else if (respondCode == HttpURLConnection.HTTP_OK) {
-                /**
-                 * 状态码为200，请求成功。获取响应头，处理缓存
-                 */
+                //状态码为200，请求成功。获取响应头，处理缓存
                 Map<String, List<String>> headers = urlConnection.getHeaderFields();
                 Set<String> keys = headers.keySet();
                 HashMap<String, String> headersStr = new HashMap<>();
@@ -100,21 +97,20 @@ public class HttpRequestClient extends ConfigClient {
 
                 Response response = new Response(result, headersStr);
 
-                /**
-                 * 打印Entry日志
-                 */
+                // 打印Entry日志
                 Cache.Entry entry = HttpHeaderParser.parseCacheHeaders(response);
                 if (entry != null) {  //响应头带有缓存
                     ServerCache.getInstance().put(Util.getCacheKey(logUrl), entry);
                     RestHttpLog.i(entry.toString());
                 }
 
+                final int logCode = respondCode;
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (callback != null) {
                             callback.success(result);
-                            HttpLog.responseLog(respondCode + "\n" + result, requestTime);
+                            HttpLog.responseLog(logCode + "\n" + result, requestTime);
                         }
                     }
                 });
@@ -126,15 +122,14 @@ public class HttpRequestClient extends ConfigClient {
                     RestHttpLog.i("urlConnection.getErrorStream() == null,respondCode : " + respondCode);
                 }
 
-                /**
-                 * 打印错误日志
-                 */
+                //打印错误日志
+                final int logCode = respondCode;
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (callback != null) {
-                            callback.failure(respondCode, info);
-                            HttpLog.responseLog(respondCode + "\n" + info, requestTime);
+                            callback.failure(logCode, info);
+                            HttpLog.responseLog(logCode + "\n" + info, requestTime);
                         }
                     }
                 });
@@ -144,12 +139,13 @@ public class HttpRequestClient extends ConfigClient {
                 RestHttpLog.i("网络异常 : " + url);
                 e.printStackTrace();
             }
+            final int logCode = respondCode;
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (callback != null) {
                         callback.failure(NO_NETWORK, "抛出异常,没有连接网络");
-                        HttpLog.responseLog("抛出异常：" + e.getMessage(), requestTime);
+                        HttpLog.responseLog(logCode + " 抛出异常：" + e.getMessage(), requestTime);
                     }
                 }
             });
