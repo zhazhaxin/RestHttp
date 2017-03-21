@@ -1,16 +1,16 @@
-#RestHttp网络库 --- 基于HttpURLConnection
+# RestHttp网络库 --- 基于HttpURLConnection
 
 > - RestHttp提供了三级缓存（服务器缓存，内存缓存，硬盘缓存），通过动态代理的方式实现了面向接口调用API。
 > - 封装了HttpURLConnection，简单易用的API设计。
 > - Debug模式下设置日志TAG，所有网络请求日志输出，方便调试。
 
-##gradle依赖
+## gradle依赖
 
 ``
     compile 'cn.alien95:resthttp:1.0.6'
 ``
 
-##使用
+## 使用
 
  - 初始化：设置日志TAG
 
@@ -29,7 +29,7 @@ public class App extends Application {
 }
 ```
 
-###通过接口定义API
+### 通过接口定义API
 
  - API接口类
 
@@ -66,7 +66,7 @@ public interface ServiceAPI {
 }
 ```
 
-###Java类方式请求数据
+### Java类方式请求数据
 
  - Http --- GET,POST
 
@@ -118,7 +118,7 @@ public interface ServiceAPI {
    });
  ```
 
-###图片加载 --- 支持大图压缩
+### 图片加载 --- 支持大图压缩
 
  - HttpImageView
 
@@ -141,7 +141,7 @@ image.setInSimpleSize(inSimpleSize);
 image.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
 ```
 
-###注意事项
+### 注意事项
         
  - 依赖的其他库
 
@@ -150,7 +150,7 @@ image.setImageUrlWithCompress(IMAGE_SMALL_URL, 800, 600);
     compile 'com.google.code.gson:gson:2.6.2'      
 ```
 
-###[详细用法请看Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
+### [详细用法请看Demo](https://github.com/llxdaxia/RestHttp/tree/dev/demo)
 
 <img src="screenshot/http.png" width="260" height="462"/>
 <img src="screenshot/https.png" width="260" height="462"/>
