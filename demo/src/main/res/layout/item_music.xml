@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="6dp">
 
-        <cn.alien95.resthttp.view.HttpImageView
+        <cn.lemon.resthttp.view.HttpImageView
             android:id="@+id/image"
             android:layout_width="104dp"
             android:layout_height="72dp"
