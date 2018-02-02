@@ -135,18 +135,18 @@ public class UploadFileActivity extends AppCompatActivity implements View.OnClic
                 Bitmap photo = (Bitmap) bundle.get("data");
 
                 file = new File(Utils.getCacheDir(), System.currentTimeMillis() + ".jpg");
-                ImageUtil.saveImage(photo, file);   //压缩后上传
+                ImageUtil.saveBitmap(photo, file);   //压缩后上传
             } else {
                 Utils.Toast("获取图片失败");
                 return;
             }
         } else {
-            ImageUtil.getBitmapFromUri(uri, new ImageUtil.Callback() {
+            ImageUtil.compress(uri, new ImageUtil.Callback() {
                 @Override
                 public void callback(Bitmap bitmap) {
                     dir = getCacheDir();
                     mImageFile = new File(dir, "test_upload.jpg");
-                    ImageUtil.saveImage(bitmap, mImageFile);
+                    ImageUtil.saveBitmap(bitmap, mImageFile);
                     mImage.setImageBitmap(decodeFile(mImageFile));
                 }
             });

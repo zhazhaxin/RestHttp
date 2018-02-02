@@ -21,7 +21,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.2'
 }
 
 ext {
@@ -31,7 +31,7 @@ ext {
     //依赖字段
     publishedGroupId = 'cn.alien95'  //JCenter的GroupId
     artifact = 'resthttp'  //JCenter的ArtifactId
-    libraryVersion = '1.0.6'  //版本号
+    libraryVersion = '1.0.7'  //版本号
 
     siteUrl = 'https://github.com/llxdaxia/RestHttp'
     gitUrl = 'https://github.com/llxdaxia/RestHttp.git'

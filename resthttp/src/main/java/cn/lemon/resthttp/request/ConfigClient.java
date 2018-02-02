@@ -117,11 +117,10 @@ public abstract class ConfigClient {
                 ops.close();
             }
             urlConnection.connect();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             if (RestHttpLog.isDebug()) {
                 e.printStackTrace();
             }
-            return null;
         }
         return urlConnection;
     }

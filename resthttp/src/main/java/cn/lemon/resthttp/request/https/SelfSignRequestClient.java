@@ -28,6 +28,7 @@ public class SelfSignRequestClient extends HttpsRequestClient {
         return ConfigClient.getInstance(SelfSignRequestClient.class);
     }
 
+    @Override
     public void request(Request request) {
         String url = request.url;
         try {

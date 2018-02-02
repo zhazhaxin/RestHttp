@@ -134,7 +134,7 @@ public class HttpRequestClient extends ConfigClient {
                     }
                 });
             }
-        } catch (final IOException e) {
+        } catch (final Throwable e) {
             if (RestHttpLog.isDebug()) {
                 RestHttpLog.i("网络异常 : " + url);
                 e.printStackTrace();
