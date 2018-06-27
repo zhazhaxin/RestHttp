@@ -39,6 +39,7 @@ public class ServerCacheDispatcher {
 
     /**
      * 同步直接处理
+     * @param request
      */
     public Object getRestCacheSync(Request request) {
 
@@ -104,6 +105,7 @@ public class ServerCacheDispatcher {
 
     /**
      * 异步读取文件并转化为对象
+     * @param key
      */
     public Cache.Entry getCacheAsyn(final String key) {
 

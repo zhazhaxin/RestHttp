@@ -63,6 +63,7 @@ public class RequestDispatcher {
 
     /**
      * 异步读取服务器缓存文件
+     * @param callable
      */
     public Future submitCallable(Callable callable) {
         return mThreadPool.submit(callable);

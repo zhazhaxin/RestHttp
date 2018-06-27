@@ -26,6 +26,10 @@ public class Request<T> {
 
     /**
      * Http
+     * @param url
+     * @param method
+     * @param params
+     * @param callback
      */
     public Request(String url, int method, Map<String,String> params, HttpCallback callback){
         this.url = url;
@@ -36,6 +40,10 @@ public class Request<T> {
 
     /**
      * Https
+     * @param url
+     * @param method
+     * @param params
+     * @param httpsCallback
      */
     public Request(String url, int method, Map<String,String> params, HttpsCallback httpsCallback) {
         this.method = method;
@@ -47,6 +55,11 @@ public class Request<T> {
 
     /**
      * Https自签名证书
+     * @param url
+     * @param method
+     * @param params
+     * @param isSelfSign
+     * @param httpsCallback
      */
     public Request(String url, int method, Map<String,String> params,boolean isSelfSign, HttpsCallback httpsCallback) {
         this.method = method;
@@ -59,6 +72,10 @@ public class Request<T> {
 
     /**
      * Restful接口请求缓存构造函数
+     * @param url
+     * @param method
+     * @param resultType
+     * @param restCallback
      */
     public Request(String url, int method, Map<String,String> params, Class resultType, RestCallback<T> restCallback){
         this.url = url;

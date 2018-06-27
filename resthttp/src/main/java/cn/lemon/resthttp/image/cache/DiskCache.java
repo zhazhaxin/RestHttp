@@ -22,7 +22,7 @@ import cn.lemon.resthttp.util.Util;
  */
 public class DiskCache implements ImageCache {
 
-    private final String IMAGE_CACHE_PATH = "ImageCache";
+    private static final String IMAGE_CACHE_PATH = "ImageCache";
     private static DiskCache instance;
     private DiskLruCache diskLruCache;
     private static long maxStoreSize = 50 * 1024 * 1024; //50MB
@@ -110,8 +110,9 @@ public class DiskCache implements ImageCache {
     public boolean isExist(String key) {
         try {
             DiskLruCache.Snapshot snapShot = diskLruCache.get(key);
-            if (snapShot != null)
+            if (snapShot != null) {
                 return true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -92,25 +92,22 @@ public abstract class ConfigClient {
 
     public HttpURLConnection configURLConnection(HttpURLConnection urlConnection, Request request) {
         try {
-            urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
-            urlConnection.setInstanceFollowRedirects(true);  //重定向默认是true
-            if (request.method == Method.GET) {
-                urlConnection.setRequestMethod("GET");
-            } else if (request.method == Method.POST) {
-                urlConnection.setRequestMethod("POST");
-            }
-
+            //重定向默认是true
+            urlConnection.setInstanceFollowRedirects(true);
             if (mHeaders != null) {
                 for (Map.Entry<String, String> entry : mHeaders.entrySet()) {
                     urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
                     RestHttpLog.i("header : " + entry.getKey() + "  " + entry.getValue());
                 }
             }
-
-            if (request.method == Method.POST) {
+            if (request.method == Method.GET) {
+                urlConnection.setRequestMethod("GET");
+            } else if (request.method == Method.POST) {
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true);
                 OutputStream ops = urlConnection.getOutputStream();
                 ops.write(getPostParamBody(request.params).getBytes());
                 ops.flush();

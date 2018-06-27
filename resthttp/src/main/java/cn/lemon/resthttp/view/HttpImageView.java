@@ -44,6 +44,7 @@ public class HttpImageView extends ImageView {
 
     /**
      * 设置图片网络连接地址
+     * @param url
      */
     public void setImageUrl(String url) {
         mUrl = url;
@@ -83,6 +84,7 @@ public class HttpImageView extends ImageView {
     /**
      * 设置图片网络地址
      * @param inSimpleSize 压缩参数
+     * @param url
      */
     public void setImageUrlWithCompress(String url, int inSimpleSize) {
         mUrl = url;
@@ -108,6 +110,9 @@ public class HttpImageView extends ImageView {
 
     /**
      * 设置图片压缩
+     * @param url
+     * @param reqHeight
+     * @param reqWidth
      */
     public void setImageUrlWithCompress(String url, int reqWidth, int reqHeight) {
         mUrl = url;

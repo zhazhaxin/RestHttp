@@ -42,8 +42,8 @@ public class RestFactory {
 
         private static String baseUrl = "";
 
-        public Builder baseUrl(String baseUrl) {
-            this.baseUrl = baseUrl;
+        public Builder baseUrl(String url) {
+            baseUrl = url;
             return this;
         }
 
@@ -160,10 +160,9 @@ public class RestFactory {
                      * 异步处理任务
                      */
                     if (isAsync) {
-                        final int finalCallbackPosition = callbackPosition;
                         Request request = new Request(url, Method.POST, params,
-                                ((RestCallback) args[finalCallbackPosition]).getActualClass(),
-                                (RestCallback) args[finalCallbackPosition]);
+                                ((RestCallback) args[callbackPosition]).getActualClass(),
+                                (RestCallback) args[callbackPosition]);
                         asyncRestRequest(request);
                     } else {
                         Request request = new Request(url, Method.POST, params, method.getReturnType());
