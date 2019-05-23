@@ -7,7 +7,7 @@
 ## gradle依赖
 
 ``
-    compile 'cn.alien95:resthttp:1.0.8'
+    compile 'cn.alien95:resthttp:1.0.9'
 ``
 
 ## 使用

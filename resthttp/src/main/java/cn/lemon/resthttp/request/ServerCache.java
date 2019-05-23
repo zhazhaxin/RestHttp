@@ -130,11 +130,12 @@ public class ServerCache implements Cache {
             e.printStackTrace();
         }
         try {
-            assert is != null;
-            T temp = (T) is.readObject();
-            is.close();
-            return temp;
-        } catch (ClassNotFoundException | IOException e) {
+            if (is != null ) {
+                T temp = (T) is.readObject();
+                is.close();
+                return temp;
+            }
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 
